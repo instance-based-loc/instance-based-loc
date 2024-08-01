@@ -15,9 +15,11 @@ Please do NOT push to main - we shouldn't have to rebase/other stuff for every f
 ### Setup conda environment
 
 ```bash
-conda create -n dator python=3.10
+conda env create -f environment.yml
 conda activate dator
 ```
+
+_NOTE_: Update the environment YAML before merging any PR. Remove the `prefix` property from the YAML file as well. 
 
 ## Overall Documentation
 
