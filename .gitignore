@@ -1,0 +1,34 @@
+# Any of you rfiles that you don't want to pust to github
+dev-*
+
+# The data dir for symlinks to data being used
+data/*
+
+# Some data that could be added to Git
+!data/our-synthetic
+data/our-synthetic/*
+!data/our-synthetic/360_basic_test
+
+# The models dir to store checkpoints 
+models/
+
+# The output directory
+out/
+
+# Cache directory
+cache/
+
+# Editors
+.vscode
+.idea
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Environments
+.env
