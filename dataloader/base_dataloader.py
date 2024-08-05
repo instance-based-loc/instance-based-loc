@@ -74,3 +74,17 @@ class BaseDataLoader(ABC):
             np.ndarray: Truncated pointcloud data.
         """
         pass
+
+    @abstractmethod
+    def get_pointcloud_from_pose(self, pose: np.ndarray) -> np.ndarray:
+        """
+        Get the pointcloud's portion that is viewed from the current pose. 
+        NOTE - not a depth map of the current viewed position, but truncate the view frustum to a reasonable limit. 
+        
+        Args:
+            pose: the current pose (of generally the camera)
+        
+        Returns:
+            np.ndarray: Truncated pointcloud data viewed from the current pose. 
+        """
+        pass
