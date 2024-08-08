@@ -8,7 +8,6 @@ import open3d as o3d
 from tqdm import tqdm
 import imageio
 
-sys.path.insert(0, "..")
 from utils import depth_utils
 
 class SynthDataloader(BaseDataLoader):
@@ -138,3 +137,30 @@ class SynthDataloader(BaseDataLoader):
         visible_pointcloud.colors = o3d.utility.Vector3dVector(np.array(visible_colors))
         
         return visible_pointcloud
+
+# NOTE - can be used to form depth map, but it will only **look like** the depth map in the dataset
+#        called "sense" of depthmap as we negate the y axis while forming it
+def get_sense_of_depthmap_from_pointcloud(
+        pointcloud: o3d.geometry.PointCloud,
+        image_width: int,
+        image_height: int,
+        focal_length_x: float,
+        focal_length_y: float
+) -> np.ndarray:
+    points = np.asarray(pointcloud.points)
+    
+    X = points[:, 0]
+    Y = points[:, 1]
+    Z = points[:, 2]
+
+    x_pixel = (X * focal_length_x / Z) + (image_width / 2)
+    y_pixel = (Y * focal_length_y / Z) + (image_height / 2)
+
+    x_pixel = np.clip(np.round(x_pixel).astype(int), 0, image_width - 1)
+    y_pixel = np.clip(np.round(y_pixel).astype(int), 0, image_height - 1)
+
+    depth_map = np.zeros((image_height, image_width), dtype=np.float32)
+
+    depth_map[-y_pixel, x_pixel] = Z
+
+    return depth_map

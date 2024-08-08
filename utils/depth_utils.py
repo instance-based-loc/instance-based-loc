@@ -2,15 +2,17 @@ import numpy as np
 import open3d as o3d
 from scipy.spatial.transform import Rotation
 
+DEFAULT_OUTLIER_REMOVAL_CONFIG = \
+    {
+        "radius_nb_points": 12,
+        "radius": 0.05,
+    }
+
 def get_pointcloud_from_depth(
         depth_image: np.ndarray, 
         focal_lenth_x: float,
         focal_lenth_y: float,
-        outlier_removal_config = \
-            {
-                "radius_nb_points": 12,
-                "radius": 0.05,
-            }
+        outlier_removal_config = DEFAULT_OUTLIER_REMOVAL_CONFIG
 ) -> o3d.geometry.PointCloud:
     w, h = depth_image.shape
 
@@ -44,11 +46,8 @@ def get_coloured_pointcloud_from_depth(
         rgb_image: np.ndarray,
         focal_lenth_x: float,
         focal_lenth_y: float,
-        outlier_removal_config = \
-            {
-                "radius_nb_points": 12,
-                "radius": 0.05,
-            }
+        outlier_removal_config = DEFAULT_OUTLIER_REMOVAL_CONFIG
+
 ) -> o3d.geometry.PointCloud:
     # NOTE: ensure this is the calling function
     assert depth_image.shape[:2] == rgb_image.shape[:2], "Depth and RGB image dimensions do not match"
