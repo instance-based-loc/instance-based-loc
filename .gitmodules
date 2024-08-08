@@ -1,0 +1,6 @@
+[submodule "object_memory/recognize-anything"]
+	path = object_memory/recognize-anything
+	url = https://github.com/xinyu1205/recognize-anything
+[submodule "object_memory/Grounded-Segment-Anything"]
+	path = object_memory/Grounded-Segment-Anything
+	url = git@github.com:IDEA-Research/Grounded-Segment-Anything.git
