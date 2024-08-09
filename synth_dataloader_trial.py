@@ -6,7 +6,8 @@ def main(args):
     dataloader = SynthDataloader(
         evaluation_indices=args.eval_img_inds,
         data_path=args.data_path,
-        camera_focal_lenth=args.focal_length,
+        focal_length_x=args.focal_length_x,
+        focal_length_y=args.focal_length_y,
         map_pointcloud_cache_path=args.map_pcd_cache_path
     )
 
@@ -33,16 +34,22 @@ if __name__ == "__main__":
         default=[4]
     )
     parser.add_argument(
-        "--focal-length",
+        "--focal-length-x",
         type=float,
-        help="Focal length of camera",
+        help="Focal length of camera's x-axis",
+        default=300
+    )
+    parser.add_argument(
+        "--focal-length-y",
+        type=float,
+        help="Focal length of camera's y-axis",
         default=300
     )
     parser.add_argument(
         "--map-pcd-cache-path",
         type=str,
         help="Location where the map's pointcloud is cached for future use",
-        default="./cache/360_zip_cache_map.pcd"
+        default="./.cache/360_zip_cache_map.pcd"
     )
     args = parser.parse_args()
 

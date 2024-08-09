@@ -4,7 +4,9 @@ from scipy.spatial.transform import Rotation
 
 def get_pointcloud_from_depth(
         depth_image: np.ndarray, 
-        focal_lenth: float,
+        # focal_lenth: float,
+        focal_lenth_x: float,
+        focal_lenth_y: float,
         outlier_removal_config = \
             {
                 "radius_nb_points": 12,
@@ -12,6 +14,7 @@ def get_pointcloud_from_depth(
             }
 ) -> o3d.geometry.PointCloud:
     w, h = depth_image.shape
+    # print(depth_image)
 
     horizontal_distance = np.linspace(-h / 2, h / 2, h, dtype=np.float32)
     vertical_distance = np.linspace(w / 2, -w / 2, w, dtype=np.float32).reshape(-1, 1)
@@ -19,9 +22,9 @@ def get_pointcloud_from_depth(
     horizontal_distance = np.tile(horizontal_distance, (w, 1))
     vertical_distance = np.tile(vertical_distance, (1, h))
 
-    X = horizontal_distance * depth_image / focal_lenth
-    Y = vertical_distance * depth_image / focal_lenth
-    Z = depth_image
+    X = horizontal_distance * depth_image / focal_lenth_x
+    Y = vertical_distance * depth_image / focal_lenth_y
+    Z = depth_image#* 1.0 / depth_image.max()
 
     pointcloud_points = np.stack([X, Y, Z], axis=2).reshape(-1, 3)
 

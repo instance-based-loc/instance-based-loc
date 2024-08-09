@@ -16,7 +16,8 @@ class SynthDataloader(BaseDataLoader):
             self, 
             data_path: str, 
             evaluation_indices: Optional[Tuple[int]], 
-            camera_focal_lenth: Optional[float] = None,
+            focal_length_x: Optional[float] = None,
+            focal_length_y: Optional[float] = None,
             map_pointcloud_cache_path: Optional[str] = None
         ):
         """
@@ -59,7 +60,8 @@ class SynthDataloader(BaseDataLoader):
         else:
             print("Creating the map's pointcloud")
 
-            self.focal_length = camera_focal_lenth
+            self.focal_length_x = focal_length_x
+            self.focal_length_y = focal_length_y
             self.setup_map_pointcloud()
 
             # Save the pointcloud if the user has given a path
@@ -75,7 +77,7 @@ class SynthDataloader(BaseDataLoader):
         for env_idx in tqdm(self.environment_indices, desc="Forming pointcloud map from env. images"):
             cur_pointcloud = \
                 depth_utils.get_pointcloud_from_depth(
-                    np.load(self._depth_images_paths[env_idx]), self.focal_length
+                    np.load(self._depth_images_paths[env_idx]), self.focal_length_x, self.focal_length_y
                 )
             transformed_cur_pointcloud = depth_utils.transform_pointcloud(cur_pointcloud, self._poses[env_idx])
             self.map_pointcloud += transformed_cur_pointcloud
