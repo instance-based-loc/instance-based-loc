@@ -1,6 +1,9 @@
-from dataloader.synthetic_dataloader import SynthDataloader
+from dataloader.synthetic_dataloader import SynthDataloader, get_sense_of_depthmap_from_pointcloud
 import argparse
 import matplotlib.pyplot as plt
+import open3d as o3d
+import numpy as np
+from utils import depth_utils
 
 def main(args):
     dataloader = SynthDataloader(
@@ -11,11 +14,20 @@ def main(args):
         map_pointcloud_cache_path=args.map_pcd_cache_path
     )
 
-    rgb, _, _ = dataloader.get_image_data(0)
-    
-    plt.imshow(rgb)
-    plt.axis('off')
-    plt.show()
+    rgb, depth, pose = dataloader.get_image_data(0)
+
+    pcd = dataloader.get_visible_pointcloud(pose, 100, 0.05, 20)
+
+    proj_depth = get_sense_of_depthmap_from_pointcloud(pcd, depth.shape[0], depth.shape[1], args.focal_length, args.focal_length)
+
+    reformed_pcd = depth_utils.get_pointcloud_from_depth(proj_depth, args.focal_length, args.focal_length)
+    # o3d.visualization.draw_geometries([pcd, reformed_pcd])
+    # o3d.visualization.draw_geometries([pcd, dataloader.get_pointcloud()])
+
+    # in actual position (not in camera frame)
+    o3d.visualization.draw_geometries([depth_utils.transform_pointcloud(pcd, pose), dataloader.get_pointcloud(), depth_utils.transform_pointcloud(reformed_pcd, pose)])
+
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -49,7 +61,7 @@ if __name__ == "__main__":
         "--map-pcd-cache-path",
         type=str,
         help="Location where the map's pointcloud is cached for future use",
-        default="./.cache/360_zip_cache_map.pcd"
+        default="./cache/360_zip_cache_map_coloured.pcd"
     )
     args = parser.parse_args()
 

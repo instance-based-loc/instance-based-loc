@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Optional, Tuple, Dict
 import numpy as np
 from functools import lru_cache
+import open3d as o3d
 
 class BaseDataLoader(ABC):
     """
@@ -63,7 +64,7 @@ class BaseDataLoader(ABC):
         pass
 
     @abstractmethod
-    def get_pointcloud(self, bounding_box: Optional[Dict[str, Tuple[float, float]]] = None) -> np.ndarray:
+    def get_pointcloud(self, bounding_box: Optional[Dict[str, Tuple[float, float]]] = None) -> o3d.geometry.PointCloud:
         """
         Get the pointcloud data, optionally truncated by a bounding box.
         
@@ -72,5 +73,18 @@ class BaseDataLoader(ABC):
         
         Returns:
             np.ndarray: Truncated pointcloud data.
+        """
+        pass
+
+    @abstractmethod
+    def get_visible_pointcloud(self, pose: np.ndarray) -> o3d.geometry.PointCloud:
+        """
+        Filters the point cloud to include only points visible from a given pose.
+
+        Args:
+            pose (np.ndarray): The pose containing translation and quaternion (x, y, z, qx, qy, qz, qw).
+
+        Returns:
+            np.ndarray: The filtered point cloud.
         """
         pass

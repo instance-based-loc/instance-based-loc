@@ -8,7 +8,6 @@ import open3d as o3d
 from tqdm import tqdm
 import imageio
 
-sys.path.insert(0, "..")
 from utils import depth_utils
 
 class SynthDataloader(BaseDataLoader):
@@ -49,8 +48,12 @@ class SynthDataloader(BaseDataLoader):
         with open(self._pose_information_file_path, 'r') as f:
             pose_file_data = json.load(f)
             for view in pose_file_data["views"]:
-                q = Rotation.from_euler('zyx', [r for _, r in view["rotation"].items()], degrees=True).as_quat()
-                t = np.array([x for _, x in view["position"].items()])
+                t = np.array([view["position"]["x"], view["position"]["y"], view["position"]["z"]])
+
+                rotation_euler = [view["rotation"]["x"], view["rotation"]["y"], view["rotation"]["z"]]
+
+                q = Rotation.from_euler('xyz', rotation_euler, degrees=True).as_quat()
+
                 pose = np.concatenate([t, q])
                 self._poses.append(pose)
 
@@ -76,8 +79,8 @@ class SynthDataloader(BaseDataLoader):
         self.map_pointcloud = o3d.geometry.PointCloud()
         for env_idx in tqdm(self.environment_indices, desc="Forming pointcloud map from env. images"):
             cur_pointcloud = \
-                depth_utils.get_pointcloud_from_depth(
-                    np.load(self._depth_images_paths[env_idx]), self.focal_length_x, self.focal_length_y
+                depth_utils.get_coloured_pointcloud_from_depth(
+                    np.load(self._depth_images_paths[env_idx]), np.asarray(imageio.imread(self._rgb_images_paths[env_idx])), self.focal_length, self.focal_length
                 )
             transformed_cur_pointcloud = depth_utils.transform_pointcloud(cur_pointcloud, self._poses[env_idx])
             self.map_pointcloud += transformed_cur_pointcloud
@@ -93,8 +96,73 @@ class SynthDataloader(BaseDataLoader):
         print(cur_rgb_image.shape, cur_depth_image.shape, cur_pose.shape)
         return cur_rgb_image, cur_depth_image, cur_pose
 
-    def get_pointcloud(self, bounding_box: Optional[Dict[str, Tuple[float, float]]] = None) -> np.ndarray:
+    def get_pointcloud(self, bounding_box: Optional[Dict[str, Tuple[float, float]]] = None) -> o3d.geometry.PointCloud:
         if bounding_box is not None:
             raise NotImplementedError
         
         return self.map_pointcloud
+    
+    def get_visible_pointcloud(self, pose, fov, near_clip, far_clip) -> o3d.geometry.PointCloud:
+        t = pose[:3]
+        q = pose[3:]
+
+        q /= np.linalg.norm(q)
+        R = Rotation.from_quat(q).as_matrix()
+        R_inv = R.T
+        
+        # Get points and colors from the point cloud
+        pointcloud_points = np.asarray(self.get_pointcloud().points)
+        pointcloud_colors = np.asarray(self.get_pointcloud().colors)
+        
+        # Transform points to the camera's coordinate system
+        transformed_pointcloud = np.dot(pointcloud_points - t, R_inv.T)
+
+        # Define camera parameters
+        fov_rad = np.deg2rad(fov)
+        tan_half_fov = np.tan(fov_rad / 2)
+
+        # Filter points and colors based on the camera's FOV and clipping planes
+        visible_points = []
+        visible_colors = []
+        for point, color in zip(transformed_pointcloud, pointcloud_colors):
+            x, y, z = point
+            if z < near_clip or z > far_clip:
+                continue
+            if abs(x / z) > tan_half_fov or abs(y / z) > tan_half_fov:
+                continue
+            visible_points.append(point)
+            visible_colors.append(color)
+
+        # Create and return a new point cloud with visible points and colors
+        visible_pointcloud = o3d.geometry.PointCloud()
+        visible_pointcloud.points = o3d.utility.Vector3dVector(np.array(visible_points))
+        visible_pointcloud.colors = o3d.utility.Vector3dVector(np.array(visible_colors))
+        
+        return visible_pointcloud
+
+# NOTE - can be used to form depth map, but it will only **look like** the depth map in the dataset
+#        called "sense" of depthmap as we negate the y axis while forming it
+def get_sense_of_depthmap_from_pointcloud(
+        pointcloud: o3d.geometry.PointCloud,
+        image_width: int,
+        image_height: int,
+        focal_length_x: float,
+        focal_length_y: float
+) -> np.ndarray:
+    points = np.asarray(pointcloud.points)
+    
+    X = points[:, 0]
+    Y = points[:, 1]
+    Z = points[:, 2]
+
+    x_pixel = (X * focal_length_x / Z) + (image_width / 2)
+    y_pixel = (Y * focal_length_y / Z) + (image_height / 2)
+
+    x_pixel = np.clip(np.round(x_pixel).astype(int), 0, image_width - 1)
+    y_pixel = np.clip(np.round(y_pixel).astype(int), 0, image_height - 1)
+
+    depth_map = np.zeros((image_height, image_width), dtype=np.float32)
+
+    depth_map[-y_pixel, x_pixel] = Z
+
+    return depth_map
