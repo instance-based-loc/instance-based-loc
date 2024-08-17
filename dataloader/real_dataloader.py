@@ -21,7 +21,7 @@ class RealDataloader(BaseDataLoader):
             map_pointcloud_cache_path: Optional[str] = None
         ):
         """
-        Keep the evaluton_indices parameter as an empty list if you have separate directories
+        Keep the evaluation_indices parameter as an empty list if you have separate directories
         for eval and env datasets.
         """
         super().__init__(data_path, evaluation_indices)
@@ -76,11 +76,12 @@ class RealDataloader(BaseDataLoader):
         """
         self.map_pointcloud = o3d.geometry.PointCloud()
         for env_idx in tqdm(self.environment_indices, desc="Forming pointcloud map from env. images"):
+            rgb_image = np.asarray(imageio.imread(self._rgb_images_paths[env_idx]))
             depth_img = np.asarray(imageio.imread(self._depth_images_paths[env_idx]), dtype=np.float32)
             depth_img /= 1000.0
             cur_pointcloud = \
-                depth_utils.get_pointcloud_from_depth(
-                    depth_img, self.focal_length_x, self.focal_length_y
+                depth_utils.get_coloured_pointcloud_from_depth(
+                    depth_img, rgb_image, self.focal_length_x, self.focal_length_y
                 )
             # print(cur_pointcloud)
             transformed_cur_pointcloud = depth_utils.transform_pointcloud(cur_pointcloud, self._poses[env_idx])
@@ -94,7 +95,6 @@ class RealDataloader(BaseDataLoader):
         cur_depth_image = np.asarray(imageio.imread(self._depth_images_paths[index]))
         cur_pose = self._poses[index]
 
-        print(cur_rgb_image.shape, cur_depth_image.shape, cur_pose.shape)
         return cur_rgb_image, cur_depth_image, cur_pose
 
     def get_pointcloud(self, bounding_box: Optional[Dict[str, Tuple[float, float]]] = None) -> np.ndarray:
@@ -102,3 +102,42 @@ class RealDataloader(BaseDataLoader):
             raise NotImplementedError
         
         return self.map_pointcloud
+    
+    def get_visible_pointcloud(self, pose, fov, near_clip, far_clip) -> o3d.geometry.PointCloud:
+        t = pose[:3]
+        q = pose[3:]
+
+        q /= np.linalg.norm(q)
+        R = Rotation.from_quat(q).as_matrix()
+        R_inv = R.T
+        
+        # Get points and colors from the point cloud
+        pointcloud_points = np.asarray(self.get_pointcloud().points)
+        pointcloud_colors = np.asarray(self.get_pointcloud().colors)
+        
+        # Transform points to the camera's coordinate system
+        transformed_pointcloud = np.dot(pointcloud_points - t, R_inv.T)
+
+        # Define camera parameters
+        fov_rad = np.deg2rad(fov)
+        tan_half_fov = np.tan(fov_rad / 2)
+
+        # Filter points and colors based on the camera's FOV and clipping planes
+        visible_points = []
+        visible_colors = []
+        for point, color in zip(transformed_pointcloud, pointcloud_colors):
+            x, y, z = point
+            # print(z)
+            if z < near_clip or z > far_clip:
+                continue
+            if abs(x / z) > tan_half_fov or abs(y / z) > tan_half_fov:
+                continue
+            visible_points.append(point)
+            visible_colors.append(color)
+
+        # Create and return a new point cloud with visible points and colors
+        visible_pointcloud = o3d.geometry.PointCloud()
+        visible_pointcloud.points = o3d.utility.Vector3dVector(np.array(visible_points))
+        visible_pointcloud.colors = o3d.utility.Vector3dVector(np.array(visible_colors))
+        
+        return visible_pointcloud
