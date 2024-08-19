@@ -15,6 +15,7 @@ def get_pointcloud_from_depth(
         outlier_removal_config = DEFAULT_OUTLIER_REMOVAL_CONFIG
 ) -> o3d.geometry.PointCloud:
     w, h = depth_image.shape
+    # print(depth_image)
 
     horizontal_distance = np.linspace(-h / 2, h / 2, h, dtype=np.float32)
     vertical_distance = np.linspace(w / 2, -w / 2, w, dtype=np.float32).reshape(-1, 1)

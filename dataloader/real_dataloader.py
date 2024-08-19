@@ -8,9 +8,10 @@ import open3d as o3d
 from tqdm import tqdm
 import imageio
 
+sys.path.insert(0, "..")
 from utils import depth_utils
 
-class SynthDataloader(BaseDataLoader):
+class RealDataloader(BaseDataLoader):
     def __init__(
             self, 
             data_path: str, 
@@ -20,7 +21,7 @@ class SynthDataloader(BaseDataLoader):
             map_pointcloud_cache_path: Optional[str] = None
         ):
         """
-        Keep the evaluton_indices parameter as an empty list if you have separate directories
+        Keep the evaluation_indices parameter as an empty list if you have separate directories
         for eval and env datasets.
         """
         super().__init__(data_path, evaluation_indices)
@@ -28,7 +29,7 @@ class SynthDataloader(BaseDataLoader):
         # Setup paths
         self._depth_images_dir_path=os.path.join(self.data_path, "depth")
         self._rgb_images_dir_path=os.path.join(self.data_path, "rgb")
-        self._pose_information_file_path=os.path.join(self.data_path, "poses.json")
+        self._pose_information_file_path=os.path.join(self.data_path, "poses_odom.txt")
 
         # setup file path
         self._depth_images_paths = [
@@ -46,16 +47,13 @@ class SynthDataloader(BaseDataLoader):
         # Set poses
         self._poses = []
         with open(self._pose_information_file_path, 'r') as f:
-            pose_file_data = json.load(f)
-            for view in pose_file_data["views"]:
-                t = np.array([view["position"]["x"], view["position"]["y"], view["position"]["z"]])
+            pose_file_data = f.readlines()
+            for pose in pose_file_data[1:]:
+                split_pose = pose.split()
 
-                rotation_euler = [view["rotation"]["x"], view["rotation"]["y"], view["rotation"]["z"]]
-
-                q = Rotation.from_euler('xyz', rotation_euler, degrees=True).as_quat()
-
-                pose = np.concatenate([t, q])
-                self._poses.append(pose)
+                # x y z qx qy qz qw
+                p = np.array([float(i) for i in split_pose[1:-1]])
+                self._poses.append(p)
 
         if map_pointcloud_cache_path is not None and os.path.exists(map_pointcloud_cache_path):
             print("Retrieving map's pointcloud from cache")
@@ -78,10 +76,14 @@ class SynthDataloader(BaseDataLoader):
         """
         self.map_pointcloud = o3d.geometry.PointCloud()
         for env_idx in tqdm(self.environment_indices, desc="Forming pointcloud map from env. images"):
+            rgb_image = np.asarray(imageio.imread(self._rgb_images_paths[env_idx]))
+            depth_img = np.asarray(imageio.imread(self._depth_images_paths[env_idx]), dtype=np.float32)
+            depth_img /= 1000.0
             cur_pointcloud = \
                 depth_utils.get_coloured_pointcloud_from_depth(
-                    np.load(self._depth_images_paths[env_idx]), np.asarray(imageio.imread(self._rgb_images_paths[env_idx])), self.focal_length, self.focal_length
+                    depth_img, rgb_image, self.focal_length_x, self.focal_length_y
                 )
+            # print(cur_pointcloud)
             transformed_cur_pointcloud = depth_utils.transform_pointcloud(cur_pointcloud, self._poses[env_idx])
             self.map_pointcloud += transformed_cur_pointcloud
 
@@ -90,13 +92,12 @@ class SynthDataloader(BaseDataLoader):
 
     def get_image_data(self, index: int) -> Tuple[np.ndarray, Optional[np.ndarray], np.ndarray]:
         cur_rgb_image = np.asarray(imageio.imread(self._rgb_images_paths[index]))
-        cur_depth_image = np.load(self._depth_images_paths[index])
+        cur_depth_image = np.asarray(imageio.imread(self._depth_images_paths[index]))
         cur_pose = self._poses[index]
 
-        print(cur_rgb_image.shape, cur_depth_image.shape, cur_pose.shape)
         return cur_rgb_image, cur_depth_image, cur_pose
 
-    def get_pointcloud(self, bounding_box: Optional[Dict[str, Tuple[float, float]]] = None) -> o3d.geometry.PointCloud:
+    def get_pointcloud(self, bounding_box: Optional[Dict[str, Tuple[float, float]]] = None) -> np.ndarray:
         if bounding_box is not None:
             raise NotImplementedError
         
@@ -126,6 +127,7 @@ class SynthDataloader(BaseDataLoader):
         visible_colors = []
         for point, color in zip(transformed_pointcloud, pointcloud_colors):
             x, y, z = point
+            # print(z)
             if z < near_clip or z > far_clip:
                 continue
             if abs(x / z) > tan_half_fov or abs(y / z) > tan_half_fov:
@@ -139,30 +141,3 @@ class SynthDataloader(BaseDataLoader):
         visible_pointcloud.colors = o3d.utility.Vector3dVector(np.array(visible_colors))
         
         return visible_pointcloud
-
-# NOTE - can be used to form depth map, but it will only **look like** the depth map in the dataset
-#        called "sense" of depthmap as we negate the y axis while forming it
-def get_sense_of_depthmap_from_pointcloud(
-        pointcloud: o3d.geometry.PointCloud,
-        image_width: int,
-        image_height: int,
-        focal_length_x: float,
-        focal_length_y: float
-) -> np.ndarray:
-    points = np.asarray(pointcloud.points)
-    
-    X = points[:, 0]
-    Y = points[:, 1]
-    Z = points[:, 2]
-
-    x_pixel = (X * focal_length_x / Z) + (image_width / 2)
-    y_pixel = (Y * focal_length_y / Z) + (image_height / 2)
-
-    x_pixel = np.clip(np.round(x_pixel).astype(int), 0, image_width - 1)
-    y_pixel = np.clip(np.round(y_pixel).astype(int), 0, image_height - 1)
-
-    depth_map = np.zeros((image_height, image_width), dtype=np.float32)
-
-    depth_map[-y_pixel, x_pixel] = Z
-
-    return depth_map
