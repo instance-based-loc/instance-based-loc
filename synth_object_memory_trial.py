@@ -16,23 +16,19 @@ def main(args):
     )
 
     def dummy_get_embs(
-        obj_grounded_imgs, 
-        obj_bounding_boxes, 
-        obj_masks, 
-        obj_phrases,
-        rgb_image_path,
-        depth_image_path,
-        consider_floor
+        *args
     ):
         return torch.tensor([1, 2, 3])
     memory = ObjectMemory(
         device = args.device,
         ram_pretrained_path = args.ram_pretrained_path,
         sam_checkpoint_path = args.sam_checkpoint_path,
-        camera_focal_lenth_x=args.focal_length,
-        camera_focal_lenth_y=args.focal_length,
-        get_embeddings_func=dummy_get_embs
+        camera_focal_lenth_x = args.focal_length,
+        camera_focal_lenth_y = args.focal_length,
+        get_embeddings_func = dummy_get_embs
     )
+
+    
 
 
 if __name__ == "__main__":

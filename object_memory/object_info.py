@@ -5,9 +5,13 @@ from utils.datatypes import TypedList
 from sklearn.neighbors import NearestNeighbors
 
 class ObjectInfo:
-    def _add_name(self, new_name):
+    def _add_name(self, new_name: str):
         if new_name not in self.names:
             self.names.append(new_name)
+
+    def _add_names(self, new_names: list[str]):
+        for new_name in new_names:
+            self._add_name(new_name)
 
     def _add_embedding(self, new_emb: np.ndarray):
         # Case 1: If the number of embeddings is less than max limit, append it
@@ -17,6 +21,7 @@ class ObjectInfo:
             # Case 2: Use KNN to find the least similar embedding
             embeddings_array = np.array(self.embeddings)
 
+            # TODO: is this right?
             knn = NearestNeighbors(n_neighbors=2, metric='euclidean')
             knn.fit(embeddings_array)
 
@@ -29,6 +34,9 @@ class ObjectInfo:
             if new_emb_distance < least_similar_distance:
                 self.embeddings[least_similar_index] = new_emb
 
+    def _add_embeddings(self, new_embs: list[np.ndarray]):
+        self.embeddings.extend(new_embs)
+        # TODO: limit the number of embeddings
 
     def _add_pointcloud(self, new_pointcloud: o3d.geometry.PointCloud):
         combined_points = np.vstack((np.asarray(self.pointcloud.points), np.asarray(new_pointcloud.points)))
@@ -68,12 +76,17 @@ class ObjectInfo:
         return (
             f"ObjectInfo == ID: {self.id}, Names: {self.names}, Mean_Emb: {self.mean_emb}, Num. Points: {self.pcd.shape}"
         )
+    
+    def __add__(self, new_obj_info):
+        self._add_names(new_names = new_obj_info.names)
+        self._add_embeddings(new_embs = new_obj_info.embeddings)
+        self._add_pointcloud(new_pointcloud = new_obj_info.pointcloud)
 
     def downsample(self, voxel_size):
         self.pointcloud = voxel_down_sample_with_colors(self.pointcloud, voxel_size)
         self._process_pointcloud()
 
-    def add_info(self, new_name: str, new_emb: np.ndarray, new_pointcloud: o3d.geometry.PointCloud, align: bool, max_iteration=30, max_correspondence_distance=0.01):
+    def add_info(self, new_name: str, new_emb: np.ndarray, new_pointcloud: o3d.geometry.PointCloud, align: bool = False, max_iteration=30, max_correspondence_distance=0.01):
         if align:
             raise NotImplementedError("Aligning is a To-Do")
         
@@ -82,4 +95,14 @@ class ObjectInfo:
         self._add_pointcloud(new_pointcloud)
 
         self._compute_means()
+
+    def update_pointcloud_with_mask(self, mask):
+        """
+        Update the point cloud and colors based on the given boolean mask.
+        
+        :param mask: A boolean mask of the same length as the number of points in the point cloud.
+        """
+        self.pointcloud.points = o3d.utility.Vector3dVector(self.pcd[:, mask])
+        self.pointcloud.colors = o3d.utility.Vector3dVector(self.pcd_colours[:, mask])
+        self._process_pointcloud()
 
