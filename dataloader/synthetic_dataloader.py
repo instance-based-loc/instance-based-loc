@@ -86,13 +86,9 @@ class SynthDataloader(BaseDataLoader):
     def _get_environment_indices(self) -> Tuple[int, ...]:
         return [i for i in range(len(self._depth_images_paths)) if i not in self.evaluation_indices]
 
-    def get_image_data(self, index: int) -> Tuple[np.ndarray, Optional[np.ndarray], np.ndarray]:
-        cur_rgb_image = np.asarray(imageio.imread(self._rgb_images_paths[index]))
-        cur_depth_image = np.load(self._depth_images_paths[index])
+    def get_image_data(self, index: int):
         cur_pose = self._poses[index]
-
-        print(cur_rgb_image.shape, cur_depth_image.shape, cur_pose.shape)
-        return cur_rgb_image, cur_depth_image, cur_pose
+        return self._rgb_images_paths[index], self._depth_images_paths[index], cur_pose
 
     def get_pointcloud(self, bounding_box: Optional[Dict[str, Tuple[float, float]]] = None) -> o3d.geometry.PointCloud:
         if bounding_box is not None:
