@@ -1,8 +1,9 @@
-from abc import ABC, abstractmethod
 from typing import Type
 import torch
 import open3d as o3d
 import numpy as np
+from typing import Callable
+import imageio
 
 from .object_finder import ObjectFinder
 from .object_info import ObjectInfo
@@ -12,18 +13,21 @@ from utils.datatypes import TypedList
 
 print("\033[34mLoaded modules for object_memory.object_memory\033[0m")
 
-class BaseObjectMemory(ABC):
-    @abstractmethod
+def default_load_rgb(path: str) -> np.ndarray:
+    return np.asarray(imageio.imread(path))
+
+def default_load_depth(path: str) -> np.ndarray:
+    return np.load(path)
+
+class ObjectMemory():
     def _load_rgb_image(self, path: str) -> np.ndarray:
-        pass
+        return self.load_rgb_image_func(path)
 
-    @abstractmethod
     def _load_depth_image(self, path: str) -> np.ndarray:
-        pass
+        return self.load_depth_image_func(path)
 
-    @abstractmethod
-    def _get_embeddings(self, *args, **kwargs) -> torch.Tensor:
-        pass
+    def _get_embeddings(self, *args) -> torch.Tensor:
+        return self.get_embeddings_func(*args)
 
     def _log(self, statement: any) -> None:
         """
@@ -41,10 +45,13 @@ class BaseObjectMemory(ABC):
         sam_checkpoint_path: Type[str],
         camera_focal_lenth_x: Type[float],
         camera_focal_lenth_y: Type[float],
+        get_embeddings_func,
         log_enabled: Type[bool] = True,
         mem_formation_bounding_box_threshold = 0.3,
         mem_formation_occlusion_overlap_threshold = 0.9,
         object_info_max_embeddings_num = 5,
+        load_rgb_image_func = default_load_rgb,
+        load_depth_image_func = default_load_depth,
     ):
         # ***************************************************************************
         # Setup encoder in the init of the concrete class and then do init for super
@@ -59,6 +66,9 @@ class BaseObjectMemory(ABC):
         self.mem_formation_bounding_box_threshold = mem_formation_bounding_box_threshold
         self.mem_formation_occlusion_overlap_threshold = mem_formation_occlusion_overlap_threshold
         self.object_info_max_embeddings_num = object_info_max_embeddings_num
+        self.get_embeddings_func = get_embeddings_func
+        self.load_rgb_image_func = load_rgb_image_func
+        self.load_depth_image_func = load_depth_image_func
 
         ObjectFinder.setup(
             device = self.device,

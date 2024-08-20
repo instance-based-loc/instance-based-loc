@@ -1,9 +1,10 @@
 from dataloader.synthetic_dataloader import SynthDataloader
-from object_memory.dummy_object_memory import DummyObjectMemory
+from object_memory.object_memory import ObjectMemory
 import argparse
 import matplotlib.pyplot as plt
 import open3d as o3d
 import numpy as np
+import torch
 from utils.os_env import get_user
 
 def main(args):
@@ -14,12 +15,23 @@ def main(args):
         map_pointcloud_cache_path=args.map_pcd_cache_path
     )
 
-    memory = DummyObjectMemory(
+    def dummy_get_embs(
+        obj_grounded_imgs, 
+        obj_bounding_boxes, 
+        obj_masks, 
+        obj_phrases,
+        rgb_image_path,
+        depth_image_path,
+        consider_floor
+    ):
+        return torch.tensor([1, 2, 3])
+    memory = ObjectMemory(
         device = args.device,
         ram_pretrained_path = args.ram_pretrained_path,
         sam_checkpoint_path = args.sam_checkpoint_path,
         camera_focal_lenth_x=args.focal_length,
-        camera_focal_lenth_y=args.focal_length
+        camera_focal_lenth_y=args.focal_length,
+        get_embeddings_func=dummy_get_embs
     )
 
 
