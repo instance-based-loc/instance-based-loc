@@ -2,6 +2,7 @@ import numpy as np
 import torch
 import PIL
 from huggingface_hub import hf_hub_download
+from typing import Type
 
 from utils.logging import conditional_log
 from .object_finder_phrases import filter_caption
@@ -28,16 +29,29 @@ print("\033[34mLoaded modules for object_memory.object_finder\033[0m")
 
 class ObjectFinder():
     """
-        Class that detects objects in a given image.
+    Class that detects objects in a given image using RAM, GroundingDINO, and SAM models.
+
+    This class provides methods to find and segment objects in images based on captions or keywords.
     """
 
     @classmethod
     def _log(cls, statement: any) -> None:
-        conditional_log(statement, cls.log_enabled)
+        """
+        Conditionally log a statement if logging is enabled.
 
+        Args:
+            statement (any): The statement to log.
+        """
+        conditional_log(statement, cls.log_enabled)
 
     @classmethod
     def _setup_ram(cls):
+        """
+        Setup the RAM for object detection.
+
+        Loads the RAM model and sets it to evaluation mode on the specified device.
+        Also initializes the image transformation for the RAM model.
+        """
         cls._log("Loading RAM")
         cls.ram_model = ram(pretrained=cls.ram_pretrained_path, image_size=cls.image_size, vit=cls.ram_model)
         cls.ram_model.eval()
@@ -46,29 +60,41 @@ class ObjectFinder():
 
     @classmethod
     def _setup_grounding_dino(cls):
+        """
+        Setup the GroundingDINO model for object detection.
+
+        Downloads the model configuration and checkpoint from the Hugging Face hub,
+        loads the model, and sets it to evaluation mode on the specified device.
+        """
         cls._log("Loading Grounding Dino")
 
-        cache_config_file = hf_hub_download(repo_id=cls.ckpt_repo_id, filename=cls.ckpt_config_filename)
+        cache_config_file = hf_hub_download(repo_id=cls.gd_ckpt_repo_id, filename=cls.gd_ckpt_config_filename)
         args = gd_SLConfig.fromfile(cache_config_file)
         args.device = cls.device
         cls.groundingdino_model = gd_build_model(args)
 
-        cache_file = hf_hub_download(repo_id=cls.ckpt_repo_id, filename=cls.ckpt_filenmae)
+        cache_file = hf_hub_download(repo_id=cls.gd_ckpt_repo_id, filename=cls.gd_ckpt_filename)
         checkpoint = torch.load(cache_file, map_location=cls.device)
         _ = cls.groundingdino_model.load_state_dict(gd_clean_state_dict(checkpoint['model']), strict=False)
         cls.groundingdino_model.eval()
 
     @classmethod
     def _setup_sam(cls):
+        """
+        Setup the SAM (Segment Anything Model) for image segmentation.
+
+        Loads the SAM model, sets it to evaluation mode, and initializes the SAM predictor on the specified device.
+        """
         cls._log("Loading SAM")
         cls.sam_predictor = SamPredictor(build_sam(checkpoint=cls.sam_checkpoint_path).to(cls.device).eval())
 
     @classmethod
     def setup(
         cls,
-        device,
-        ram_pretrained_path,
-        sam_checkpoint_path,
+        device: Type[str],
+        ram_pretrained_path: Type[str],
+        sam_checkpoint_path: Type[str],
+        log_enabled: Type[bool],
         gd_detection_box_threshold = 0.35,
         gd_detection_text_threshold = 0.55,
         gd_box_processing_intersection_threshold = 0.7,
@@ -77,10 +103,28 @@ class ObjectFinder():
         ram_model = 'swin_l',
         gd_ckpt_repo_id = "ShilongLiu/GroundingDINO",
         gd_ckpt_filename = "groundingdino_swinb_cogcoor.pth",
-        gd_ckpt_config_filename = "GroundingDINO_SwinB.cfg.py",
-        log_enabled = True
-
+        gd_ckpt_config_filename = "GroundingDINO_SwinB.cfg.py"
     ) -> None:
+        """
+        Setup the ObjectFinder class with the specified parameters.
+
+        Initializes the RAM, GroundingDINO, and SAM models with the provided paths and configuration.
+
+        Args:
+            device (torch.device): The device to run the models on (e.g., 'cuda' or 'cpu').
+            ram_pretrained_path (str): Path to the pretrained RAM model.
+            sam_checkpoint_path (str): Path to the SAM model checkpoint.
+            gd_detection_box_threshold (float): Detection box threshold for GroundingDINO. Default is 0.35.
+            gd_detection_text_threshold (float): Detection text threshold for GroundingDINO. Default is 0.55.
+            gd_box_processing_intersection_threshold (float): Intersection threshold for bounding box comparison. Default is 0.7.
+            gd_box_processing_size_threshold (float): Size threshold for bounding box comparison. Default is 0.75.
+            image_size (int): Image size for RAM model input. Default is 384.
+            ram_model (str): The RAM model variant to use (e.g., 'swin_l'). Default is 'swin_l'.
+            gd_ckpt_repo_id (str): Hugging Face repo ID for GroundingDINO model. Default is "ShilongLiu/GroundingDINO".
+            gd_ckpt_filename (str): Filename of the GroundingDINO model checkpoint. Default is "groundingdino_swinb_cogcoor.pth".
+            gd_ckpt_config_filename (str): Filename of the GroundingDINO model config file. Default is "GroundingDINO_SwinB.cfg.py".
+            log_enabled (bool): Flag to enable or disable logging. Default is True.
+        """
         cls.device = device
         cls.ram_pretrained_path = ram_pretrained_path
         cls.sam_checkpoint_path = sam_checkpoint_path
@@ -100,7 +144,17 @@ class ObjectFinder():
         cls._setup_sam()
 
     @classmethod
-    def get_bounding_boxes_and_phrases(cls, image: torch.Tensor, keywords: list[str]) -> tuple[torch.Tensor, list]:
+    def _get_bounding_boxes_and_phrases(cls, image: torch.Tensor, keywords: list[str]) -> tuple[torch.Tensor, list]:
+        """
+        Detect bounding boxes and phrases in an image based on provided keywords using GroundingDINO.
+
+        Args:
+            image (torch.Tensor): The input image tensor.
+            keywords (list[str]): List of keywords to detect in the image.
+
+        Returns:
+            tuple[torch.Tensor, list]: Detected bounding boxes and corresponding phrases.
+        """
         def get_box_iou(rect1, rect2) -> float:
             area_rect1 = rect1[2]*rect1[3]
             area_rect2 = rect2[2]*rect2[3]
@@ -160,12 +214,24 @@ class ObjectFinder():
 
         if len(returned_boxes) > 0:
             # torch.stack cannot work on an empty lis
-            return torch.stack(returned_boxes), returned_phrases
+            return torch.stack(returned_boxes, dim=0), returned_phrases
         
         return None, None
     
     @classmethod
-    def segment_from_bounding_boxes(cls, image: np.array, cxcy_boxes: torch.Tensor):
+    def _segment_from_bounding_boxes(cls, image: np.array, cxcy_boxes: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+        """
+        Generate masks for the detected bounding boxes using the SAM model and 
+        transform the bounding boxes to the image's coordinates. 
+
+        Args:
+            image (torch.Tensor): The input image tensor.
+            boxes (torch.Tensor): The detected bounding boxes.
+
+        Returns:
+            torch.Tensor: Bounding boxes
+            torch.Tensor: Generated masks for the bounding boxes.
+        """
         with torch.no_grad():
             cls.sam_predictor.set_image(image)
             H, W, _ = image.shape
@@ -181,7 +247,18 @@ class ObjectFinder():
             return boxes_xyxy, masks
 
     @classmethod
-    def find(cls, image_path: str, caption: list[str] = None) -> tuple[list, torch.Tensor, torch.Tensor, list]:
+    def find(cls, image_path: str, consider_floor: bool, caption: list[str] = None) -> tuple[list, torch.Tensor, torch.Tensor, list]:
+        """
+        Detect and segment objects in an image based on provided keywords.
+
+        Args:
+            image_path (str): the input image's path 
+            consider_floor (bool): 
+            keywords (list[str]): List of keywords to detect and segment in the image.
+
+        Returns:
+            tuple[list, torch.Tensor, torch.Tensor, list]: grounded_objects, boxes, masks, phrases
+        """
 
         image_source, image = gd_load_image(image_path)
 
@@ -191,17 +268,20 @@ class ObjectFinder():
             caption = inference_ram(img_ram, cls.ram_model)[0].split("|")
 
         filtered_caption = filter_caption(caption)
+        if consider_floor:
+            filter_caption.append("floor")
+            filter_caption.append("ground")
         cls._log(f"Filtered caption post RAM: {filtered_caption}")
 
         # Use of GroundingDINO
-        cxcy_boxes, phrases = cls.get_bounding_boxes_and_phrases(image, filtered_caption)
+        cxcy_boxes, phrases = cls._get_bounding_boxes_and_phrases(image, filtered_caption)
 
         if cxcy_boxes is None or phrases is None:
             cls._log("Grounding DINO could not find anything.")
             return None, None, None, None
 
         # Use of SAM
-        boxes, masks = cls.segment_from_bounding_boxes(image_source, cxcy_boxes)
+        boxes, masks = cls._segment_from_bounding_boxes(image_source, cxcy_boxes)
 
         # ground objects
         grounded_objects = [image_source[int(bb[1]):int(bb[3]),

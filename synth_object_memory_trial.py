@@ -1,5 +1,5 @@
 from dataloader.synthetic_dataloader import SynthDataloader
-from object_memory.object_finder import ObjectFinder
+from object_memory.dummy_object_memory import DummyObjectMemory
 import argparse
 import matplotlib.pyplot as plt
 import open3d as o3d
@@ -14,10 +14,12 @@ def main(args):
         map_pointcloud_cache_path=args.map_pcd_cache_path
     )
 
-    ObjectFinder.setup(
+    memory = DummyObjectMemory(
         device = args.device,
         ram_pretrained_path = args.ram_pretrained_path,
-        sam_checkpoint_path = args.sam_checkpoint_path
+        sam_checkpoint_path = args.sam_checkpoint_path,
+        camera_focal_lenth_x=args.focal_length,
+        camera_focal_lenth_y=args.focal_length
     )
 
 
