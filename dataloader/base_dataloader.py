@@ -48,17 +48,17 @@ class BaseDataLoader(ABC):
         pass
 
     @abstractmethod
-    def get_image_data(self, index: int) -> Tuple[np.ndarray, Optional[np.ndarray], np.ndarray]:
+    def get_image_data(self, index: int) -> Tuple[str, Optional[str], np.ndarray]:
         """
-        Get the RGB image, depth map, and pose at the specified index.
+        Get the RGB image path, depth map path, and pose at the specified index.
         
         Args:
             index (int): Index of the image.
         
         Returns:
             Tuple containing:
-            - RGB image (np.ndarray)
-            - Optional depth map (np.ndarray)
+            - RGB image path (str)
+            - Optional depth map (str)
             - Pose (np.ndarray)
         """
         pass
