@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import open3d as o3d
 import numpy as np
 from utils import depth_utils
+import imageio
 
 def main(args):
     dataloader = RealDataloader(
@@ -14,11 +15,14 @@ def main(args):
         map_pointcloud_cache_path=args.map_pcd_cache_path
     )
 
-    rgb, depth, pose = dataloader.get_image_data(1)
+    rgb_path, depth_path, pose = dataloader.get_image_data(1)
+    rgb = np.asarray(imageio.imread(rgb_path))
+    depth = np.asarray(imageio.imread(depth_path), dtype=np.float32)
+    depth /= 1000.0
     
-    # plt.imshow(rgb)
-    # plt.axis('off')
-    # plt.show()
+    plt.imshow(rgb)
+    plt.axis('off')
+    plt.show()
 
     pcd = dataloader.get_visible_pointcloud(pose, 100, 0.05, 20)
 
