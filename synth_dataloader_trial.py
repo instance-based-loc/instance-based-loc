@@ -21,9 +21,9 @@ def main(args):
 
     pcd = dataloader.get_visible_pointcloud(pose, 100, 0.05, 20)
 
-    proj_depth = get_sense_of_depthmap_from_pointcloud(pcd, depth.shape[0], depth.shape[1], args.focal_length, args.focal_length)
+    proj_depth = get_sense_of_depthmap_from_pointcloud(pcd, depth.shape[0], depth.shape[1], args.focal_length_x, args.focal_length_y)
 
-    reformed_pcd = depth_utils.get_pointcloud_from_depth(proj_depth, args.focal_length, args.focal_length)
+    reformed_pcd = depth_utils.get_pointcloud_from_depth(proj_depth, args.focal_length_x, args.focal_length_y)
     # o3d.visualization.draw_geometries([pcd, reformed_pcd])
     # o3d.visualization.draw_geometries([pcd, dataloader.get_pointcloud()])
 
@@ -64,7 +64,7 @@ if __name__ == "__main__":
         "--map-pcd-cache-path",
         type=str,
         help="Location where the map's pointcloud is cached for future use",
-        default="./cache/360_zip_cache_map_coloured.pcd"
+        default="./.cache/360_zip_cache_map_coloured.pcd"
     )
     args = parser.parse_args()
 

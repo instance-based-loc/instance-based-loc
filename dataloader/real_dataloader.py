@@ -75,7 +75,7 @@ class RealDataloader(BaseDataLoader):
             Function that creates the pointcloud of the environment
         """
         self.map_pointcloud = o3d.geometry.PointCloud()
-        for env_idx in tqdm(self.environment_indices[:50], desc="Forming pointcloud map from env. images"):
+        for env_idx in tqdm(self.environment_indices, desc="Forming pointcloud map from env. images"):
             rgb_image = np.asarray(imageio.imread(self._rgb_images_paths[env_idx]))
             depth_img = np.asarray(imageio.imread(self._depth_images_paths[env_idx]), dtype=np.float32)
             depth_img /= 1000.0

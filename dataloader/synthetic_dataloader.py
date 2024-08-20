@@ -80,7 +80,7 @@ class SynthDataloader(BaseDataLoader):
         for env_idx in tqdm(self.environment_indices, desc="Forming pointcloud map from env. images"):
             cur_pointcloud = \
                 depth_utils.get_coloured_pointcloud_from_depth(
-                    np.load(self._depth_images_paths[env_idx]), np.asarray(imageio.imread(self._rgb_images_paths[env_idx])), self.focal_length, self.focal_length
+                    np.load(self._depth_images_paths[env_idx]), np.asarray(imageio.imread(self._rgb_images_paths[env_idx])), self.focal_length_x, self.focal_length_y
                 )
             transformed_cur_pointcloud = depth_utils.transform_pointcloud(cur_pointcloud, self._poses[env_idx])
             self.map_pointcloud += transformed_cur_pointcloud
