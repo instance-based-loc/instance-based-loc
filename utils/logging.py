@@ -18,5 +18,5 @@ def get_mem_stats():
 
     cuda_memory_stats = torch.cuda.memory_stats()
     max_cuda_memory_GBs = int(cuda_memory_stats["allocated_bytes.all.peak"]) / (1e3 ** 3)
-
+    # TODO subtract initial memory and GPU usuage from before the run 
     return f"{memory_info_GBs:.3f}", f"{max_cuda_memory_GBs:.3f}"

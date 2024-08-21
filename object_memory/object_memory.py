@@ -4,11 +4,15 @@ import open3d as o3d
 import numpy as np
 from tqdm import tqdm
 import imageio
+import os
 
 from .object_finder import ObjectFinder
 from .object_info import ObjectInfo
 from utils.logging import conditional_log
-from utils.depth_utils import get_mask_coloured_pointclouds_from_depth, transform_pointcloud, DEFAULT_OUTLIER_REMOVAL_CONFIG
+from utils.depth_utils import get_mask_coloured_pointclouds_from_depth, \
+    transform_pointcloud, \
+    DEFAULT_OUTLIER_REMOVAL_CONFIG, \
+    combine_point_clouds
 
 print("\033[34mLoaded modules for object_memory.object_memory\033[0m")
 
@@ -80,6 +84,14 @@ class ObjectMemory():
 
         self.memory: list[ObjectInfo] = []
 
+    def __repr__(self):
+        repr = ""
+        for obj_info in self.memory:
+            repr += f"\t{obj_info}\n"
+        if repr == "":
+            repr = "\tNo objects in memory yet."
+        return repr
+
     def _get_object_info(self, rgb_image_path, depth_image_path, consider_floor, outlier_removal_config):
         obj_grounded_imgs, obj_bounding_boxes, obj_masks, obj_phrases = ObjectFinder.find(rgb_image_path, consider_floor)
 
@@ -123,11 +135,11 @@ class ObjectMemory():
         rgb_image_path: str,
         depth_image_path: str,
         pose: np.ndarray,
+        consider_floor: bool,
         outlier_removal_config = DEFAULT_OUTLIER_REMOVAL_CONFIG,
         add_noise = False,
         pose_noise = {'trans': 0.0005, 'rot': 0.0005},
         depth_noise = 0.003,
-        consider_floor= True,
         min_points = 500,
         will_cluster_later = True
     ):
@@ -137,10 +149,10 @@ class ObjectMemory():
         obj_phrases, embs, obj_pointclouds = self._get_object_info(rgb_image_path, depth_image_path, consider_floor, outlier_removal_config)
         
         if obj_phrases is None:
-            self._log("BaseObjectMemory.process_image did NOT find any objects")
+            self._log("ObjectMemory.process_image did NOT find any objects")
             return
         else:
-            self._log(f"BaseObjectMemory.process_image found: {obj_phrases}")
+            self._log(f"ObjectMemory.process_image found: {obj_phrases}")
         
         if add_noise:
             def add_noise_to_array(array, noise_level):
@@ -177,7 +189,7 @@ class ObjectMemory():
         transformed_pointclouds = [transform_pointcloud(obj_pointcloud, pose) for obj_pointcloud in obj_pointclouds]
 
         for i, (obj_phrase, obj_emb, obj_pointcloud) in enumerate(zip(obj_phrases, embs, transformed_pointclouds)):
-            self._log(f"\tCurrent Object Phrase under consideration for BaseObjectMemory.process_image: {obj_phrase}")
+            self._log(f"\tCurrent Object Phrase under consideration for ObjectMemory.process_image: {obj_phrase}")
 
             if num_points_in_pointcloud(obj_pointcloud) < min_points:
                 self._log(f"\t\tSkipping as number of points {num_points_in_pointcloud(obj_pointcloud)} < min_points = {min_points}.")
@@ -202,6 +214,11 @@ class ObjectMemory():
                 self.memory.append(new_obj_info)
                 self._log(f"\tObject Added: {new_obj_info}")
 
+    def downsample_all_objects(self, voxel_size):
+        self._log("Downsampling all objects")
+        for obj in self.memory:
+            obj.downsample(voxel_size)
+
     def remove_points_below_floor(self):
         """
         Remove points from objects that are below a specified floor height 
@@ -210,8 +227,8 @@ class ObjectMemory():
 
         Uses self.dataset_floor_thickness
         """
-        
-        # Initialize floor_height to infinity to find the minimum height
+        self._log("Removing points below floor")
+
         floor_height = float('inf')
 
         # First pass: Determine the lowest floor height from non-floor objects
@@ -297,18 +314,41 @@ class ObjectMemory():
 
             # Merge objects into a single clustered object
             clustered_object_info = objects_to_cluster[0]
+
             for obj_info in objects_to_cluster[1:]:
-                self._log(f"\tMerging {obj} into {clustered_object_info}")
+                self._log(f"\t\tMerging {obj_info} into {clustered_object_info}")
                 clustered_object_info = clustered_object_info + obj_info
 
+            self._log(f"\tClustered Object is finally {clustered_object_info}")
             clustered_objects.append(clustered_object_info)
 
         self._log(f"\tTotal clustered objects: {len(clustered_objects)}")
         
         # Update memory with new clustered objects
         self.memory = clustered_objects
-        print(f"Updated memory size: {len(self.memory)}")
+        self._log(f"Updated memory size: {len(self.memory)}")
 
         # Update object IDs
         for i, obj_info in enumerate(self.memory):
             obj_info.id = i
+
+    def save(self, save_directory: str):
+        os.makedirs(save_directory, exist_ok=True)
+
+        individual_obj_save_dir = os.path.join(save_directory, "objects")
+        os.makedirs(individual_obj_save_dir, exist_ok=True)
+
+        textual_info_path = os.path.join(save_directory, "memory.txt")
+        combined_pointcloud_save_path = os.path.join(save_directory, "combined_pointcloud.ply")
+
+        with open(textual_info_path, "w") as f:
+            f.write(self.__repr__())
+
+        combined_pointcloud = combine_point_clouds(obj.pointcloud for obj in self.memory)
+        o3d.io.write_point_cloud(combined_pointcloud_save_path, combined_pointcloud)
+
+        for obj in self.memory:
+            current_obj_save_dir = os.path.join(individual_obj_save_dir, f"{obj.id}")
+            obj.save(current_obj_save_dir)
+
+        self._log(f"Saved memory to {save_directory}")

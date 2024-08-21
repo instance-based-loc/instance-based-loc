@@ -39,11 +39,27 @@ def main(args):
         memory.process_image(
             rgb_image_path,
             depth_image_path,
-            pose
+            pose,
+            consider_floor = False
         )
 
         mem_usage, gpu_usage = get_mem_stats()
         print(f"Using {mem_usage} GB of memory and {gpu_usage} GB of GPU")
+
+    # Downsample
+    memory.downsample_all_objects(voxel_size=0.01)
+
+    # Recluster
+    memory.recluster_objects_with_dbscan(visualize=True)
+    
+    # Remove below floors
+    memory.remove_points_below_floor()
+
+    print("\nMemory is")
+    print(memory)
+
+    memory.save(save_directory = "./out/360_trial")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

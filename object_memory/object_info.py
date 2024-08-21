@@ -2,6 +2,7 @@ import numpy as np
 import open3d as o3d
 from utils.depth_utils import voxel_down_sample_with_colors
 from sklearn.neighbors import NearestNeighbors
+import os, pickle
 
 class ObjectInfo:
     def _add_name(self, new_name: str):
@@ -48,7 +49,7 @@ class ObjectInfo:
 
     def _process_pointcloud(self):
         self.pcd = np.asarray(self.pointcloud.points).T
-        self.pcd_colours = np.asarray(self.pointcloud.colors).T
+        self.pcd_colors = np.asarray(self.pointcloud.colors).T
 
     def _compute_means(self):
         self.mean_emb = np.mean(np.array(self.embeddings), axis=0)
@@ -58,8 +59,8 @@ class ObjectInfo:
         self.id = id
         self.names: list[str] = [name]
         self.embeddings: list[np.ndarray] = [emb]
-        self.pointcloud = pointcloud
-        self.max_embeddings_num = max_embeddings_num
+        self.pointcloud: o3d.geometry.PointCloud = pointcloud
+        self.max_embeddings_num: int = max_embeddings_num
 
         self._process_pointcloud()
 
@@ -80,6 +81,7 @@ class ObjectInfo:
         self._add_names(new_names = new_obj_info.names)
         self._add_embeddings(new_embs = new_obj_info.embeddings)
         self._add_pointcloud(new_pointcloud = new_obj_info.pointcloud)
+        return self
 
     def downsample(self, voxel_size):
         self.pointcloud = voxel_down_sample_with_colors(self.pointcloud, voxel_size)
@@ -95,13 +97,21 @@ class ObjectInfo:
 
         self._compute_means()
 
-    def update_pointcloud_with_mask(self, mask):
-        """
-        Update the point cloud and colors based on the given boolean mask.
+    def update_pointcloud_with_mask(self, mask: np.ndarray):
+        mask = np.asarray(mask)
         
-        :param mask: A boolean mask of the same length as the number of points in the point cloud.
-        """
-        self.pointcloud.points = o3d.utility.Vector3dVector(self.pcd[:, mask])
-        self.pointcloud.colors = o3d.utility.Vector3dVector(self.pcd_colours[:, mask])
+        self.pointcloud.points = o3d.utility.Vector3dVector(np.asarray(self.pointcloud.points)[mask, :])
+        self.pointcloud.colors = o3d.utility.Vector3dVector(np.asarray(self.pointcloud.colors)[mask, :])
+
         self._process_pointcloud()
 
+    def save(self, save_directory: str):
+        os.makedirs(save_directory, exist_ok=True)
+
+        o3d.io.write_point_cloud(os.path.join(save_directory, "pointcloud.ply"), self.pointcloud)
+        with open(os.path.join(save_directory, "info.pkl"), "wb") as f:
+            pickle.dump({
+                "names": self.names,
+                "embeddings": self.embeddings,
+                "max_embeddings_num": self.max_embeddings_num
+            }, f)

@@ -223,3 +223,9 @@ def voxel_down_sample_with_colors(pcd: o3d.geometry.PointCloud, voxel_size: floa
         downsampled_pcd.colors = o3d.utility.Vector3dVector(downsampled_colors)
     
     return downsampled_pcd
+
+def combine_point_clouds(pcds: list[o3d.geometry.PointCloud]):
+    combined_pcd = o3d.geometry.PointCloud()
+    for pcd in pcds:
+        combined_pcd += pcd  # Merge point clouds
+    return combined_pcd
