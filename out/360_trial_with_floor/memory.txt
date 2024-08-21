@@ -1,0 +1,3 @@
+	ObjectInfo == ID: 0, Names: ['armchair'], Mean_Emb: [1. 2. 3.], Num. Points: (3, 11211)
+	ObjectInfo == ID: 1, Names: ['armchair'], Mean_Emb: [1. 2. 3.], Num. Points: (3, 53968)
+	ObjectInfo == ID: 2, Names: ['table'], Mean_Emb: [1. 2. 3.], Num. Points: (3, 9845)

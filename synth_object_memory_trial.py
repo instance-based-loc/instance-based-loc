@@ -13,7 +13,8 @@ def main(args):
     dataloader = SynthDataloader(
         evaluation_indices=args.eval_img_inds,
         data_path=args.data_path,
-        camera_focal_lenth=args.focal_length,
+        focal_length_x=args.focal_length,
+        focal_length_y=args.focal_length,
         map_pointcloud_cache_path=args.map_pcd_cache_path
     )
 
