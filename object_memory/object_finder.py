@@ -183,7 +183,7 @@ class ObjectFinder():
                 detected_boxes, _, detected_phrases = gd_predict(
                     model=cls.groundingdino_model,
                     image=image,
-                    caption=word,
+                    caption=str(word),
                     box_threshold=cls.gd_detection_box_threshold,
                     text_threshold=cls.gd_detection_text_threshold,
                     device=cls.device
@@ -192,7 +192,7 @@ class ObjectFinder():
                 cls._log(f"Index {i} / Word {word}: {detected_phrases}")
 
                 if detected_boxes is not None and len(detected_phrases) > 0:
-                    if len(returned_boxes) > 0:
+                    if len(detected_boxes) > 0:
                         for box in detected_boxes:
                             box_is_unique = True
 
@@ -269,8 +269,8 @@ class ObjectFinder():
 
         filtered_caption = filter_caption(caption)
         if consider_floor:
-            filter_caption.append("floor")
-            filter_caption.append("ground")
+            filtered_caption.append("floor")
+            filtered_caption.append("ground")
         cls._log(f"Filtered caption post RAM: {filtered_caption}")
 
         # Use of GroundingDINO

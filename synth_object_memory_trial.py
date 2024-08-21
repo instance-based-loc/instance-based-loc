@@ -7,6 +7,8 @@ import numpy as np
 import torch
 from utils.os_env import get_user
 
+from utils.logging import get_mem_stats
+
 def main(args):
     dataloader = SynthDataloader(
         evaluation_indices=args.eval_img_inds,
@@ -16,9 +18,9 @@ def main(args):
     )
 
     def dummy_get_embs(
-        *args
+        **kwargs
     ):
-        return torch.tensor([1, 2, 3])
+        return torch.tensor([1, 2, 3], device=torch.device(kwargs["device"]))
     memory = ObjectMemory(
         device = args.device,
         ram_pretrained_path = args.ram_pretrained_path,
@@ -28,8 +30,20 @@ def main(args):
         get_embeddings_func = dummy_get_embs
     )
 
-    
+    for idx in dataloader.environment_indices:
+        print(f"Making env from index {idx} currently.")
+        rgb_image_path, \
+        depth_image_path, \
+        pose = dataloader.get_image_data(idx)
 
+        memory.process_image(
+            rgb_image_path,
+            depth_image_path,
+            pose
+        )
+
+        mem_usage, gpu_usage = get_mem_stats()
+        print(f"Using {mem_usage} GB of memory and {gpu_usage} GB of GPU")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

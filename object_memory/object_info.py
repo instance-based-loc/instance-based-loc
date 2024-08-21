@@ -1,7 +1,6 @@
 import numpy as np
 import open3d as o3d
 from utils.depth_utils import voxel_down_sample_with_colors
-from utils.datatypes import TypedList
 from sklearn.neighbors import NearestNeighbors
 
 class ObjectInfo:
@@ -57,8 +56,8 @@ class ObjectInfo:
 
     def __init__(self, id: int, name: str, emb: np.ndarray, pointcloud: o3d.geometry.PointCloud, max_embeddings_num: int):
         self.id = id
-        self.names = TypedList[str](name)
-        self.embeddings = TypedList[np.ndarray](emb) # so that we don't accidentally add a torch tensor
+        self.names: list[str] = [name]
+        self.embeddings: list[np.ndarray] = [emb]
         self.pointcloud = pointcloud
         self.max_embeddings_num = max_embeddings_num
 

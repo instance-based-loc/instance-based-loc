@@ -9,7 +9,6 @@ from .object_finder import ObjectFinder
 from .object_info import ObjectInfo
 from utils.logging import conditional_log
 from utils.depth_utils import get_mask_coloured_pointclouds_from_depth, transform_pointcloud, DEFAULT_OUTLIER_REMOVAL_CONFIG
-from utils.datatypes import TypedList
 
 print("\033[34mLoaded modules for object_memory.object_memory\033[0m")
 
@@ -26,8 +25,8 @@ class ObjectMemory():
     def _load_depth_image(self, path: str) -> np.ndarray:
         return self.load_depth_image_func(path)
 
-    def _get_embeddings(self, *args) -> torch.Tensor:
-        return self.get_embeddings_func(*args)
+    def _get_embeddings(self, **kwargs) -> torch.Tensor:
+        return self.get_embeddings_func(**kwargs)
 
     def _log(self, statement: any) -> None:
         """
@@ -79,7 +78,7 @@ class ObjectMemory():
             log_enabled = self.log_enabled
         )
 
-        self.memory = TypedList[ObjectInfo]()
+        self.memory: list[ObjectInfo] = []
 
     def _get_object_info(self, rgb_image_path, depth_image_path, consider_floor, outlier_removal_config):
         obj_grounded_imgs, obj_bounding_boxes, obj_masks, obj_phrases = ObjectFinder.find(rgb_image_path, consider_floor)
@@ -88,15 +87,19 @@ class ObjectMemory():
             return None, None, None
         
         embs = np.array(
-            self._get_embeddings(
-                obj_grounded_imgs, 
-                obj_bounding_boxes, 
-                obj_masks, 
-                obj_phrases,
-                self._load_rgb_image(rgb_image_path),
-                self._load_depth_image(depth_image_path),
-                consider_floor
-            ).cpu()
+            [
+                np.array(self._get_embeddings(
+                    current_obj_grounded_img = obj_grounded_imgs[i], 
+                    current_obj_bounding_box = obj_bounding_boxes[i], 
+                    current_obj_mask = obj_masks[i], 
+                    current_obj_phrase = obj_phrases[i],
+                    full_rgb_image = self._load_rgb_image(rgb_image_path),
+                    full_depth_image = self._load_depth_image(depth_image_path),
+                    consider_floor = consider_floor,
+                    device = self.device
+                ).cpu())
+                    for i in range(len(obj_grounded_imgs))
+            ]
         )
 
         obj_pointclouds = get_mask_coloured_pointclouds_from_depth(
@@ -117,9 +120,9 @@ class ObjectMemory():
 
     def process_image(
         self,
-        rgb_image_path,
-        depth_image_path,
-        pose,
+        rgb_image_path: str,
+        depth_image_path: str,
+        pose: np.ndarray,
         outlier_removal_config = DEFAULT_OUTLIER_REMOVAL_CONFIG,
         add_noise = False,
         pose_noise = {'trans': 0.0005, 'rot': 0.0005},
@@ -138,9 +141,6 @@ class ObjectMemory():
             return
         else:
             self._log(f"BaseObjectMemory.process_image found: {obj_phrases}")
-
-        if pose is None: 
-            raise NotImplementedError("Although we can implement ICP for poses between subsequent image, we require it now.")
         
         if add_noise:
             def add_noise_to_array(array, noise_level):
