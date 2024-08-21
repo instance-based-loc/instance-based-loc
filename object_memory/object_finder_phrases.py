@@ -16,6 +16,17 @@ def _check_whether_in_sub_phrases(text: str) -> bool:
 
     return False
 
+def check_if_floor(texts: list[str]):
+    words = [
+        "floor",
+        "ground",
+        "earth"
+    ]
+    for word in words:
+        if word in texts:
+            return True
+    return False
+
 _words_to_ignore_in_caption = [
                     "living room", 
                     "ceiling", 

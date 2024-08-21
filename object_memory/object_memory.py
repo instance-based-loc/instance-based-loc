@@ -13,6 +13,7 @@ from utils.depth_utils import get_mask_coloured_pointclouds_from_depth, \
     transform_pointcloud, \
     DEFAULT_OUTLIER_REMOVAL_CONFIG, \
     combine_point_clouds
+from .object_finder_phrases import check_if_floor
 
 print("\033[34mLoaded modules for object_memory.object_memory\033[0m")
 
@@ -83,6 +84,7 @@ class ObjectMemory():
         )
 
         self.memory: list[ObjectInfo] = []
+        self.floors: list[ObjectInfo] = [] # stoors floors or ground
 
     def __repr__(self):
         repr = ""
@@ -211,13 +213,19 @@ class ObjectMemory():
                     self.object_info_max_embeddings_num
                 )
 
-                self.memory.append(new_obj_info)
-                self._log(f"\tObject Added: {new_obj_info}")
+                if check_if_floor(new_obj_info.names):
+                    self.floors.append(new_obj_info)
+                    self._log(f"\Floor added Added: {new_obj_info}")
+                else:
+                    self.memory.append(new_obj_info)
+                    self._log(f"\tObject Added: {new_obj_info}")
 
     def downsample_all_objects(self, voxel_size):
         self._log("Downsampling all objects")
         for obj in self.memory:
             obj.downsample(voxel_size)
+        for floor in self.floors:
+            floor.downsample(voxel_size)
 
     def remove_points_below_floor(self):
         """
@@ -233,18 +241,12 @@ class ObjectMemory():
 
         # First pass: Determine the lowest floor height from non-floor objects
         for info in self.memory:
-            if "floor" in info.names:  # Skip objects that are classified as floors
-                continue
-            
             # Find the minimum height of the current point cloud
             low = np.min(info.pcd[1, :])
             floor_height = min(low, floor_height)  # Update the lowest floor height
 
         # Second pass: Remove points below the calculated floor height plus thickness
         for info in self.memory:
-            if "floor" in info.names:  # Skip objects that are classified as floors
-                continue
-            
             # Filter out points that are below the floor height plus thickness
             mask = info.pcd[1, :] > floor_height + self.dataset_floor_thickness
             info.update_pointcloud_with_mask(mask)  # Update the point cloud using the mask
@@ -337,18 +339,27 @@ class ObjectMemory():
 
         individual_obj_save_dir = os.path.join(save_directory, "objects")
         os.makedirs(individual_obj_save_dir, exist_ok=True)
+        individual_floor_save_dir = os.path.join(save_directory, "floors")
+        os.makedirs(individual_floor_save_dir, exist_ok=True)
 
         textual_info_path = os.path.join(save_directory, "memory.txt")
         combined_pointcloud_save_path = os.path.join(save_directory, "combined_pointcloud.ply")
+        combined_pointcloud_with_floor_save_path = os.path.join(save_directory, "combined_pointcloud_with_floor.ply")
 
         with open(textual_info_path, "w") as f:
             f.write(self.__repr__())
 
         combined_pointcloud = combine_point_clouds(obj.pointcloud for obj in self.memory)
         o3d.io.write_point_cloud(combined_pointcloud_save_path, combined_pointcloud)
+        combined_pointcloud_with_floor = combine_point_clouds([obj.pointcloud for obj in self.memory] + [floor.pointcloud for floor in self.floors])
+        o3d.io.write_point_cloud(combined_pointcloud_with_floor_save_path, combined_pointcloud_with_floor)
 
         for obj in self.memory:
             current_obj_save_dir = os.path.join(individual_obj_save_dir, f"{obj.id}")
             obj.save(current_obj_save_dir)
+
+        for floor in self.floors:
+            current_floor_save_dir = os.path.join(individual_floor_save_dir, f"{floor.id}")
+            floor.save(current_floor_save_dir)
 
         self._log(f"Saved memory to {save_directory}")

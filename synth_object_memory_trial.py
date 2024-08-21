@@ -40,7 +40,7 @@ def main(args):
             rgb_image_path,
             depth_image_path,
             pose,
-            consider_floor = False
+            consider_floor = True
         )
 
         mem_usage, gpu_usage = get_mem_stats()
@@ -58,7 +58,7 @@ def main(args):
     print("\nMemory is")
     print(memory)
 
-    memory.save(save_directory = "./out/360_trial")
+    memory.save(save_directory = "./out/360_trial_with_floor")
 
 
 if __name__ == "__main__":
