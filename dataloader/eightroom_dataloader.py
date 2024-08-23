@@ -89,20 +89,21 @@ class EightRoomDataLoader(BaseDataLoader):
             pose = np.concatenate([t, q])
             self._poses.append(pose)
 
-        if map_pointcloud_cache_path is not None and os.path.exists(map_pointcloud_cache_path):
-            print("Retrieving map's pointcloud from cache")
-            self.map_pointcloud = o3d.io.read_point_cloud(map_pointcloud_cache_path)
-        else:
-            print("Creating the map's pointcloud")
+        # disabling pcd creation
+        # if map_pointcloud_cache_path is not None and os.path.exists(map_pointcloud_cache_path):
+        #     print("Retrieving map's pointcloud from cache")
+        #     self.map_pointcloud = o3d.io.read_point_cloud(map_pointcloud_cache_path)
+        # else:
+        #     print("Creating the map's pointcloud")
 
-            self.focal_length_x = focal_length_x
-            self.focal_length_y = focal_length_y
-            self.setup_map_pointcloud()
+        #     self.focal_length_x = focal_length_x
+        #     self.focal_length_y = focal_length_y
+        #     self.setup_map_pointcloud()
 
-            # Save the pointcloud if the user has given a path
-            if map_pointcloud_cache_path is not None:
-                print("Saving the map's pointcloud")
-                o3d.io.write_point_cloud(map_pointcloud_cache_path, self.get_pointcloud())
+        #     # Save the pointcloud if the user has given a path
+        #     if map_pointcloud_cache_path is not None:
+        #         print("Saving the map's pointcloud")
+        #         o3d.io.write_point_cloud(map_pointcloud_cache_path, self.get_pointcloud())
 
     def setup_map_pointcloud(self) -> None:
         """

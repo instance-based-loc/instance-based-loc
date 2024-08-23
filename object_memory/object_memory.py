@@ -84,7 +84,7 @@ class ObjectMemory():
         )
 
         self.memory: list[ObjectInfo] = []
-        self.floors: list[ObjectInfo] = [] # stoors floors or ground
+        self.floors = None # stoors all floors or ground in one pcd
 
     def __repr__(self):
         repr = ""
@@ -213,9 +213,13 @@ class ObjectMemory():
                     self.object_info_max_embeddings_num
                 )
 
+                # add to floor object or to list of emm objects
                 if check_if_floor(new_obj_info.names):
-                    self.floors.append(new_obj_info)
-                    self._log(f"\Floor added Added: {new_obj_info}")
+                    if self.floors == None:
+                        self.floors = new_obj_info
+                    else:
+                        self.floors = self.floors + new_obj_info
+                    self._log(f"\tFloor Added: {new_obj_info}")
                 else:
                     self.memory.append(new_obj_info)
                     self._log(f"\tObject Added: {new_obj_info}")
@@ -224,8 +228,8 @@ class ObjectMemory():
         self._log("Downsampling all objects")
         for obj in self.memory:
             obj.downsample(voxel_size)
-        for floor in self.floors:
-            floor.downsample(voxel_size)
+        if self.floors != None:
+            self.floors.downsample(voxel_size)
 
     def remove_points_below_floor(self):
         """
@@ -351,15 +355,14 @@ class ObjectMemory():
 
         combined_pointcloud = combine_point_clouds(obj.pointcloud for obj in self.memory)
         o3d.io.write_point_cloud(combined_pointcloud_save_path, combined_pointcloud)
-        combined_pointcloud_with_floor = combine_point_clouds([obj.pointcloud for obj in self.memory] + [floor.pointcloud for floor in self.floors])
+        combined_pointcloud_with_floor = combine_point_clouds([obj.pointcloud for obj in self.memory] + [self.floors.pointcloud])
         o3d.io.write_point_cloud(combined_pointcloud_with_floor_save_path, combined_pointcloud_with_floor)
 
         for obj in self.memory:
             current_obj_save_dir = os.path.join(individual_obj_save_dir, f"{obj.id}")
             obj.save(current_obj_save_dir)
 
-        for floor in self.floors:
-            current_floor_save_dir = os.path.join(individual_floor_save_dir, f"{floor.id}")
-            floor.save(current_floor_save_dir)
+        current_floor_save_dir = os.path.join(individual_floor_save_dir, f"all_floors")
+        self.floors.save(current_floor_save_dir)
 
         self._log(f"Saved memory to {save_directory}")

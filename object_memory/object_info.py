@@ -5,6 +5,28 @@ from sklearn.neighbors import NearestNeighbors
 import os, pickle
 
 class ObjectInfo:
+    def __init__(self, id: int, name: str, emb: np.ndarray, pointcloud: o3d.geometry.PointCloud, max_embeddings_num: int):
+        self.id = id
+        self.names: list[str] = [name]
+        self.embeddings: list[np.ndarray] = [emb]
+        self.pointcloud: o3d.geometry.PointCloud = pointcloud
+        self.max_embeddings_num: int = max_embeddings_num
+
+        self._process_pointcloud()
+
+        self.mean_emb = None
+        self.centroid = None
+
+        self._compute_means()
+
+    def __repr__(self):
+        """
+        Returns a string representation of the object information.
+        """
+        return (
+            f"ObjectInfo == ID: {self.id}, Names: {self.names}, Mean_Emb: {self.mean_emb}, Num. Points: {self.pcd.shape}"
+        )
+    
     def _add_name(self, new_name: str):
         if new_name not in self.names:
             self.names.append(new_name)
@@ -14,6 +36,8 @@ class ObjectInfo:
             self._add_name(new_name)
 
     def _add_embedding(self, new_emb: np.ndarray):
+        raise NotImplementedError
+
         # Case 1: If the number of embeddings is less than max limit, append it
         if len(self.embeddings) < self.max_embeddings_num:
             self.embeddings.append(new_emb)
@@ -55,27 +79,6 @@ class ObjectInfo:
         self.mean_emb = np.mean(np.array(self.embeddings), axis=0)
         self.centroid = np.mean(self.pcd, axis=-1)
 
-    def __init__(self, id: int, name: str, emb: np.ndarray, pointcloud: o3d.geometry.PointCloud, max_embeddings_num: int):
-        self.id = id
-        self.names: list[str] = [name]
-        self.embeddings: list[np.ndarray] = [emb]
-        self.pointcloud: o3d.geometry.PointCloud = pointcloud
-        self.max_embeddings_num: int = max_embeddings_num
-
-        self._process_pointcloud()
-
-        self.mean_emb = None
-        self.centroid = None
-
-        self._compute_means()
-
-    def __repr__(self):
-        """
-        Returns a string representation of the object information.
-        """
-        return (
-            f"ObjectInfo == ID: {self.id}, Names: {self.names}, Mean_Emb: {self.mean_emb}, Num. Points: {self.pcd.shape}"
-        )
     
     def __add__(self, new_obj_info):
         self._add_names(new_names = new_obj_info.names)

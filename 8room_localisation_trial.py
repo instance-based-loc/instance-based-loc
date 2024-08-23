@@ -6,7 +6,9 @@ import open3d as o3d
 import numpy as np
 import torch
 import pickle
+from copy import deepcopy
 from utils.os_env import get_user
+
 
 from utils.logging import get_mem_stats
 
@@ -53,6 +55,11 @@ def main(args):
 
             mem_usage, gpu_usage = get_mem_stats()
             print(f"Using {mem_usage} GB of memory and {gpu_usage} GB of GPU")
+
+            cpu_memory = deepcopy(memory)
+            pickle.dump(cpu_memory, open(args.memory_load_path, 'wb'))
+            print("Memory dumped")
+            exit(0)
 
         # Downsample
         memory.downsample_all_objects(voxel_size=0.01)
@@ -150,7 +157,7 @@ if __name__ == "__main__":
         "--sampling-period",
         type=int,
         help="sampling period",
-        default=40
+        default=400
     )
     # Memory dump/load args
     parser.add_argument(
