@@ -28,7 +28,7 @@ def main(args):
     # o3d.visualization.draw_geometries([pcd, dataloader.get_pointcloud()])
 
     # in actual position (not in camera frame)
-    o3d.visualization.draw_geometries([depth_utils.transform_pointcloud(pcd, pose), dataloader.get_pointcloud(), depth_utils.transform_pointcloud(reformed_pcd, pose)])
+    # o3d.visualization.draw_geometries([depth_utils.transform_pointcloud(pcd, pose), dataloader.get_pointcloud(), depth_utils.transform_pointcloud(reformed_pcd, pose)])
 
 
 

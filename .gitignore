@@ -13,7 +13,8 @@ data/our-synthetic/*
 models/
 
 # The output directory
-out/
+out/*
+!out/360_trial_with_floor
 
 # Cache directory
 cache/

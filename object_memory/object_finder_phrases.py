@@ -9,11 +9,22 @@ def filter_caption(caption: list[str]) -> list[str]:
             filtered_caption.append(c.strip())
     return filtered_caption
 
-def _check_whether_in_sub_phrases(cls, text: str) -> bool:
+def _check_whether_in_sub_phrases(text: str) -> bool:
     for sub_phrase in _sub_phrases_to_ignore_in_caption:
         if sub_phrase in text:
             return True
 
+    return False
+
+def check_if_floor(texts: list[str]):
+    words = [
+        "floor",
+        "ground",
+        "earth"
+    ]
+    for word in words:
+        if word in texts:
+            return True
     return False
 
 _words_to_ignore_in_caption = [
