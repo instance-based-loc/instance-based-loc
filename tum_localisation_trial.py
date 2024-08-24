@@ -1,4 +1,4 @@
-from dataloader.eightroom_dataloader import EightRoomDataLoader
+from dataloader.tum_dataloader import TUMDataloader
 from object_memory.object_memory import ObjectMemory
 import argparse
 import matplotlib.pyplot as plt
@@ -19,13 +19,13 @@ def dummy_get_embs(
     return torch.tensor([1, 2, 3], device=torch.device(kwargs["device"]))
 
 def main(args):
-    dataloader = EightRoomDataLoader(
+    dataloader = TUMDataloader(
         evaluation_indices=args.eval_img_inds,
         data_path=args.data_path,
         focal_length_x=args.focal_length,
         focal_length_y=args.focal_length,
         map_pointcloud_cache_path=args.map_pcd_cache_path,
-        rot_correction=args.rot_correction,
+        # rot_correction=args.rot_correction,
         start_file_index=args.start_file_index,
         last_file_index=args.last_file_index,
         sampling_period=args.sampling_period
@@ -62,7 +62,7 @@ def main(args):
         memory.downsample_all_objects(voxel_size=0.01)
 
         # Remove below floors
-        memory.remove_points_below_floor()
+        # memory.remove_points_below_floor()
 
         # Recluster
         memory.recluster_objects_with_dbscan(visualize=True)
@@ -77,9 +77,10 @@ def main(args):
         memory.load(args.memory_load_path)
         print("Memory loaded")
 
+    exit(0)
     ########### begin localisation ############
 
-    eval_dataloader = EightRoomDataLoader(
+    eval_dataloader = TUMDataloader(
         evaluation_indices=args.eval_img_inds,
         data_path=args.data_path,
         focal_length_x=args.focal_length,
@@ -101,6 +102,13 @@ def main(args):
     import imageio
     import os
     print("Begin localisation")
+    for idx in tqdm(eval_dataloader.environment_indices, total=len(eval_dataloader.environment_indices)):
+        print(f"Localising {idx}/{len(eval_dataloader.environment_indices)} currently.")
+        rgb_image_path, depth_image_path, target_pose = eval_dataloader.get_image_data(idx)
+        print(rgb_image_path)
+        os.system(f"cp {rgb_image_path} {os.path.join('./out/imgs/', str(idx) + '.png')}")
+
+    exit(0)
     for idx in tqdm(eval_dataloader.environment_indices, total=len(eval_dataloader.environment_indices)):
         print(f"Localistion {idx}/{len(eval_dataloader.environment_indices)} currently.")
         rgb_image_path, depth_image_path, target_pose = eval_dataloader.get_image_data(idx)
@@ -160,7 +168,7 @@ if __name__ == "__main__":
         "--data-path",
         type=str,
         help="Path to the 8room sequence",
-        default="/scratch/aneesh.chavan/8room/8-room-v1/1/"
+        default="/scratch/sarthak/synced_data2"
     )
     parser.add_argument(
         "-e",
@@ -180,7 +188,7 @@ if __name__ == "__main__":
         "--map-pcd-cache-path",
         type=str,
         help="Location where the map's pointcloud is cached for future use",
-        default="./cache/360_zip_cache_map_coloured.pcd"
+        default="./cache/tum_zip_cache_map_coloured.pcd"
     )
     #device
     parser.add_argument(
@@ -213,19 +221,19 @@ if __name__ == "__main__":
         "--start-file-index",
         type=int,
         help="beginning of file sampling",
-        default=200
+        default=0
     )
     parser.add_argument(
         "--last-file-index",
         type=int,
         help="last file to sample",
-        default=1500
+        default=2000
     )
     parser.add_argument(
         "--sampling-period",
         type=int,
         help="sampling period",
-        default=15
+        default=20
     )
 
     # eval sampling params
@@ -258,7 +266,7 @@ if __name__ == "__main__":
         "--memory-load-path",
         type=str,
         help="file to load memory from, or save it to",
-        default='./out/8room_with_floor/8room_memory.pt'
+        default='./out/8room_with_floor/tum_desk_memory.pt'
     )
 
     # lora path

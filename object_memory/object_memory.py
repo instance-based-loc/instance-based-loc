@@ -27,7 +27,12 @@ def default_load_rgb(path: str) -> np.ndarray:
     return np.asarray(imageio.imread(path))
 
 def default_load_depth(path: str) -> np.ndarray:
-    return np.load(path)
+    if path.split('.')[-1] == 'npy':
+        depth_img = np.load(path)
+    else:
+        depth_img = np.asarray(imageio.imread(path))
+
+    return depth_img
 
 class ObjectMemory():
     def _load_rgb_image(self, path: str) -> np.ndarray:

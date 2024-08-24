@@ -18,7 +18,10 @@ class TUMDataloader(BaseDataLoader):
             evaluation_indices: Optional[Tuple[int]], 
             focal_length_x: Optional[float] = None,
             focal_length_y: Optional[float] = None,
-            map_pointcloud_cache_path: Optional[str] = None
+            map_pointcloud_cache_path: Optional[str] = None,
+            start_file_index: Optional[int] = 0,
+            last_file_index: Optional[int] = None,
+            sampling_period: Optional[int] = 10,
         ):
         """
         Keep the evaluation_indices parameter as an empty list if you have separate directories
@@ -44,6 +47,12 @@ class TUMDataloader(BaseDataLoader):
         ]
         assert len(self._depth_images_paths) == len(self._rgb_images_paths), "No. of depth and RGB images are not the same!"
 
+        # subsample file names 
+        if last_file_index == None:
+            last_file_index = len(self._depth_images_paths)
+        self._depth_images_paths = self._depth_images_paths[start_file_index:last_file_index:sampling_period]
+        self._rgb_images_paths = self._rgb_images_paths[start_file_index:last_file_index:sampling_period]
+
         # Set poses
         self._poses = []
         with open(self._pose_information_file_path, 'r') as f:
@@ -54,6 +63,9 @@ class TUMDataloader(BaseDataLoader):
                 # x y z qx qy qz qw
                 p = np.array([float(i) for i in split_pose])
                 self._poses.append(p)
+
+        # subsample poses
+        self._poses = self._poses[start_file_index:last_file_index:sampling_period]
 
         if map_pointcloud_cache_path is not None and os.path.exists(map_pointcloud_cache_path):
             print("Retrieving map's pointcloud from cache")
@@ -75,7 +87,7 @@ class TUMDataloader(BaseDataLoader):
             Function that creates the pointcloud of the environment
         """
         self.map_pointcloud = o3d.geometry.PointCloud()
-        for env_idx in tqdm(self.environment_indices, desc="Forming pointcloud map from env. images"):
+        for env_idx in tqdm([i for i in self.environment_indices][::50], desc="Forming pointcloud map from env. images"):
             rgb_image = np.asarray(imageio.imread(self._rgb_images_paths[env_idx]))
             depth_img = np.asarray(imageio.imread(self._depth_images_paths[env_idx]), dtype=np.float32)
             depth_img /= 5000.0 # for kinect camera
@@ -86,6 +98,8 @@ class TUMDataloader(BaseDataLoader):
             # print(cur_pointcloud)
             transformed_cur_pointcloud = depth_utils.transform_pointcloud_kinect(cur_pointcloud, self._poses[env_idx])
             self.map_pointcloud += transformed_cur_pointcloud
+        
+        self.map_pointcloud = self.map_pointcloud.voxel_down_sample(0.025)
 
     def _get_environment_indices(self) -> Tuple[int, ...]:
         return [i for i in range(len(self._depth_images_paths)) if i not in self.evaluation_indices]
