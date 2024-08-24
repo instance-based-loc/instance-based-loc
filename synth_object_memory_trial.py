@@ -33,9 +33,7 @@ def main(args):
 
     for idx in dataloader.environment_indices:
         print(f"Making env from index {idx} currently.")
-        rgb_image_path, \
-        depth_image_path, \
-        pose = dataloader.get_image_data(idx)
+        rgb_image_path, depth_image_path, pose = dataloader.get_image_data(idx)
 
         memory.process_image(
             rgb_image_path,
@@ -50,11 +48,12 @@ def main(args):
     # Downsample
     memory.downsample_all_objects(voxel_size=0.01)
 
+    # Remove below floors
+    memory.remove_points_below_floor()
+    
     # Recluster
     memory.recluster_objects_with_dbscan(visualize=True)
     
-    # Remove below floors
-    memory.remove_points_below_floor()
 
     print("\nMemory is")
     print(memory)

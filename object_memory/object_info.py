@@ -5,6 +5,28 @@ from sklearn.neighbors import NearestNeighbors
 import os, pickle
 
 class ObjectInfo:
+    def __init__(self, id: int, name: str, emb: np.ndarray, pointcloud: o3d.geometry.PointCloud, max_embeddings_num: int):
+        self.id = id
+        self.names: list[str] = [name]
+        self.embeddings: list[np.ndarray] = [emb]
+        self.pointcloud: o3d.geometry.PointCloud = pointcloud
+        self.max_embeddings_num: int = max_embeddings_num
+
+        self._process_pointcloud()
+
+        self.mean_emb = None
+        self.centroid = None
+
+        self._compute_means()
+
+    def __repr__(self):
+        """
+        Returns a string representation of the object information.
+        """
+        return (
+            f"ObjectInfo == ID: {self.id}, Names: {self.names}, Mean_Emb: {self.mean_emb.shape}, Num. Points: {self.pcd.shape}"
+        )
+    
     def _add_name(self, new_name: str):
         if new_name not in self.names:
             self.names.append(new_name)
@@ -35,7 +57,7 @@ class ObjectInfo:
                 self.embeddings[least_similar_index] = new_emb
 
     def _add_embeddings(self, new_embs: list[np.ndarray]):
-        self.embeddings.extend(new_embs)
+        self.embeddings += new_embs
         # TODO: limit the number of embeddings
 
     def _add_pointcloud(self, new_pointcloud: o3d.geometry.PointCloud):
@@ -52,30 +74,9 @@ class ObjectInfo:
         self.pcd_colors = np.asarray(self.pointcloud.colors).T
 
     def _compute_means(self):
-        self.mean_emb = np.mean(np.array(self.embeddings), axis=0)
+        self.mean_emb = np.mean(np.array(self.embeddings), axis=0).squeeze()
         self.centroid = np.mean(self.pcd, axis=-1)
 
-    def __init__(self, id: int, name: str, emb: np.ndarray, pointcloud: o3d.geometry.PointCloud, max_embeddings_num: int):
-        self.id = id
-        self.names: list[str] = [name]
-        self.embeddings: list[np.ndarray] = [emb]
-        self.pointcloud: o3d.geometry.PointCloud = pointcloud
-        self.max_embeddings_num: int = max_embeddings_num
-
-        self._process_pointcloud()
-
-        self.mean_emb = None
-        self.centroid = None
-
-        self._compute_means()
-
-    def __repr__(self):
-        """
-        Returns a string representation of the object information.
-        """
-        return (
-            f"ObjectInfo == ID: {self.id}, Names: {self.names}, Mean_Emb: {self.mean_emb}, Num. Points: {self.pcd.shape}"
-        )
     
     def __add__(self, new_obj_info):
         self._add_names(new_names = new_obj_info.names)
