@@ -75,27 +75,25 @@ class TUMDataloader(BaseDataLoader):
             Function that creates the pointcloud of the environment
         """
         self.map_pointcloud = o3d.geometry.PointCloud()
-        for env_idx in tqdm(self.environment_indices[:50], desc="Forming pointcloud map from env. images"):
+        for env_idx in tqdm(self.environment_indices, desc="Forming pointcloud map from env. images"):
             rgb_image = np.asarray(imageio.imread(self._rgb_images_paths[env_idx]))
             depth_img = np.asarray(imageio.imread(self._depth_images_paths[env_idx]), dtype=np.float32)
-            depth_img /= 1000.0 #655.35 # for kinect camera
+            depth_img /= 5000.0 # for kinect camera
             cur_pointcloud = \
                 depth_utils.get_coloured_pointcloud_from_depth(
                     depth_img, rgb_image, self.focal_length_x, self.focal_length_y
                 )
             # print(cur_pointcloud)
-            transformed_cur_pointcloud = depth_utils.transform_pointcloud(cur_pointcloud, self._poses[env_idx])
+            transformed_cur_pointcloud = depth_utils.transform_pointcloud_kinect(cur_pointcloud, self._poses[env_idx])
             self.map_pointcloud += transformed_cur_pointcloud
 
     def _get_environment_indices(self) -> Tuple[int, ...]:
         return [i for i in range(len(self._depth_images_paths)) if i not in self.evaluation_indices]
 
-    def get_image_data(self, index: int) -> Tuple[np.ndarray, Optional[np.ndarray], np.ndarray]:
-        cur_rgb_image = np.asarray(imageio.imread(self._rgb_images_paths[index]))
-        cur_depth_image = np.asarray(imageio.imread(self._depth_images_paths[index]))
+    def get_image_data(self, index: int) -> Tuple[str, Optional[str], np.ndarray]:
         cur_pose = self._poses[index]
 
-        return cur_rgb_image, cur_depth_image, cur_pose
+        return self._rgb_images_paths[index], self._depth_images_paths[index], cur_pose
 
     def get_pointcloud(self, bounding_box: Optional[Dict[str, Tuple[float, float]]] = None) -> np.ndarray:
         if bounding_box is not None:

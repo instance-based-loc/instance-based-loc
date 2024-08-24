@@ -113,3 +113,31 @@ def transform_pointcloud(
     transformed_pointcloud.colors = o3d.utility.Vector3dVector(pointcloud_colors)
     
     return transformed_pointcloud
+
+def transform_pointcloud_kinect(
+        pointcloud: o3d.geometry.PointCloud,
+        pose: np.ndarray
+) -> o3d.geometry.PointCloud:
+    # Extract translation and quaternion from the pose
+    t = pose[:3]
+    q = pose[3:]
+
+    # Normalize the quaternion
+    q /= np.linalg.norm(q)
+    R = Rotation.from_quat(q).as_matrix()
+
+    # Get points and colors from the point cloud
+    pointcloud_points = np.asarray(pointcloud.points)
+    pointcloud_colors = np.asarray(pointcloud.colors)
+
+    R2 = Rotation.from_euler('xyz', [0,  np.pi, 0]).as_matrix()
+    
+    # Apply transformation to the points
+    transformed_pointcloud_points = (R @ R2 @ pointcloud_points.T).T - t
+
+    # Create and return a new point cloud with transformed points and original colors
+    transformed_pointcloud = o3d.geometry.PointCloud()
+    transformed_pointcloud.points = o3d.utility.Vector3dVector(transformed_pointcloud_points)
+    transformed_pointcloud.colors = o3d.utility.Vector3dVector(pointcloud_colors)
+    
+    return transformed_pointcloud
