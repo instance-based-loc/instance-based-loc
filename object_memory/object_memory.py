@@ -5,6 +5,9 @@ import numpy as np
 from tqdm import tqdm
 import imageio
 import os
+import pickle
+import copy
+from scipy.spatial.transform import Rotation
 
 from .object_finder import ObjectFinder
 from .object_info import ObjectInfo
@@ -13,7 +16,10 @@ from utils.depth_utils import get_mask_coloured_pointclouds_from_depth, \
     transform_pointcloud, \
     DEFAULT_OUTLIER_REMOVAL_CONFIG, \
     combine_point_clouds
+from utils.similarity_volume import SimVolume
+from utils.fpfh_register import register_point_clouds, evaluate_transform, downsample_and_compute_fpfh
 from .object_finder_phrases import check_if_floor
+from .lora_module import LoraRevolver, LoraConfig
 
 print("\033[34mLoaded modules for object_memory.object_memory\033[0m")
 
@@ -53,10 +59,11 @@ class ObjectMemory():
         log_enabled: Type[bool] = True,
         mem_formation_bounding_box_threshold = 0.3,
         mem_formation_occlusion_overlap_threshold = 0.9,
-        object_info_max_embeddings_num = 5,
+        object_info_max_embeddings_num = 1000000,
         load_rgb_image_func = default_load_rgb,
         load_depth_image_func = default_load_depth,
-        dataset_floor_thickness = 0.1
+        dataset_floor_thickness = 0.1,
+        lora_path=None
     ):
         # *******************************************************************************************
         # Setup encoder in the pipeline and pass a wrapper function to `get_embeddings_func`
@@ -83,6 +90,14 @@ class ObjectMemory():
             log_enabled = self.log_enabled
         )
 
+        self.loraModule = LoraRevolver(self.device)
+        if lora_path != None:
+            self.loraModule.load_lora_ckpt_from_file(lora_path, "5x40")
+        else:
+            raise NotImplementedError
+
+        self.get_embeddings_func = self.loraModule.encode_image
+
         self.memory: list[ObjectInfo] = []
         self.floors = None # stoors all floors or ground in one pcd
 
@@ -100,7 +115,7 @@ class ObjectMemory():
         if obj_grounded_imgs is None:
             return None, None, None
         
-        embs = np.array(
+        embs = np.stack(
             [
                 np.array(self._get_embeddings(
                     current_obj_grounded_img = obj_grounded_imgs[i], 
@@ -366,3 +381,402 @@ class ObjectMemory():
         self.floors.save(current_floor_save_dir)
 
         self._log(f"Saved memory to {save_directory}")
+
+    def save_to_pkl(self, save_directory: str):
+        pklable_memory = []
+        for objinfo in self.memory:
+            blank_info = ObjectInfo(
+                id=0,
+                name="",
+                emb=objinfo.embeddings[0],
+                pointcloud=o3d.geometry.PointCloud(),
+                max_embeddings_num=1e5
+            )
+
+            blank_info.id = id
+            blank_info.names = objinfo.names
+            blank_info.embeddings = objinfo.embeddings
+            blank_info.max_embeddings_num = objinfo.max_embeddings_num
+            blank_info.mean_emb = objinfo.mean_emb
+            blank_info.centroid = objinfo.centroid
+            blank_info.pointcloud = None
+
+            pcd_points = np.asarray(objinfo.pointcloud.points)
+            pcd_colors = np.asarray(objinfo.pointcloud.colors)
+
+            info_tuple = (blank_info, pcd_points, pcd_colors)
+            pklable_memory.append(info_tuple)
+        
+        blank_info = ObjectInfo(
+            id=0,
+            name="",
+            emb=objinfo.embeddings[0],
+            pointcloud=o3d.geometry.PointCloud(),
+            max_embeddings_num=1e5
+        )
+
+        blank_info.id = id
+        blank_info.names = objinfo.names
+        blank_info.embeddings = objinfo.embeddings
+        blank_info.max_embeddings_num = objinfo.max_embeddings_num
+        blank_info.mean_emb = objinfo.mean_emb
+        blank_info.centroid = objinfo.centroid
+        blank_info.pointcloud = None
+
+        pcd_points = np.asarray(objinfo.pointcloud.points)
+        pcd_colors = np.asarray(objinfo.pointcloud.colors)
+
+        info_tuple = (blank_info, pcd_points, pcd_colors)
+        pklable_floors = info_tuple
+
+        pickle.dump((pklable_memory, pklable_floors), open(save_directory, 'wb'))
+
+    """
+    Designed to load objInfos into memory from a pickleable object created by save, above
+    """
+    def load(self, load_directory: str):
+        pkl = pickle.load(open(load_directory, 'rb'))
+
+        pklable_memory, pklable_floors = pkl
+
+        def conv_info_tuple(info_tuple):
+            blank_info, pcd_points, pcd_colors = info_tuple
+            pcd = o3d.geometry.PointCloud()
+            pcd.points = o3d.utility.Vector3dVector(pcd_points)
+            pcd.colors = o3d.utility.Vector3dVector(pcd_colors)
+
+            blank_info.pointcloud = pcd
+            return blank_info
+        
+        self.memory = [conv_info_tuple(it) for it in pklable_memory]
+        self.floors = conv_info_tuple(pklable_floors)
+
+
+    """
+    The sauce.
+    """
+    def localise(self, image_path, depth_image_path, testname="", 
+                 subtest_name="",
+                 save_point_clouds=False,
+                 outlier_removal_config=None, 
+                 fpfh_global_dist_factor = 2, fpfh_local_dist_factor = 0.4, 
+                 fpfh_voxel_size = 0.05, topK=5, useLora=True,
+                 save_localised_pcd_path=None,
+                 consider_floor=False,
+                 perform_semantic_icp=True):
+        """
+        Given an image and a corresponding depth image in an unknown frame, consult the stored memory
+        and output a pose in the world frame of the point clouds stored in memory.
+
+        Args:
+        - image_path (str): Path to the RGB image file.
+        - depth_image_path (str): Path to the depth image file in .npy format.
+        - icp_threshold (float): Threshold for ICP (Iterative Closest Point) algorithm.
+        - testname (str): Name for test-specific files.
+        - perform_semantic_icp(bool): Initialise transformation by performing a simple p2p semantic ICP first
+        
+        Returns:
+        - np.ndarray: Localized pose in the world frame as [x, y, z, qw, qx, qy, qz].
+        """
+        # Default outlier removal config
+        if outlier_removal_config == None:
+            outlier_removal_config = {
+                "radius_nb_points": 8,
+                "radius": 0.05,
+            }
+
+        consider_floor=False
+        # Extract all objects currently seen, get embeddings, point clouds in the local unknown frame
+        detected_phrases, detected_embs, detected_pointclouds = self._get_object_info(image_path, depth_image_path, consider_floor=consider_floor, outlier_removal_config=outlier_removal_config)
+
+
+        # TODO deal with no objects detected
+        if detected_embs is None:
+            return np.array([0.,0.,0.,0.,0.,0.,1.]), [[],[]]
+ 
+        # Correlate embeddings with objects in memory for all seen objects
+        # TODO maybe a KNN search will do better?
+        for m in self.memory:
+            m._compute_means()  # Update object info means
+
+        memory_embs = np.array([m.mean_emb for m in self.memory])
+
+        if len(detected_embs) > len(self.memory):
+            detected_embs = detected_embs[:len(memory_embs)]
+
+        all_memory_embs = [np.array([e/np.linalg.norm(e) for e in m.embeddings]) for m in self.memory]      # all embeddings per object
+
+        detected_embs /= np.linalg.norm(detected_embs, axis=-1, keepdims=True)
+        memory_embs /= np.linalg.norm(memory_embs, axis=-1, keepdims=True)      # mean embedding
+
+        # Detected x Mem x Emb sized
+        cosine_similarities = np.inner(detected_embs, memory_embs)
+        print(cosine_similarities.shape)
+
+        # get the closest similarity from each object
+        closest_similarities = np.zeros_like(cosine_similarities)
+        for i, d in enumerate(detected_embs):
+            for j, m in enumerate(all_memory_embs):
+                closest_similarities[i][j] = np.max(np.dot(m, d))
+
+        print(d.shape, m.shape)
+
+
+        # closest L2-norm similarities
+        L2_closest_similarities = np.zeros_like(cosine_similarities)
+        for i, d in enumerate(detected_embs):
+            row = np.zeros_like(cosine_similarities[0])
+            for j, m in enumerate(all_memory_embs):
+                row[i] = np.max(np.linalg.norm(m - d))
+            L2_closest_similarities[i] = row
+
+        # Save point clouds
+        save_root = f"pcds/{testname}/"
+        subsave_root = os.path.join(save_root, str(subtest_name))
+        if not os.path.exists(save_root):
+            os.makedirs(save_root)
+
+        if save_point_clouds:
+            if not os.path.exists(subsave_root):
+                os.makedirs(subsave_root)
+
+            init_pcd = o3d.geometry.PointCloud()
+            temp_pcd = o3d.geometry.PointCloud()
+            for i, d in enumerate(detected_pointclouds):
+                temp_pcd.points = o3d.utility.Vector3dVector(d.T)
+                temp_pcd.paint_uniform_color([0.,1.,0.])
+                init_pcd += temp_pcd            
+
+            for j, m in enumerate(self.memory):
+                temp_pcd.points = o3d.utility.Vector3dVector(m.pcd.T)
+                temp_pcd.paint_uniform_color([1.,0.,0.])
+                init_pcd += temp_pcd
+
+            o3d.io.write_point_cloud(os.path.join(subsave_root , "_init_pcd_" + str(subtest_name) + ".ply"), init_pcd)
+            print("Initial ICP point clouds saved")
+
+        # TODO unseen objects in detected objects are not being dealt with, 
+        # assuming that all detected objects can be assigned to mem objs
+
+        print("Getting assignments")
+        print(closest_similarities.shape)
+        # sv = SimVolume(closest_similarities)
+        sv = SimVolume(closest_similarities)
+        # rep_vol, _ = sv.construct_volume()
+        # print(rep_vol.shape)
+        # best_coords = sv.get_top_indices(rep_vol, 10)
+        # assns = sv.conv_coords_to_pairs(rep_vol, best_coords)
+        
+        subvolume_size = min(len(detected_pointclouds), 3)      # 3 represents the dimensionality of the subvolumes constructed
+        sv.fast_construct_volume(subvolume_size)
+        assns = sv.get_top_indices_from_subvolumes(num_per_length=4)
+        assns_to_consider = assns
+        del sv
+
+        print("Phrases: ", detected_phrases)
+        print(cosine_similarities)
+        print("                 V?")
+        print(closest_similarities)
+        print("Assignments being considered: ", assns_to_consider)
+
+        assn_data = [ assn for assn in assns_to_consider ]
+
+        # clean up outliers from detected pcds before registration
+        cleaned_detected_pcds = []
+        for obj in detected_pointclouds:
+            obj_filtered, _ = obj.remove_radius_outlier(nb_points=outlier_removal_config["radius_nb_points"],
+                                                            radius=outlier_removal_config["radius"])
+            cleaned_detected_pcds.append(np.asarray(obj_filtered.points).T)
+        detected_pointclouds = cleaned_detected_pcds
+
+        # prepare a full memory and detected pcd
+        all_memory_points = []
+        for obj in self.memory:
+            all_memory_points.append(obj.pcd)
+        all_memory_points = np.concatenate(all_memory_points, axis=-1)
+        
+        all_memory_pcd = o3d.geometry.PointCloud()
+        all_memory_pcd.points = o3d.utility.Vector3dVector(all_memory_points.T)
+
+        all_detected_points = []
+        for obj in detected_pointclouds:
+            all_detected_points.append(obj)
+        all_detected_points = np.concatenate(all_detected_points, axis=-1)
+        
+        all_detected_pcd = o3d.geometry.PointCloud()
+        all_detected_pcd.points = o3d.utility.Vector3dVector(all_detected_points.T)
+
+        # go through all top K assingments, record ICP costs
+        for assn_num, assn in tqdm(enumerate(assn_data)):
+            # use ALL object pointclouds together
+            chosen_detected_points = []
+            chosen_memory_points = []
+
+            for d_index, m_index in assn:
+                chosen_detected_points.append(detected_pointclouds[d_index])
+                chosen_memory_points.append(self.memory[m_index].pcd)
+
+            # for i in detected_pointclouds:
+            #     chosen_detected_points.append(i)
+            # for i in self.memory:
+            #     all_memory_points.append(i.pcd)
+
+            chosen_detected_points = np.concatenate(chosen_detected_points, axis=-1)
+            chosen_memory_points = np.concatenate(chosen_memory_points, axis=-1)
+
+            # centering all the pointclouds
+            detected_mean = np.mean(chosen_detected_points, axis=-1)
+            memory_mean = np.mean(chosen_memory_points, axis=-1)
+            chosen_detected_pcd = o3d.geometry.PointCloud()
+            chosen_detected_pcd.points = o3d.utility.Vector3dVector(chosen_detected_points.T - detected_mean)
+            chosen_memory_pcd = o3d.geometry.PointCloud()
+            chosen_memory_pcd.points = o3d.utility.Vector3dVector(chosen_memory_points.T - memory_mean)
+            
+            chosen_memory_pcd.paint_uniform_color([0,1,0])
+            chosen_detected_pcd.paint_uniform_color([1,0,0])
+
+
+            if perform_semantic_icp:            
+                raise NotImplementedError
+                # generate labels that match objects
+                chosen_detected_labels = np.zeros(len(chosen_detected_pcd.points))
+                chosen_memory_labels = np.zeros(len(chosen_memory_pcd.points))
+
+                det_ptr = 0
+                mem_ptr = 0
+                for d_index, m_index in assn:
+                    chosen_detected_labels[det_ptr:] = d_index
+                    chosen_memory_labels[mem_ptr:] = d_index
+
+                    # update ptrs
+                    det_ptr += len(detected_pointclouds[d_index])
+                    mem_ptr += len(self.memory[m_index].pcd)
+
+                # heavy downsample
+                ideal_num_points = 25*len(assn)
+                det_skip = len(chosen_detected_labels) // ideal_num_points
+                mem_skip = len(chosen_memory_labels) // ideal_num_points
+
+                # det_indices = np.random.choice(len(chosen_detected_labels), size=25*len(assn), replace=False)
+                # mem_indices = np.random.choice(len(chosen_memory_labels), size=25*len(assn), replace=False)
+
+                ds_detected_points = np.asarray(chosen_detected_pcd.points)[::det_skip]
+                ds_memory_points = np.asarray(chosen_memory_pcd.points)[::mem_skip]
+
+                chosen_detected_labels = chosen_detected_labels[::det_skip]
+                chosen_memory_labels = chosen_memory_labels[::mem_skip]
+
+                # o3d.io.write_point_cloud(f"./temp/{str(assn)}-{testname}-detmem.ply", chosen_memory_pcd + chosen_detected_pcd)
+
+                # calculate initial coarse alignment based on semantic matching (better init?)
+                semantic_icp_transform = semantic_icp(torch.tensor(ds_detected_points), 
+                                                      torch.tensor(ds_memory_points),
+                                                    chosen_detected_labels, chosen_memory_labels,
+                                                    max_iterations=2,
+                                                    tolerance=0.001)
+                chosen_detected_pcd = chosen_detected_pcd.transform(semantic_icp_transform)    
+                
+                transform, rmse, fitness = register_point_clouds(chosen_detected_pcd, chosen_memory_pcd, 
+                                                voxel_size = fpfh_voxel_size, global_dist_factor = fpfh_global_dist_factor, 
+                                                local_dist_factor = fpfh_local_dist_factor)
+                
+                transform = transform @ semantic_icp_transform
+
+            # no semantics
+            else:
+                transform, rmse, fitness = register_point_clouds(chosen_detected_pcd, chosen_memory_pcd, 
+                                                voxel_size = fpfh_voxel_size, global_dist_factor = fpfh_global_dist_factor, 
+                                                local_dist_factor = fpfh_local_dist_factor)
+
+            # save transformation pcds
+            if save_point_clouds:              
+                o3d.io.write_point_cloud(os.path.join(subsave_root, f"only_chosen_" + str(assn) + ".ply"), chosen_memory_pcd + chosen_detected_pcd.transform(transform))
+
+            # get transforms in the global frame, account for mean centering
+            global_frame_transform = copy.deepcopy(transform)
+            R = copy.copy(transform[:3, :3])
+            tx = copy.copy(transform[:3, 3])
+
+            global_frame_transform[:3, :3] = R
+            global_frame_transform[:3,  3] = tx + memory_mean - R@detected_mean
+
+            # apply candidate transform to ALL pcds, check rmse            
+            full_memory_rmse, full_memory_fitness = evaluate_transform(all_detected_pcd, all_memory_pcd, trans_init=global_frame_transform)
+
+            assn_data[assn_num] = [assn, transform, rmse, fitness, full_memory_rmse, full_memory_fitness]       # fitness
+
+        best_assn_acc_to_fitness = sorted(assn_data, key=lambda x: x[-1], reverse=True)    # reverse required for fitness
+        best_assn_acc_to_rmse = sorted(assn_data, key=lambda x: x[-2])
+
+        best_assn = best_assn_acc_to_fitness
+
+        for a in best_assn:
+            print("Assn: ", a[0], " | chosen RMSE: ", a[3] , " | full RMSE: ", a[5] , " | chosen fitness: ", a[4] , " | full memory fitness: ", a[-1])
+
+        best_transform = best_assn[0][1]
+        best_assn = best_assn[0][0]
+
+        # USE THE BEST CHOSEN ASSIGNMENT
+        # GET TX/RX error
+        all_detected_points = []
+        all_memory_points = []
+        for d_index, m_index in best_assn:
+            all_detected_points.append(detected_pointclouds[d_index])
+            all_memory_points.append(self.memory[m_index].pcd)
+
+        all_detected_points = np.concatenate(all_detected_points, axis=-1)
+        all_memory_points = np.concatenate(all_memory_points, axis=-1)
+
+        detected_mean = np.mean(all_detected_points, axis=-1)
+        memory_mean = np.mean(all_memory_points, axis=-1)
+
+        moved_objs = [n for n in range(len(detected_pointclouds)) if n not in assn]
+
+        R = copy.copy(best_transform[:3,:3])
+        t = copy.copy(best_transform[:3, 3])
+        
+        tAvg = t + memory_mean - R@detected_mean  
+        # tAvg = t + detected_mean - R@memory_mean #incorrect smh
+        qAvg = Rotation.from_matrix(R).as_quat()
+
+        localised_pose = np.concatenate((tAvg, qAvg))
+        print("Best assn: ", best_assn)
+
+        ## DEBUG
+        print("R: ", R )
+        print("t: ", t)
+
+        # use ALL object pointclouds together, save pcd
+        if save_point_clouds:
+            # transform full memory
+            all_detected_points = []
+            all_memory_points = []
+            for i in detected_pointclouds:
+                all_detected_points.append(i)
+            for i in self.memory:
+                all_memory_points.append(i.pcd)
+            all_detected_points = np.concatenate(all_detected_points, axis=-1)
+            all_memory_points = np.concatenate(all_memory_points, axis=-1)
+
+            # centering all the pointclouds (needed as best_transform is between centered pcds)
+            all_detected_pcd = o3d.geometry.PointCloud()
+            all_detected_pcd.points = o3d.utility.Vector3dVector(all_detected_points.T - detected_mean)
+            all_memory_pcd = o3d.geometry.PointCloud()
+            all_memory_pcd.points = o3d.utility.Vector3dVector(all_memory_points.T - memory_mean)
+            
+            # remove outliers from detected pcds
+            all_detected_pcd_filtered, _ = all_detected_pcd.remove_radius_outlier(nb_points=outlier_removal_config["radius_nb_points"],
+                                                            radius=outlier_removal_config["radius"])
+
+            all_memory_pcd.paint_uniform_color([0,1,0])
+            all_detected_pcd_filtered.paint_uniform_color([1,0,0])
+
+            o3d.io.write_point_cloud(os.path.join(subsave_root, f"_best_full_pcd" + str(best_assn) + ".ply"), all_memory_pcd + all_detected_pcd_filtered.transform(best_transform))
+        # # import pdb; pdb.set_trace()
+
+        # save rgb image
+        if save_point_clouds:
+            os.system(f"cp {image_path} {os.path.join(subsave_root, 'rgb_image.' + image_path.split('.')[-1])}")
+
+        # return localised_pose, [assn, moved_idx]
+        return localised_pose, [assn, None]

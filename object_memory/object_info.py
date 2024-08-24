@@ -24,7 +24,7 @@ class ObjectInfo:
         Returns a string representation of the object information.
         """
         return (
-            f"ObjectInfo == ID: {self.id}, Names: {self.names}, Mean_Emb: {self.mean_emb}, Num. Points: {self.pcd.shape}"
+            f"ObjectInfo == ID: {self.id}, Names: {self.names}, Mean_Emb: {self.mean_emb.shape}, Num. Points: {self.pcd.shape}"
         )
     
     def _add_name(self, new_name: str):
@@ -36,8 +36,6 @@ class ObjectInfo:
             self._add_name(new_name)
 
     def _add_embedding(self, new_emb: np.ndarray):
-        raise NotImplementedError
-
         # Case 1: If the number of embeddings is less than max limit, append it
         if len(self.embeddings) < self.max_embeddings_num:
             self.embeddings.append(new_emb)
@@ -59,7 +57,7 @@ class ObjectInfo:
                 self.embeddings[least_similar_index] = new_emb
 
     def _add_embeddings(self, new_embs: list[np.ndarray]):
-        self.embeddings.extend(new_embs)
+        self.embeddings += new_embs
         # TODO: limit the number of embeddings
 
     def _add_pointcloud(self, new_pointcloud: o3d.geometry.PointCloud):
@@ -76,7 +74,7 @@ class ObjectInfo:
         self.pcd_colors = np.asarray(self.pointcloud.colors).T
 
     def _compute_means(self):
-        self.mean_emb = np.mean(np.array(self.embeddings), axis=0)
+        self.mean_emb = np.mean(np.array(self.embeddings), axis=0).squeeze()
         self.centroid = np.mean(self.pcd, axis=-1)
 
     
