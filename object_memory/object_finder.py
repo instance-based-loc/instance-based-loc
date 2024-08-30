@@ -237,13 +237,22 @@ class ObjectFinder():
             H, W, _ = image.shape
             boxes_xyxy = gd_box_cxcywh_to_xyxy(cxcy_boxes) * torch.Tensor([W, H, W, H])
 
+            # print(boxes_xyxy)
+
             transformed_boxes = cls.sam_predictor.transform.apply_boxes_torch(boxes_xyxy.to(cls.device), image.shape[:2])
+            
+            # print(transformed_boxes)
+            
             masks, _, _ = cls.sam_predictor.predict_torch(
                 point_coords = None,
                 point_labels = None,
                 boxes = transformed_boxes,
                 multimask_output = False,
                 )
+            
+            # masks = torch.logical_not(masks)
+            # print(torch.any(masks))
+
             return boxes_xyxy, masks
 
     @classmethod

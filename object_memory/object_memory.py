@@ -8,6 +8,7 @@ import os
 import pickle
 import copy
 from scipy.spatial.transform import Rotation
+from sklearn.cluster import AgglomerativeClustering
 
 from .object_finder import ObjectFinder
 from .object_info import ObjectInfo
@@ -114,7 +115,7 @@ class ObjectMemory():
             repr = "\tNo objects in memory yet."
         return repr
 
-    def _get_object_info(self, rgb_image_path, depth_image_path, consider_floor, outlier_removal_config):
+    def _get_object_info(self, rgb_image_path, depth_image_path, consider_floor, outlier_removal_config, depth_factor=1.):
         obj_grounded_imgs, obj_bounding_boxes, obj_masks, obj_phrases = ObjectFinder.find(rgb_image_path, consider_floor)
 
         if obj_grounded_imgs is None:
@@ -137,7 +138,7 @@ class ObjectMemory():
         )
 
         obj_pointclouds = get_mask_coloured_pointclouds_from_depth(
-            depth_image = self._load_depth_image(depth_image_path),
+            depth_image = self._load_depth_image(depth_image_path) / depth_factor,
             rgb_image = self._load_rgb_image(rgb_image_path),
             masks =  obj_masks,
             focal_length_x = self.camera_focal_lenth_x,
@@ -163,12 +164,14 @@ class ObjectMemory():
         pose_noise = {'trans': 0.0005, 'rot': 0.0005},
         depth_noise = 0.003,
         min_points = 500,
-        will_cluster_later = True
+        will_cluster_later = True,
+        depth_factor=1.
     ):
         def num_points_in_pointcloud(pcd):
             return len(np.asarray(pcd.points))
 
-        obj_phrases, embs, obj_pointclouds = self._get_object_info(rgb_image_path, depth_image_path, consider_floor, outlier_removal_config)
+        obj_phrases, embs, obj_pointclouds = self._get_object_info(rgb_image_path, depth_image_path, consider_floor, outlier_removal_config,
+                                                                   depth_factor=depth_factor)
         
         if obj_phrases is None:
             self._log("ObjectMemory.process_image did NOT find any objects")
@@ -224,6 +227,7 @@ class ObjectMemory():
                     break 
                     # We do clustering later now
 
+        
             if obj_is_unique:
                 new_obj_info = ObjectInfo(
                     len(self.memory),
@@ -358,6 +362,51 @@ class ObjectMemory():
         for i, obj_info in enumerate(self.memory):
             obj_info.id = i
 
+    def recluster_via_agglomerative_clustering(self, distance_func=None, embedding_distance_threshold=0.4, distance_threshold=0.1):
+        if distance_func == None:
+            def df(all_obj_embs, all_obj_centroids, distance_threshold=0.1):       # expects N x D 
+                norms = np.linalg.norm(all_obj_embs, axis=1, keepdims=True)
+                normalized_embeddings = all_obj_embs / norms
+
+                emb_distance_matrix = 1 - np.dot(normalized_embeddings, normalized_embeddings.T)
+                
+                # compute pairwise distances, NxNx3
+                centroid_distances = np.linalg.norm(all_obj_centroids[np.newaxis, :, :] - all_obj_centroids[:, np.newaxis, :])
+                
+                # mask out all pairs where centroid distance is greater than the allowed threshold
+                emb_distance_matrix = np.where(centroid_distances < distance_threshold, emb_distance_matrix, 1)
+                
+                return emb_distance_matrix
+            
+            distance_func = df
+
+        all_mean_embs = np.array([obj.mean_emb for obj in self.memory])
+        all_centroids = np.array([obj.centroid for obj in self.memory])
+        distance_matrix = df(all_mean_embs, all_centroids, distance_threshold=distance_threshold)
+
+        # sklearn agglomerative clustering
+        self._log("Clustering agglomeratively")
+        agg_clustering = AgglomerativeClustering(n_clusters=None, distance_threshold=embedding_distance_threshold, metric='precomputed', linkage='average')
+        agg_clustering.fit(distance_matrix)
+
+        # Get the cluster labels
+        labels = agg_clustering.labels_
+
+        unique_labels = set(labels)
+
+        self._log(f"{len(unique_labels)} objects clustered")
+
+        # reassign memory
+        new_memory = [None for _ in unique_labels]
+        for new_label, old_obj_info in zip(labels, self.memory):
+            if new_memory[new_label] == None:
+                new_memory[new_label] = old_obj_info
+            else:
+                new_memory[new_label] = new_memory[new_label] + old_obj_info
+        
+        # save new memory
+        self.memory = new_memory
+
     def save(self, save_directory: str):
         os.makedirs(save_directory, exist_ok=True)
 
@@ -468,7 +517,8 @@ class ObjectMemory():
                  fpfh_voxel_size = 0.05, topK=5, useLora=True,
                  save_localised_pcd_path=None,
                  consider_floor=False,
-                 perform_semantic_icp=True):
+                 perform_semantic_icp=True,
+                 depth_factor = 1.):
         """
         Given an image and a corresponding depth image in an unknown frame, consult the stored memory
         and output a pose in the world frame of the point clouds stored in memory.
@@ -492,7 +542,9 @@ class ObjectMemory():
 
         consider_floor=False
         # Extract all objects currently seen, get embeddings, point clouds in the local unknown frame
-        detected_phrases, detected_embs, detected_pointclouds = self._get_object_info(image_path, depth_image_path, consider_floor=consider_floor, outlier_removal_config=outlier_removal_config)
+        detected_phrases, detected_embs, detected_pointclouds = self._get_object_info(image_path, depth_image_path, consider_floor=consider_floor, 
+                                                                                      outlier_removal_config=outlier_removal_config,
+                                                                                      depth_factor=depth_factor)
 
 
         # TODO deal with no objects detected
@@ -516,7 +568,7 @@ class ObjectMemory():
 
         # Detected x Mem x Emb sized
         cosine_similarities = np.inner(detected_embs, memory_embs)
-        print(cosine_similarities.shape)
+        print(cosine_similarities.shape, f" {len(detected_embs)} objects detected")
 
         # get the closest similarity from each object
         closest_similarities = np.zeros_like(cosine_similarities)
@@ -589,6 +641,7 @@ class ObjectMemory():
         # clean up outliers from detected pcds before registration
         cleaned_detected_pcds = []
         for obj in detected_pointclouds:
+            print(obj)
             obj_filtered, _ = obj.remove_radius_outlier(nb_points=outlier_removal_config["radius_nb_points"],
                                                             radius=outlier_removal_config["radius"])
             cleaned_detected_pcds.append(np.asarray(obj_filtered.points).T)

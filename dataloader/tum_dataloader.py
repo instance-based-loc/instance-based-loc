@@ -53,12 +53,22 @@ class TUMDataloader(BaseDataLoader):
         self._depth_images_paths = self._depth_images_paths[start_file_index:last_file_index:sampling_period]
         self._rgb_images_paths = self._rgb_images_paths[start_file_index:last_file_index:sampling_period]
 
+        # addn rot matrix
+        R2 = Rotation.from_euler('xyz', [0,  np.pi, 0]).as_matrix()
+
         # Set poses
         self._poses = []
         with open(self._pose_information_file_path, 'r') as f:
             pose_file_data = f.readlines()
             for pose in pose_file_data:
                 split_pose = pose.split()
+
+                # account for kinect world frame being different
+                R1 = Rotation.from_quat([float(i) for i in split_pose[3:]]).as_matrix()
+                q = Rotation.from_matrix(R1 @ R2).as_quat()
+
+                split_pose[:3] = [-float(i) for i in split_pose[:3]]
+                split_pose[3:] = q
 
                 # x y z qx qy qz qw
                 p = np.array([float(i) for i in split_pose])

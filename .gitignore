@@ -34,3 +34,5 @@ __pycache__/
 # Environments
 .env
 models/*
+pcds*
+*log

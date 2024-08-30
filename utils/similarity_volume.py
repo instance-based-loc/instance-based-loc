@@ -107,8 +107,9 @@ class SimVolume():
         
         assert self.aug.shape[0] >= subvolume_size
 
+        from tqdm import tqdm
         self.chosen_objects = [i for i in itertools.combinations([j for j in range(self.aug.shape[0])], subvolume_size)]
-        for chosen in self.chosen_objects:
+        for chosen in tqdm(self.chosen_objects):
             # print(chosen)
 
             sub_aug = self.aug[list(chosen)]    # pick out the rows of self.aug that are in chosen

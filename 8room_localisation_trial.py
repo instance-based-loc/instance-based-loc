@@ -58,6 +58,28 @@ def main(args):
             mem_usage, gpu_usage = get_mem_stats()
             print(f"Using {mem_usage} GB of memory and {gpu_usage} GB of GPU")
 
+
+        # save memory point cloud
+        pcd_list = []
+        
+        for info in memory.memory:
+            object_pcd = info.pcd
+            pcd_list.append(object_pcd)
+
+        combined_pcd = o3d.geometry.PointCloud()
+
+        for bhencho in range(len(pcd_list)):
+            pcd_np = pcd_list[bhencho]
+            pcd_vec = o3d.utility.Vector3dVector(pcd_np.T)
+            pcd = o3d.geometry.PointCloud()
+            pcd.points = pcd_vec
+            pcd.paint_uniform_color(np.random.rand(3))
+            combined_pcd += pcd
+    
+        save_path = f"/home2/aneesh.chavan/instance-based-loc/pcds/cached_{args.testname}_before_cons.ply"
+        o3d.io.write_point_cloud(save_path, combined_pcd)
+
+
         # Downsample
         memory.downsample_all_objects(voxel_size=0.01)
 
@@ -68,6 +90,26 @@ def main(args):
         memory.recluster_objects_with_dbscan(visualize=True)
 
 
+        # save
+        pcd_list = []
+
+        for info in memory.memory:
+            object_pcd = info.pcd
+            pcd_list.append(object_pcd)
+
+        combined_pcd = o3d.geometry.PointCloud()
+
+        for bhencho in range(len(pcd_list)):
+            pcd_np = pcd_list[bhencho]
+            pcd_vec = o3d.utility.Vector3dVector(pcd_np.T)
+            pcd = o3d.geometry.PointCloud()
+            pcd.points = pcd_vec
+            pcd.paint_uniform_color(np.random.rand(3))
+            combined_pcd += pcd
+
+        save_path = f"/home2/aneesh.chavan/instance-based-loc/pcds/cached_{args.testname}_after_cons.ply"
+        o3d.io.write_point_cloud(save_path, combined_pcd)
+
         print("\nMemory is")
         print(memory)
 
@@ -76,6 +118,8 @@ def main(args):
     else:
         memory.load(args.memory_load_path)
         print("Memory loaded")
+
+    exit(0)
 
     ########### begin localisation ############
 
@@ -153,7 +197,7 @@ if __name__ == "__main__":
         "--testname",
         type=str,
         help="Experiment name",
-        default="8room"
+        default="8room_agg_clustering"
     )
     # dataset params
     parser.add_argument(
@@ -245,7 +289,7 @@ if __name__ == "__main__":
         "--loc-sampling-period",
         type=int,
         help="eval sampling period",
-        default=13
+        default=26
     )
     # Memory dump/load args
     parser.add_argument(

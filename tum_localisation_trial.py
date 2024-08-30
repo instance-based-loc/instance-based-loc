@@ -22,8 +22,8 @@ def main(args):
     dataloader = TUMDataloader(
         evaluation_indices=args.eval_img_inds,
         data_path=args.data_path,
-        focal_length_x=args.focal_length,
-        focal_length_y=args.focal_length,
+        focal_length_x=args.focal_length_x,
+        focal_length_y=args.focal_length_y,
         map_pointcloud_cache_path=args.map_pcd_cache_path,
         # rot_correction=args.rot_correction,
         start_file_index=args.start_file_index,
@@ -37,39 +37,87 @@ def main(args):
         device = args.device,
         ram_pretrained_path = args.ram_pretrained_path,
         sam_checkpoint_path = args.sam_checkpoint_path,
-        camera_focal_lenth_x = args.focal_length,
-        camera_focal_lenth_y = args.focal_length,
+        camera_focal_lenth_x = args.focal_length_x,
+        camera_focal_lenth_y = args.focal_length_y,
         get_embeddings_func = dummy_get_embs,
         lora_path=args.lora_path
     )
     if args.load_memory == False:
 
-        for idx in dataloader.environment_indices:
-            print(f"Making env from index {idx}/{len(dataloader.environment_indices)} currently.")
+        for idx in tqdm(dataloader.environment_indices, total=len(dataloader.environment_indices)):
             rgb_image_path, depth_image_path, pose = dataloader.get_image_data(idx)
 
             memory.process_image(
                 rgb_image_path,
                 depth_image_path,
                 pose,
-                consider_floor = True
+                consider_floor = False,
+                add_noise=False,
+                depth_factor=5000.
             )
 
             mem_usage, gpu_usage = get_mem_stats()
             print(f"Using {mem_usage} GB of memory and {gpu_usage} GB of GPU")
 
+
+        print("\Before memory is")
+        print(memory)
+
+            #######
+        # save memory point cloud
+        pcd_list = []
+        
+        for info in memory.memory:
+            object_pcd = info.pcd
+            pcd_list.append(object_pcd)
+
+        combined_pcd = o3d.geometry.PointCloud()
+
+        for bhencho in range(len(pcd_list)):
+            pcd_np = pcd_list[bhencho]
+            pcd_vec = o3d.utility.Vector3dVector(pcd_np.T)
+            pcd = o3d.geometry.PointCloud()
+            pcd.points = pcd_vec
+            pcd.paint_uniform_color(np.random.rand(3))
+            combined_pcd += pcd
+    
+        save_path = f"/home2/aneesh.chavan/instance-based-loc/pcds/cached_{args.testname}_before_cons.ply"
+        o3d.io.write_point_cloud(save_path, combined_pcd)
+
         # Downsample
-        memory.downsample_all_objects(voxel_size=0.01)
+        memory.downsample_all_objects(voxel_size=0.005)
 
         # Remove below floors
         # memory.remove_points_below_floor()
 
         # Recluster
-        memory.recluster_objects_with_dbscan(visualize=True)
-
+        # memory.recluster_objects_with_dbscan(eps=.1, min_points_per_cluster=600, visualize=True)
+        memory.recluster_via_agglomerative_clustering(distance_threshold=2000)
 
         print("\nMemory is")
         print(memory)
+
+            #######
+        # save memory point cloud
+        pcd_list = []
+        
+        for info in memory.memory:
+            object_pcd = info.pcd
+            pcd_list.append(object_pcd)
+
+        combined_pcd = o3d.geometry.PointCloud()
+
+        for bhencho in range(len(pcd_list)):
+            pcd_np = pcd_list[bhencho]
+            pcd_vec = o3d.utility.Vector3dVector(pcd_np.T)
+            pcd = o3d.geometry.PointCloud()
+            pcd.points = pcd_vec
+            pcd.paint_uniform_color(np.random.rand(3))
+            combined_pcd += pcd
+
+        save_path = f"/home2/aneesh.chavan/instance-based-loc/pcds/cached_{args.testname}_after_cons.ply"
+        o3d.io.write_point_cloud(save_path, combined_pcd)
+    #######
 
         memory.save_to_pkl(args.memory_load_path)
         print("Memory dumped")
@@ -77,16 +125,14 @@ def main(args):
         memory.load(args.memory_load_path)
         print("Memory loaded")
 
-    exit(0)
     ########### begin localisation ############
 
     eval_dataloader = TUMDataloader(
         evaluation_indices=args.eval_img_inds,
         data_path=args.data_path,
-        focal_length_x=args.focal_length,
-        focal_length_y=args.focal_length,
+        focal_length_x=args.focal_length_x,
+        focal_length_y=args.focal_length_y,
         map_pointcloud_cache_path=args.map_pcd_cache_path,
-        rot_correction=args.rot_correction,
         start_file_index=args.loc_start_file_index,
         last_file_index=args.loc_last_file_index,
         sampling_period=args.loc_sampling_period
@@ -102,13 +148,13 @@ def main(args):
     import imageio
     import os
     print("Begin localisation")
-    for idx in tqdm(eval_dataloader.environment_indices, total=len(eval_dataloader.environment_indices)):
-        print(f"Localising {idx}/{len(eval_dataloader.environment_indices)} currently.")
-        rgb_image_path, depth_image_path, target_pose = eval_dataloader.get_image_data(idx)
-        print(rgb_image_path)
-        os.system(f"cp {rgb_image_path} {os.path.join('./out/imgs/', str(idx) + '.png')}")
+    # for idx in tqdm(eval_dataloader.environment_indices, total=len(eval_dataloader.environment_indices)):
+    #     print(f"Localising {idx}/{len(eval_dataloader.environment_indices)} currently.")
+    #     rgb_image_path, depth_image_path, target_pose = eval_dataloader.get_image_data(idx)
+    #     print(rgb_image_path)
+    #     os.system(f"cp {rgb_image_path} {os.path.join('./out/imgs/', str(idx) + '.png')}")
 
-    exit(0)
+    # exit(0)
     for idx in tqdm(eval_dataloader.environment_indices, total=len(eval_dataloader.environment_indices)):
         print(f"Localistion {idx}/{len(eval_dataloader.environment_indices)} currently.")
         rgb_image_path, depth_image_path, target_pose = eval_dataloader.get_image_data(idx)
@@ -122,7 +168,8 @@ def main(args):
                                             fpfh_local_dist_factor = args.fpfh_local_dist_factor, 
                                             fpfh_voxel_size = args.fpfh_voxel_size, useLora = True,
                                             consider_floor = False,
-                                            perform_semantic_icp=False)
+                                            perform_semantic_icp=False,
+                                            depth_factor=5000.)
 
         print("Target pose: ", target_pose)
         print("Estimated pose: ", estimated_pose)
@@ -161,7 +208,7 @@ if __name__ == "__main__":
         "--testname",
         type=str,
         help="Experiment name",
-        default="8room"
+        default="distance_agg_test"
     )
     # dataset params
     parser.add_argument(
@@ -179,10 +226,16 @@ if __name__ == "__main__":
         default=[0]
     )
     parser.add_argument(
-        "--focal-length",
+        "--focal-length-x",
         type=float,
-        help="Focal length of camera",
-        default=300
+        help="x-Focal length of camera",
+        default= 525.0 
+    )
+    parser.add_argument(
+        "--focal-length-y",
+        type=float,
+        help="y-Focal length of camera",
+        default= 525.0 
     )
     parser.add_argument(
         "--map-pcd-cache-path",
@@ -233,7 +286,7 @@ if __name__ == "__main__":
         "--sampling-period",
         type=int,
         help="sampling period",
-        default=20
+        default=30
     )
 
     # eval sampling params
@@ -241,19 +294,19 @@ if __name__ == "__main__":
         "--loc-start-file-index",
         type=int,
         help="eval beginning of file sampling",
-        default=280
+        default=107
     )
     parser.add_argument(
         "--loc-last-file-index",
         type=int,
         help="eval last file to sample",
-        default=1400
+        default=1600
     )
     parser.add_argument(
         "--loc-sampling-period",
         type=int,
         help="eval sampling period",
-        default=13
+        default=40
     )
     # Memory dump/load args
     parser.add_argument(
@@ -299,5 +352,6 @@ if __name__ == "__main__":
         default=0.05
     )
 
+    import os
     args = parser.parse_args()
     main(args)
