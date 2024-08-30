@@ -36,3 +36,4 @@ __pycache__/
 models/*
 pcds*
 *log
+gen_data/*

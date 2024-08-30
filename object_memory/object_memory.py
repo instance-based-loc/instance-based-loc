@@ -102,6 +102,7 @@ class ObjectMemory():
         else:
             raise NotImplementedError
 
+        ##  HARDCODED TO LORA
         self.get_embeddings_func = self.loraModule.encode_image
 
         self.memory: list[ObjectInfo] = []
@@ -404,8 +405,10 @@ class ObjectMemory():
             else:
                 new_memory[new_label] = new_memory[new_label] + old_obj_info
         
-        # save new memory
+        # save new memory, fix IDs
         self.memory = new_memory
+        for i, _ in enumerate(self.memory):
+            self.memory[i].id = i
 
     def save(self, save_directory: str):
         os.makedirs(save_directory, exist_ok=True)
