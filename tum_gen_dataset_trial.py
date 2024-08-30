@@ -93,7 +93,7 @@ def main(args):
 
         # Recluster
         # memory.recluster_objects_with_dbscan(eps=.1, min_points_per_cluster=600, visualize=True)
-        memory.recluster_via_agglomerative_clustering(distance_threshold=2000)
+        memory.recluster_via_combined(eps=.2, min_points_per_cluster=150)
 
         print("\nMemory is")
         print(memory)
@@ -138,7 +138,7 @@ if __name__ == "__main__":
         "--testname",
         type=str,
         help="Experiment name",
-        default="gen_dataset_TUM_desk"
+        default="gen_combined"
     )
     # dataset params
     parser.add_argument(
@@ -216,7 +216,7 @@ if __name__ == "__main__":
         "--sampling-period",
         type=int,
         help="sampling period",
-        default=50
+        default=30
     )
 
     # eval sampling params
