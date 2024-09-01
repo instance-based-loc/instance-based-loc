@@ -28,7 +28,7 @@ if __name__ == "__main__":
         "--data-path",
         type=str,
         help="Path to synthetic data",
-        default="./data/new_lab"
+        default="/scratch/sarthak/ground_floor_dataset"
     )
     parser.add_argument(
         "-e",
@@ -54,7 +54,7 @@ if __name__ == "__main__":
         "--map-pcd-cache-path",
         type=str,
         help="Location where the map's pointcloud is cached for future use",
-        default="./.cache/gf_lab4_cache.pcd"
+        default="./cache/ground_floor_lab_cache.pcd"
     )
     parser.add_argument(
         "--device",
@@ -66,13 +66,13 @@ if __name__ == "__main__":
         "--sam-checkpoint-path",
         type=str,
         help="Path to checkpoint being used for SAM",
-        default=f'/scratch/{get_user()}/sam_vit_h_4b8939.pth'
+        default=f'/scratch/sarthak/checkpoint/sam_vit_h_4b8939.pth'
     )
     parser.add_argument(
         "--ram-pretrained-path",
         type=str,
         help="Path to pretained model being used for RAM",
-        default=f'/scratch/{get_user()}/ram_swin_large_14m.pth'
+        default=f'/scratch/sarthak/checkpoint/ram_swin_large_14m.pth'
     )
     args = parser.parse_args()
 

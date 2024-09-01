@@ -1,4 +1,4 @@
-from dataloader.tum_dataloader import TUMDataloader
+from dataloader.real_dataloader import RealDataloader
 from object_memory.object_memory import ObjectMemory
 import argparse
 import matplotlib.pyplot as plt
@@ -19,7 +19,7 @@ def dummy_get_embs(
     return torch.tensor([1, 2, 3], device=torch.device(kwargs["device"]))
 
 def main(args):
-    dataloader = TUMDataloader(
+    dataloader = RealDataloader(
         evaluation_indices=args.eval_img_inds,
         data_path=args.data_path,
         focal_length_x=args.focal_length_x,
@@ -53,7 +53,7 @@ def main(args):
                 pose,
                 consider_floor = False,
                 add_noise=False,
-                depth_factor=5000.
+                depth_factor=1000.
             )
 
             mem_usage, gpu_usage = get_mem_stats()
@@ -127,7 +127,7 @@ def main(args):
 
     ########### begin localisation ############
 
-    eval_dataloader = TUMDataloader(
+    eval_dataloader = RealDataloader(
         evaluation_indices=args.eval_img_inds,
         data_path=args.data_path,
         focal_length_x=args.focal_length_x,
@@ -169,7 +169,7 @@ def main(args):
                                             fpfh_voxel_size = args.fpfh_voxel_size, useLora = True,
                                             consider_floor = False,
                                             perform_semantic_icp=False,
-                                            depth_factor=5000.)
+                                            depth_factor=1000.)
 
         print("Target pose: ", target_pose)
         print("Estimated pose: ", estimated_pose)
@@ -208,14 +208,14 @@ if __name__ == "__main__":
         "--testname",
         type=str,
         help="Experiment name",
-        default="distance_agg_test"
+        default="real_loc"
     )
     # dataset params
     parser.add_argument(
         "--data-path",
         type=str,
-        help="Path to the 8room sequence",
-        default="/scratch/sarthak/synced_data2"
+        help="Path to synthetic data",
+        default="/scratch/sarthak/ground_floor_dataset"
     )
     parser.add_argument(
         "-e",
@@ -223,25 +223,25 @@ if __name__ == "__main__":
         type=int,
         nargs='+',
         help="Indices to be evaluated",
-        default=[0]
+        default=[4]
     )
     parser.add_argument(
         "--focal-length-x",
         type=float,
         help="x-Focal length of camera",
-        default= 525.0 
+        default=385.28887939453125
     )
     parser.add_argument(
         "--focal-length-y",
         type=float,
         help="y-Focal length of camera",
-        default= 525.0 
+        default=384.3631591796875
     )
     parser.add_argument(
         "--map-pcd-cache-path",
         type=str,
         help="Location where the map's pointcloud is cached for future use",
-        default="./cache/tum_zip_cache_map_coloured.pcd"
+        default="./cache/ground_floor_lab_cache.pcd"
     )
     #device
     parser.add_argument(
@@ -280,13 +280,13 @@ if __name__ == "__main__":
         "--last-file-index",
         type=int,
         help="last file to sample",
-        default=2000
+        default=1200
     )
     parser.add_argument(
         "--sampling-period",
         type=int,
         help="sampling period",
-        default=30
+        default=20
     )
 
     # eval sampling params
@@ -294,19 +294,19 @@ if __name__ == "__main__":
         "--loc-start-file-index",
         type=int,
         help="eval beginning of file sampling",
-        default=107
+        default=10
     )
     parser.add_argument(
         "--loc-last-file-index",
         type=int,
         help="eval last file to sample",
-        default=1600
+        default=1000
     )
     parser.add_argument(
         "--loc-sampling-period",
         type=int,
         help="eval sampling period",
-        default=40
+        default=17
     )
     # Memory dump/load args
     parser.add_argument(
@@ -319,7 +319,7 @@ if __name__ == "__main__":
         "--memory-load-path",
         type=str,
         help="file to load memory from, or save it to",
-        default='./out/tum_desk_memory.pt'
+        default='./out/real_memory.pt'
     )
 
     # lora path
