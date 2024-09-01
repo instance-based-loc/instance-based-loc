@@ -18,7 +18,10 @@ class RealDataloader(BaseDataLoader):
             evaluation_indices: Optional[Tuple[int]], 
             focal_length_x: Optional[float] = None,
             focal_length_y: Optional[float] = None,
-            map_pointcloud_cache_path: Optional[str] = None
+            map_pointcloud_cache_path: Optional[str] = None,
+            start_file_index: Optional[int] = 0,
+            last_file_index: Optional[int] = None,
+            sampling_period: Optional[int] = 10,
         ):
         """
         Keep the evaluation_indices parameter as an empty list if you have separate directories
@@ -44,6 +47,12 @@ class RealDataloader(BaseDataLoader):
         ]  
         assert len(self._depth_images_paths) == len(self._rgb_images_paths), "No. of depth and RGB images are not the same!"
 
+        # subsample file names 
+        if last_file_index == None:
+            last_file_index = len(self._depth_images_paths)
+        self._depth_images_paths = self._depth_images_paths[start_file_index:last_file_index:sampling_period]
+        self._rgb_images_paths = self._rgb_images_paths[start_file_index:last_file_index:sampling_period]
+
         # Set poses
         self._poses = []
         with open(self._pose_information_file_path, 'r') as f:
@@ -54,6 +63,9 @@ class RealDataloader(BaseDataLoader):
                 # x y z qx qy qz qw
                 p = np.array([float(i) for i in split_pose[1:-1]])
                 self._poses.append(p)
+
+        # subsample poses
+        self._poses = self._poses[start_file_index:last_file_index:sampling_period]
 
         if map_pointcloud_cache_path is not None and os.path.exists(map_pointcloud_cache_path):
             print("Retrieving map's pointcloud from cache")
