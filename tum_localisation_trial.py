@@ -92,7 +92,8 @@ def main(args):
 
         # Recluster
         # memory.recluster_objects_with_dbscan(eps=.1, min_points_per_cluster=600, visualize=True)
-        memory.recluster_via_agglomerative_clustering(distance_threshold=2000)
+        # memory.recluster_via_agglomerative_clustering(distance_threshold=2000)
+        memory.recluster_via_combined(eps=0.15)
 
         print("\nMemory is")
         print(memory)
@@ -208,7 +209,7 @@ if __name__ == "__main__":
         "--testname",
         type=str,
         help="Experiment name",
-        default="distance_agg_test"
+        default="desk_combbined_test"
     )
     # dataset params
     parser.add_argument(
@@ -300,13 +301,13 @@ if __name__ == "__main__":
         "--loc-last-file-index",
         type=int,
         help="eval last file to sample",
-        default=1600
+        default=1800
     )
     parser.add_argument(
         "--loc-sampling-period",
         type=int,
         help="eval sampling period",
-        default=40
+        default=41
     )
     # Memory dump/load args
     parser.add_argument(

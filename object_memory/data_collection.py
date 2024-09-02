@@ -211,15 +211,15 @@ class ObjectDatasetMemory(ObjectMemory):
 
         # create directories per object, dump all rgb/depth pairs
         for obj in self.memory:
-            obj_name = f"object_{obj.id}"
+            obj_name = f"{obj.names[0]}_{obj.id}"
             os.system(f"mkdir {os.path.join(dataset_root, obj_name)}")
 
             for i, (rgb, depth) in enumerate(zip(obj.rgb_imgs, obj.depth_imgs)):
                 rgb_name = obj_name + "_" + str(i) + "_rgb.png"
-                depth_name = obj_name + "_" + str(i) + "_depth.png"
+                depth_name = obj_name + "_" + str(i) + "_depth.npy"
 
                 rgb_path = os.path.join(dataset_root, obj_name, rgb_name)
                 depth_path = os.path.join(dataset_root, obj_name, depth_name)
 
                 imageio.imwrite(rgb_path, rgb)
-                imageio.imwrite(depth_path, depth)
+                np.save(depth_path, depth)
