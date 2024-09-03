@@ -4,6 +4,9 @@ import os, sys, time
 import itertools
 import warnings
 import matplotlib.pyplot as plt
+from numba import jit, njit
+from tqdm import tqdm
+
 
 class SimVolume():
     def __init__(self, cosine_similarities) -> None:
@@ -107,7 +110,6 @@ class SimVolume():
         
         assert self.aug.shape[0] >= subvolume_size
 
-        from tqdm import tqdm
         self.chosen_objects = [i for i in itertools.combinations([j for j in range(self.aug.shape[0])], subvolume_size)]
         for chosen in tqdm(self.chosen_objects):
             # print(chosen)

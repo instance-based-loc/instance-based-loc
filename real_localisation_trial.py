@@ -92,7 +92,8 @@ def main(args):
 
         # Recluster
         # memory.recluster_objects_with_dbscan(eps=.1, min_points_per_cluster=600, visualize=True)
-        memory.recluster_via_agglomerative_clustering(distance_threshold=2000)
+        # memory.recluster_via_agglomerative_clustering(distance_threshold=2000)
+        memory.recluster_via_combined(eps=0.15)
 
         print("\nMemory is")
         print(memory)
