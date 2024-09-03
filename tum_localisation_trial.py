@@ -13,6 +13,8 @@ from tqdm import tqdm
 from utils.quaternion_ops import QuaternionOps
 from utils.logging import get_mem_stats
 
+from utils.embeddings import get_all_clip_embeddings, get_all_dino_embeddings
+
 def dummy_get_embs(
     **kwargs
 ):
@@ -39,7 +41,7 @@ def main(args):
         sam_checkpoint_path = args.sam_checkpoint_path,
         camera_focal_lenth_x = args.focal_length_x,
         camera_focal_lenth_y = args.focal_length_y,
-        get_embeddings_func = dummy_get_embs,
+        get_embeddings_func = get_all_clip_embeddings,
         lora_path=args.lora_path
     )
     if args.load_memory == False:
@@ -280,7 +282,7 @@ if __name__ == "__main__":
         "--last-file-index",
         type=int,
         help="last file to sample",
-        default=2000
+        default=None
     )
     parser.add_argument(
         "--sampling-period",
@@ -300,13 +302,13 @@ if __name__ == "__main__":
         "--loc-last-file-index",
         type=int,
         help="eval last file to sample",
-        default=1600
+        default=None
     )
     parser.add_argument(
         "--loc-sampling-period",
         type=int,
         help="eval sampling period",
-        default=40
+        default=47
     )
     # Memory dump/load args
     parser.add_argument(

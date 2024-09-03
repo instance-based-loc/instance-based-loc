@@ -69,7 +69,8 @@ class ObjectMemory():
         load_rgb_image_func = default_load_rgb,
         load_depth_image_func = default_load_depth,
         dataset_floor_thickness = 0.1,
-        lora_path=None
+        lora_path=None,
+        model_name="clip"
     ):
         # *******************************************************************************************
         # Setup encoder in the pipeline and pass a wrapper function to `get_embeddings_func`
@@ -96,14 +97,15 @@ class ObjectMemory():
             log_enabled = self.log_enabled
         )
 
-        self.loraModule = LoraRevolver(self.device)
-        if lora_path != None:
-            self.loraModule.load_lora_ckpt_from_file(lora_path, "5x40")
-        else:
-            raise NotImplementedError
+        # self.loraModule = LoraRevolver(self.device)
+        # if lora_path != None:
+        #     self.loraModule.load_lora_ckpt_from_file(lora_path, "5x40")
+        # else:
+        #     raise NotImplementedError
 
-        ##  HARDCODED TO LORA
-        self.get_embeddings_func = self.loraModule.encode_image
+        # ##  HARDCODED TO LORA
+        # self.get_embeddings_func = self.loraModule.encode_image
+        self.get_embeddings_func = get_embeddings_func
 
         self.memory: list[ObjectInfo] = []
         self.floors = None # stoors all floors or ground in one pcd
@@ -658,6 +660,8 @@ class ObjectMemory():
             m._compute_means()  # Update object info means
 
         memory_embs = np.array([m.mean_emb for m in self.memory])
+        # print(detected_embs.shape, memory_embs.shape)
+        detected_embs = detected_embs.reshape(-1, detected_embs.shape[-1])
 
         if len(detected_embs) > len(self.memory):
             detected_embs = detected_embs[:len(memory_embs)]
