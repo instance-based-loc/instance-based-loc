@@ -23,11 +23,11 @@ def check_if_floor(texts: list[str]):
         "earth",
         
         # ?comment these out for TUM desk
-        "table",
-        "chair",
-        "desk",
-        "desktop",
-        "counter"
+        # "table",
+        # "chair",
+        # "desk",
+        # "desktop",
+        # "counter"
     ]
     for word in words:
         if word in texts:
@@ -156,11 +156,11 @@ _sub_phrases_to_ignore_in_caption = [
                     "garage",
 
                     # comment these out for TUM desk
-                    "box",
-                    "stuff",
-                    "table",
-                    "chair",
-                    "desk",
-                    "desktop",
-                    "counter"
+                    # "box",
+                    # "stuff",
+                    # "table",
+                    # "chair",
+                    # "desk",
+                    # "desktop",
+                    # "counter"
 ]

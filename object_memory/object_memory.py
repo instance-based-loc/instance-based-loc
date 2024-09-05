@@ -432,9 +432,21 @@ class ObjectMemory():
         all_centroids = np.array([obj.centroid for obj in self.memory])
         distance_matrix = df(all_mean_embs, all_centroids)
 
+        import matplotlib.pyplot as plt
+        cax = plt.imshow(distance_matrix)
+        cbar = plt.colorbar(cax)
+        plt.savefig('/home2/aneesh.chavan/instance-based-loc/lora_sims.png')
+
+        # import pdb;
+        # pdb.set_trace()
+
         # sklearn agglomerative clustering
         self._log("Clustering agglomeratively")
-        agg_clustering = AgglomerativeClustering(n_clusters=None, distance_threshold=embedding_distance_threshold, metric='precomputed', linkage='average')
+        agg_clustering = AgglomerativeClustering(
+                            n_clusters=None, 
+                            distance_threshold=embedding_distance_threshold, 
+                            metric='precomputed', 
+                            linkage='average')
         agg_clustering.fit(distance_matrix)
 
         # Get the cluster labels

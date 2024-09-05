@@ -14,8 +14,12 @@ import multiprocessing
 from multiprocessing.pool import ThreadPool as Pool
 from functools import partial
 
+import sys
+sys.path.append("dator")
+
 from utils.quaternion_ops import QuaternionOps
 from utils.logging import get_mem_stats
+from utils.embeddings import get_dator_embeddings
 
 def dummy_get_embs(
     **kwargs
@@ -69,9 +73,21 @@ def main(args):
         sam_checkpoint_path = args.sam_checkpoint_path,
         camera_focal_lenth_x = args.focal_length_x,
         camera_focal_lenth_y = args.focal_length_y,
-        get_embeddings_func = dummy_get_embs,
+        get_embeddings_func = get_dator_embeddings,
         lora_path=args.lora_path
     )
+
+    dataloader = TUMDataloader(
+        evaluation_indices=args.eval_img_inds,
+        data_path=args.data_path,
+        focal_length_x=args.focal_length_x,
+        focal_length_y=args.focal_length_y,
+        map_pointcloud_cache_path=args.map_pcd_cache_path,
+        start_file_index=args.start_file_index,
+        last_file_index=args.last_file_index,
+        sampling_period=args.sampling_period
+    )
+
     if args.load_memory == False:
 
         for idx in tqdm(dataloader.environment_indices, total=len(dataloader.environment_indices)):
@@ -123,7 +139,7 @@ def main(args):
         # Recluster
         # memory.recluster_objects_with_dbscan(eps=.1, min_points_per_cluster=600, visualize=True)
         # memory.recluster_via_agglomerative_clustering(distance_threshold=2000)
-        memory.recluster_via_combined(eps=0.15)
+        memory.recluster_via_combined(eps=0.15, embedding_distance_threshold=0.4)
 
         print("\nMemory is")
         print(memory)
@@ -236,7 +252,7 @@ if __name__ == "__main__":
         "--testname",
         type=str,
         help="Experiment name",
-        default="desk_combined_test_half"
+        default="dator"
     )
     # dataset params
     parser.add_argument(
