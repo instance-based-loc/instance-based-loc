@@ -84,3 +84,14 @@ def get_all_dino_embeddings(**kwargs) -> torch.Tensor:
         dino_embedding = get_dino_embedding(image, device)
         dino_embeddings.append(dino_embedding)
     return torch.stack(dino_embeddings)
+
+
+def get_dator_embeddings(**kwargs) -> torch.Tensor: 
+    """
+    returns the dator embeddings for the list of images  
+    """
+    # from dator.dator_wrapper import load_dator, get_single_embedding  
+    images = [kwargs["current_obj_grounded_img"]] 
+    print(f"{images = }") 
+    import sys 
+    sys.exit(0) 

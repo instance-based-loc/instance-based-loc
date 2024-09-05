@@ -13,7 +13,7 @@ from tqdm import tqdm
 from utils.quaternion_ops import QuaternionOps
 from utils.logging import get_mem_stats
 
-from utils.embeddings import get_all_clip_embeddings, get_all_dino_embeddings
+from utils.embeddings import get_all_clip_embeddings, get_all_dino_embeddings, get_dator_embeddings 
 
 def dummy_get_embs(
     **kwargs
@@ -41,7 +41,7 @@ def main(args):
         sam_checkpoint_path = args.sam_checkpoint_path,
         camera_focal_lenth_x = args.focal_length_x,
         camera_focal_lenth_y = args.focal_length_y,
-        get_embeddings_func = get_all_clip_embeddings,
+        get_embeddings_func = get_dator_embeddings,
         lora_path=args.lora_path
     )
     if args.load_memory == False:
