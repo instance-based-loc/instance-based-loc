@@ -37,6 +37,9 @@ def check_if_floor(texts: list[str]):
 _words_to_ignore_in_caption = [
                     "garage",
                     "workshop",
+                    "warehouse",
+                    "basement",
+                    "parking garage"
                     "elevator",
                     "equipment",
                     "cardboard",
@@ -150,6 +153,7 @@ _sub_phrases_to_ignore_in_caption = [
                     "fan",
                     "cabinet",
                     "job",
+                    "garage",
 
                     # comment these out for TUM desk
                     "box",

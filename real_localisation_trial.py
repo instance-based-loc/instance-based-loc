@@ -81,7 +81,7 @@ def main(args):
             pcd.paint_uniform_color(np.random.rand(3))
             combined_pcd += pcd
     
-        save_path = f"/home2/sarthak.chittawa/instance-based-loc/pcds/cached_{args.testname}_before_cons.ply"
+        save_path = f"/home2/{get_user()}/instance-based-loc/pcds/cached_{args.testname}_before_cons.ply"
         o3d.io.write_point_cloud(save_path, combined_pcd)
 
         # Downsample
@@ -116,7 +116,7 @@ def main(args):
             pcd.paint_uniform_color(np.random.rand(3))
             combined_pcd += pcd
 
-        save_path = f"/home2/sarthak.chittawa/instance-based-loc/pcds/cached_{args.testname}_after_cons.ply"
+        save_path = f"/home2/{get_user()}/instance-based-loc/pcds/cached_{args.testname}_after_cons.ply"
         o3d.io.write_point_cloud(save_path, combined_pcd)
     #######
 
@@ -287,7 +287,7 @@ if __name__ == "__main__":
         "--sampling-period",
         type=int,
         help="sampling period",
-        default=20
+        default=40
     )
 
     # eval sampling params
@@ -307,7 +307,7 @@ if __name__ == "__main__":
         "--loc-sampling-period",
         type=int,
         help="eval sampling period",
-        default=17
+        default=33
     )
     # Memory dump/load args
     parser.add_argument(
