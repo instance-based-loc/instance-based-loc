@@ -4,6 +4,9 @@ import os, sys, time
 import itertools
 import warnings
 import matplotlib.pyplot as plt
+from numba import jit, njit
+from tqdm import tqdm
+
 
 class SimVolume():
     def __init__(self, cosine_similarities) -> None:
@@ -107,7 +110,6 @@ class SimVolume():
         
         assert self.aug.shape[0] >= subvolume_size
 
-        from tqdm import tqdm
         self.chosen_objects = [i for i in itertools.combinations([j for j in range(self.aug.shape[0])], subvolume_size)]
         for chosen in tqdm(self.chosen_objects):
             # print(chosen)
@@ -223,11 +225,6 @@ class SimVolume():
         all_filtered_topk = []
         assns = []
 
-        print("\nshapes")
-        for v in self.subvolumes:
-            print(v.shape)
-        print()
-
         unassigned_ind = self.subvolumes[0].shape[0] - 1
         for coords in top_k:
             
@@ -246,9 +243,9 @@ class SimVolume():
         
         filtered_topk = []
         for i in range(1, self.aug.shape[0] + 1):
-            print("Length: ", i)
+            to_pick = max(1, i)
             correct_length = [f for f in all_filtered_topk if len(f[0]) == i]
-            correct_length = sorted(correct_length, key= lambda x: x[-1], reverse=True)[:num_per_length]
+            correct_length = sorted(correct_length, key= lambda x: x[-1], reverse=True)[:to_pick]
             filtered_topk += correct_length
 
         assns = [a[0] for a in filtered_topk]

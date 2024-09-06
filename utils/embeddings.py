@@ -84,3 +84,26 @@ def get_all_dino_embeddings(**kwargs) -> torch.Tensor:
         dino_embedding = get_dino_embedding(image, device)
         dino_embeddings.append(dino_embedding)
     return torch.stack(dino_embeddings)
+
+
+from dator_wrapper import load_model, get_model_input
+dator_model = load_model('/home2/aneesh.chavan/instance-based-loc/dator/dator_best_tum.pth')
+dator_model.eval()
+
+def get_dator_embeddings(**kwargs) -> torch.Tensor: 
+    """
+    returns the dator embeddings for the list of images  
+    """
+    with torch.no_grad():
+        images = kwargs["current_obj_grounded_img"]
+
+        bb = kwargs["current_obj_bounding_box"]
+        full_depth_image = kwargs["full_depth_image"]
+
+        depth_img = full_depth_image[int(bb[1]):int(bb[3]),
+                                    int(bb[0]):int(bb[2])]
+
+        rgb_t, depth_t = get_model_input(images, depth_img)
+        emb = dator_model(rgb_t, depth_t).detach()
+
+        return emb

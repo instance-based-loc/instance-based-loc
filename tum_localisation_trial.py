@@ -10,24 +10,79 @@ from copy import deepcopy
 from utils.os_env import get_user
 from tqdm import tqdm
 
+import multiprocessing
+from multiprocessing.pool import ThreadPool as Pool
+from functools import partial
+
+import sys
+sys.path.append("dator")
+
 from utils.quaternion_ops import QuaternionOps
 from utils.logging import get_mem_stats
-
-from utils.embeddings import get_all_clip_embeddings, get_all_dino_embeddings
+from utils.embeddings import get_all_clip_embeddings, get_all_dino_embeddings, get_dator_embeddings
 
 def dummy_get_embs(
     **kwargs
 ):
     return torch.tensor([1, 2, 3], device=torch.device(kwargs["device"]))
 
+
+tgt = []
+pred = []
+trans_errors = []
+rot_errors = []
+chosen_assignments = []
+
+# def localisation function for multiprocessing
+def run_localisation(idx, args, memory, eval_dataloader):
+    rgb_image_path, depth_image_path, target_pose = eval_dataloader.get_image_data(idx)
+
+    estimated_pose, chosen_assignment = memory.localise(image_path=rgb_image_path, 
+                                        depth_image_path=depth_image_path,
+                                        testname=args.testname,
+                                        subtest_name=f"{idx}" ,
+                                        save_point_clouds=args.save_point_clouds,
+                                        fpfh_global_dist_factor = args.fpfh_global_dist_factor, 
+                                        fpfh_local_dist_factor = args.fpfh_local_dist_factor, 
+                                        fpfh_voxel_size = args.fpfh_voxel_size, useLora = True,
+                                        consider_floor = False,
+                                        perform_semantic_icp=False,
+                                        depth_factor=5000.)
+
+
+    translation_error = np.linalg.norm(target_pose[:3] - estimated_pose[:3]) 
+    rotation_error = QuaternionOps.quaternion_error(target_pose[3:], estimated_pose[3:])
+
+    print(f"Localistion {idx}/{len(eval_dataloader.environment_indices)} currently.")
+    print("Target pose: ", target_pose)
+    print("Estimated pose: ", estimated_pose)
+    print("Translation error: ", translation_error)
+    print("Rotation_error: ", rotation_error)
+
+    tgt.append(target_pose)
+    pred.append(estimated_pose.tolist())
+    trans_errors.append(translation_error)
+    rot_errors.append(rotation_error)
+    chosen_assignments.append(chosen_assignment)
+
 def main(args):
+    # define and create memory
+    memory = ObjectMemory(
+        device = args.device,
+        ram_pretrained_path = args.ram_pretrained_path,
+        sam_checkpoint_path = args.sam_checkpoint_path,
+        camera_focal_lenth_x = args.focal_length_x,
+        camera_focal_lenth_y = args.focal_length_y,
+        get_embeddings_func = get_dator_embeddings,
+        lora_path=args.lora_path
+    )
+
     dataloader = TUMDataloader(
         evaluation_indices=args.eval_img_inds,
         data_path=args.data_path,
         focal_length_x=args.focal_length_x,
         focal_length_y=args.focal_length_y,
         map_pointcloud_cache_path=args.map_pcd_cache_path,
-        # rot_correction=args.rot_correction,
         start_file_index=args.start_file_index,
         last_file_index=args.last_file_index,
         sampling_period=args.sampling_period
@@ -92,9 +147,11 @@ def main(args):
         # Remove below floors
         # memory.remove_points_below_floor()
 
-        # Recluster
+        ##################               Recluster
         # memory.recluster_objects_with_dbscan(eps=.1, min_points_per_cluster=600, visualize=True)
-        memory.recluster_via_agglomerative_clustering(distance_threshold=2000)
+        # memory.recluster_via_agglomerative_clustering(distance_threshold=2000)
+        # memory.recluster_via_combined(eps=0.05, embedding_distance_threshold=0.6)
+        memory.recluster_via_clustering_and_IoU(eps=0.05, embedding_distance_threshold=0.6, IoU_threshold=0.6)
 
         print("\nMemory is")
         print(memory)
@@ -127,6 +184,21 @@ def main(args):
         memory.load(args.memory_load_path)
         print("Memory loaded")
 
+    color_gen = lambda n: [(float((np.sin(i * 2 * np.pi / n) * 0.5 + 0.5)),
+                        float((np.sin((i + 1) * 2 * np.pi / n) * 0.5 + 0.5)),
+                        float((np.sin((i + 2) * 2 * np.pi / n) * 0.5 + 0.5)))
+                        for i in range(n)]
+
+    combined_pcd = o3d.geometry.PointCloud()
+    colors = color_gen(len(memory.memory))
+    for pcd, color in zip(memory.memory, colors):
+        pcd.pointcloud.paint_uniform_color(np.random.random(3))
+        combined_pcd += pcd.pointcloud
+
+    save_path = f"/home2/aneesh.chavan/instance-based-loc/pcds/cached_{args.testname}_after_cons.ply"
+    o3d.io.write_point_cloud(save_path, combined_pcd)
+    exit(0)
+
     ########### begin localisation ############
 
     eval_dataloader = TUMDataloader(
@@ -140,25 +212,12 @@ def main(args):
         sampling_period=args.loc_sampling_period
     )
 
-    tgt = []
-    pred = []
-    trans_errors = []
-    rot_errors = []
-    chosen_assignments = []
-
     import matplotlib.pyplot as plt
     import imageio
     import os
     print("Begin localisation")
-    # for idx in tqdm(eval_dataloader.environment_indices, total=len(eval_dataloader.environment_indices)):
-    #     print(f"Localising {idx}/{len(eval_dataloader.environment_indices)} currently.")
-    #     rgb_image_path, depth_image_path, target_pose = eval_dataloader.get_image_data(idx)
-    #     print(rgb_image_path)
-    #     os.system(f"cp {rgb_image_path} {os.path.join('./out/imgs/', str(idx) + '.png')}")
 
-    # exit(0)
     for idx in tqdm(eval_dataloader.environment_indices, total=len(eval_dataloader.environment_indices)):
-        print(f"Localistion {idx}/{len(eval_dataloader.environment_indices)} currently.")
         rgb_image_path, depth_image_path, target_pose = eval_dataloader.get_image_data(idx)
 
         estimated_pose, chosen_assignment = memory.localise(image_path=rgb_image_path, 
@@ -173,12 +232,13 @@ def main(args):
                                             perform_semantic_icp=False,
                                             depth_factor=5000.)
 
-        print("Target pose: ", target_pose)
-        print("Estimated pose: ", estimated_pose)
 
         translation_error = np.linalg.norm(target_pose[:3] - estimated_pose[:3]) 
         rotation_error = QuaternionOps.quaternion_error(target_pose[3:], estimated_pose[3:])
 
+        print(f"Localistion {idx}/{len(eval_dataloader.environment_indices)} currently.")
+        print("Target pose: ", target_pose)
+        print("Estimated pose: ", estimated_pose)
         print("Translation error: ", translation_error)
         print("Rotation_error: ", rotation_error)
 
@@ -187,7 +247,18 @@ def main(args):
         trans_errors.append(translation_error)
         rot_errors.append(rotation_error)
         chosen_assignments.append(chosen_assignment)
+    
+    # run multiprocessing pool on localisation trials
+    indices = [idx for idx in eval_dataloader.environment_indices]
 
+    # print("Init and begin multiprocessing")
+    # with Pool(processes=4) as mp_pool:
+    #     process_with_args = partial(run_localisation, args=args, memory=memory, eval_dataloader=eval_dataloader)
+
+    #     mp_pool.map(process_with_args, indices)
+
+
+    # Output results
     for idx, _ in enumerate(tqdm(eval_dataloader.environment_indices, total=len(eval_dataloader.environment_indices))):
         print(f"Pose {idx + 1}, image {len(eval_dataloader.environment_indices)}")
         print("Translation error", trans_errors[idx])
@@ -200,8 +271,6 @@ def main(args):
             print("MISALIGNED")
         print()
 
-    exit(0)
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     #
@@ -210,7 +279,7 @@ if __name__ == "__main__":
         "--testname",
         type=str,
         help="Experiment name",
-        default="distance_agg_test"
+        default="dator"
     )
     # dataset params
     parser.add_argument(
@@ -315,7 +384,7 @@ if __name__ == "__main__":
         "--load-memory",
         type=bool,
         help="should memory be loaded from a file",
-        default=False
+        default=True
     )
     parser.add_argument(
         "--memory-load-path",
