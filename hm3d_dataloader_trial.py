@@ -29,7 +29,7 @@ intrinsic_matrix = np.array([[fx, 0, cx],
 
 intrinsic_inverse = np.linalg.inv(intrinsic_matrix)
 
-for i in tqdm(range(len(pose_data))[27:35]):
+for i in tqdm(range(len(pose_data))[36:50]):
     rgb_image_path = os.path.join(rgb_images_save_path, f"{i}.png")
     depth_image_path = os.path.join(depth_images_save_path, f"{i}.npy")
 
