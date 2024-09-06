@@ -20,7 +20,14 @@ def check_if_floor(texts: list[str]):
     words = [
         "floor",
         "ground",
-        "earth"
+        "earth",
+        
+        # ?comment these out for TUM desk
+        # "table",
+        # "chair",
+        # "desk",
+        # "desktop",
+        # "counter"
     ]
     for word in words:
         if word in texts:
@@ -28,6 +35,14 @@ def check_if_floor(texts: list[str]):
     return False
 
 _words_to_ignore_in_caption = [
+                    "garage",
+                    "workshop",
+                    "warehouse",
+                    "basement",
+                    "parking garage"
+                    "elevator",
+                    "equipment",
+                    "cardboard",
                     "living room", 
                     "ceiling", 
                     "room", 
@@ -137,5 +152,15 @@ _sub_phrases_to_ignore_in_caption = [
                     "stall",
                     "fan",
                     "cabinet",
-                    "job"
+                    "job",
+                    "garage",
+
+                    # comment these out for TUM desk
+                    # "box",
+                    # "stuff",
+                    # "table",
+                    # "chair",
+                    # "desk",
+                    # "desktop",
+                    # "counter"
 ]

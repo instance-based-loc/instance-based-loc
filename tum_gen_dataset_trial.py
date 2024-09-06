@@ -1,5 +1,6 @@
-from dataloader.eightroom_dataloader import EightRoomDataLoader
+from dataloader.tum_dataloader import TUMDataloader
 from object_memory.object_memory import ObjectMemory
+from object_memory.data_collection import ObjectDatasetMemory
 import argparse
 import matplotlib.pyplot as plt
 import open3d as o3d
@@ -19,13 +20,13 @@ def dummy_get_embs(
     return torch.tensor([1, 2, 3], device=torch.device(kwargs["device"]))
 
 def main(args):
-    dataloader = EightRoomDataLoader(
+    dataloader = TUMDataloader(
         evaluation_indices=args.eval_img_inds,
         data_path=args.data_path,
-        focal_length_x=args.focal_length,
-        focal_length_y=args.focal_length,
+        focal_length_x=args.focal_length_x,
+        focal_length_y=args.focal_length_y,
         map_pointcloud_cache_path=args.map_pcd_cache_path,
-        rot_correction=args.rot_correction,
+        # rot_correction=args.rot_correction,
         start_file_index=args.start_file_index,
         last_file_index=args.last_file_index,
         sampling_period=args.sampling_period
@@ -33,33 +34,37 @@ def main(args):
 
     
     # define and create memory
-    memory = ObjectMemory(
+    memory = ObjectDatasetMemory(
         device = args.device,
         ram_pretrained_path = args.ram_pretrained_path,
         sam_checkpoint_path = args.sam_checkpoint_path,
-        camera_focal_lenth_x = args.focal_length,
-        camera_focal_lenth_y = args.focal_length,
+        camera_focal_lenth_x = args.focal_length_x,
+        camera_focal_lenth_y = args.focal_length_y,
         get_embeddings_func = dummy_get_embs,
         lora_path=args.lora_path
     )
     if args.load_memory == False:
 
-        for idx in dataloader.environment_indices:
-            print(f"Making env from index {idx}/{len(dataloader.environment_indices)} currently.")
+        for idx in tqdm(dataloader.environment_indices, total=len(dataloader.environment_indices)):
             rgb_image_path, depth_image_path, pose = dataloader.get_image_data(idx)
 
             memory.process_image(
                 rgb_image_path,
                 depth_image_path,
                 pose,
-                consider_floor = True
+                consider_floor = False,
+                add_noise=False,
+                depth_factor=5000.
             )
 
             mem_usage, gpu_usage = get_mem_stats()
             print(f"Using {mem_usage} GB of memory and {gpu_usage} GB of GPU")
 
 
+        print("\Before memory is")
+        print(memory)
 
+            #######
         # save memory point cloud
         pcd_list = []
         
@@ -80,22 +85,23 @@ def main(args):
         save_path = f"/home2/aneesh.chavan/instance-based-loc/pcds/cached_{args.testname}_before_cons.ply"
         o3d.io.write_point_cloud(save_path, combined_pcd)
 
-
-
         # Downsample
-        memory.downsample_all_objects(voxel_size=0.01)
+        memory.downsample_all_objects(voxel_size=0.005)
 
         # Remove below floors
-        memory.remove_points_below_floor()
+        # memory.remove_points_below_floor()
 
         # Recluster
-        memory.recluster_objects_with_dbscan(visualize=True)
+        # memory.recluster_objects_with_dbscan(eps=.1, min_points_per_cluster=600, visualize=True)
+        memory.recluster_via_combined(eps=.2, min_points_per_cluster=150)
 
+        print("\nMemory is")
+        print(memory)
 
-
-        # save
+            #######
+        # save memory point cloud
         pcd_list = []
-
+        
         for info in memory.memory:
             object_pcd = info.pcd
             pcd_list.append(object_pcd)
@@ -112,10 +118,7 @@ def main(args):
 
         save_path = f"/home2/aneesh.chavan/instance-based-loc/pcds/cached_{args.testname}_after_cons.ply"
         o3d.io.write_point_cloud(save_path, combined_pcd)
-
-
-        print("\nMemory is")
-        print(memory)
+    #######
 
         memory.save_to_pkl(args.memory_load_path)
         print("Memory dumped")
@@ -123,74 +126,7 @@ def main(args):
         memory.load(args.memory_load_path)
         print("Memory loaded")
 
-
-    ########### begin localisation ############
-
-    eval_dataloader = EightRoomDataLoader(
-        evaluation_indices=args.eval_img_inds,
-        data_path=args.data_path,
-        focal_length_x=args.focal_length,
-        focal_length_y=args.focal_length,
-        map_pointcloud_cache_path=args.map_pcd_cache_path,
-        rot_correction=args.rot_correction,
-        start_file_index=args.loc_start_file_index,
-        last_file_index=args.loc_last_file_index,
-        sampling_period=args.loc_sampling_period
-    )
-
-    tgt = []
-    pred = []
-    trans_errors = []
-    rot_errors = []
-    chosen_assignments = []
-
-
-    import matplotlib.pyplot as plt
-    import imageio
-    import os
-
-    print("Begin localisation")
-    for idx in tqdm(eval_dataloader.environment_indices, total=len(eval_dataloader.environment_indices)):
-        print(f"Localistion {idx}/{len(eval_dataloader.environment_indices)} currently.")
-        rgb_image_path, depth_image_path, target_pose = eval_dataloader.get_image_data(idx)
-
-        estimated_pose, chosen_assignment = memory.localise(image_path=rgb_image_path, 
-                                            depth_image_path=depth_image_path,
-                                            testname=args.testname,
-                                            subtest_name=f"{idx}" ,
-                                            save_point_clouds=args.save_point_clouds,
-                                            fpfh_global_dist_factor = args.fpfh_global_dist_factor, 
-                                            fpfh_local_dist_factor = args.fpfh_local_dist_factor, 
-                                            fpfh_voxel_size = args.fpfh_voxel_size, useLora = True,
-                                            consider_floor = False,
-                                            perform_semantic_icp=False)
-
-        print("Target pose: ", target_pose)
-        print("Estimated pose: ", estimated_pose)
-
-        translation_error = np.linalg.norm(target_pose[:3] - estimated_pose[:3]) 
-        rotation_error = QuaternionOps.quaternion_error(target_pose[3:], estimated_pose[3:])
-
-        print("Translation error: ", translation_error)
-        print("Rotation_error: ", rotation_error)
-
-        tgt.append(target_pose)
-        pred.append(estimated_pose.tolist())
-        trans_errors.append(translation_error)
-        rot_errors.append(rotation_error)
-        chosen_assignments.append(chosen_assignment)
-
-    for idx, _ in enumerate(tqdm(eval_dataloader.environment_indices, total=len(eval_dataloader.environment_indices))):
-        print(f"Pose {idx + 1}, image {len(eval_dataloader.environment_indices)}")
-        print("Translation error", trans_errors[idx])
-        print("Rotation errors", rot_errors[idx])
-        print("Assignment: ", chosen_assignments[idx][0])
-        print("Moved objects: ", chosen_assignments[idx][1])
-        if trans_errors[idx] < 0.6 and rot_errors[idx] < 0.3:
-            print("SUCCESS")
-        else:
-            print("MISALIGNED")
-        print()
+    memory.dump_dataset('/home2/aneesh.chavan/instance-based-loc/gen_data/tum_desk_npys')
 
     exit(0)
 
@@ -202,16 +138,14 @@ if __name__ == "__main__":
         "--testname",
         type=str,
         help="Experiment name",
-
-        default="8room_agg_clustering"
-
+        default="gen_combined"
     )
     # dataset params
     parser.add_argument(
         "--data-path",
         type=str,
         help="Path to the 8room sequence",
-        default="/scratch/aneesh.chavan/8room/8-room-v1/1/"
+        default="/scratch/sarthak/synced_data2"
     )
     parser.add_argument(
         "-e",
@@ -222,16 +156,22 @@ if __name__ == "__main__":
         default=[0]
     )
     parser.add_argument(
-        "--focal-length",
+        "--focal-length-x",
         type=float,
-        help="Focal length of camera",
-        default=300
+        help="x-Focal length of camera",
+        default= 525.0 
+    )
+    parser.add_argument(
+        "--focal-length-y",
+        type=float,
+        help="y-Focal length of camera",
+        default= 525.0 
     )
     parser.add_argument(
         "--map-pcd-cache-path",
         type=str,
         help="Location where the map's pointcloud is cached for future use",
-        default="./cache/360_zip_cache_map_coloured.pcd"
+        default="./cache/tum_zip_cache_map_coloured.pcd"
     )
     #device
     parser.add_argument(
@@ -264,19 +204,19 @@ if __name__ == "__main__":
         "--start-file-index",
         type=int,
         help="beginning of file sampling",
-        default=200
+        default=0
     )
     parser.add_argument(
         "--last-file-index",
         type=int,
         help="last file to sample",
-        default=1500
+        default=2000
     )
     parser.add_argument(
         "--sampling-period",
         type=int,
         help="sampling period",
-        default=15
+        default=30
     )
 
     # eval sampling params
@@ -284,19 +224,19 @@ if __name__ == "__main__":
         "--loc-start-file-index",
         type=int,
         help="eval beginning of file sampling",
-        default=280
+        default=107
     )
     parser.add_argument(
         "--loc-last-file-index",
         type=int,
         help="eval last file to sample",
-        default=1400
+        default=1600
     )
     parser.add_argument(
         "--loc-sampling-period",
         type=int,
         help="eval sampling period",
-        default=26
+        default=40
     )
     # Memory dump/load args
     parser.add_argument(
@@ -309,7 +249,7 @@ if __name__ == "__main__":
         "--memory-load-path",
         type=str,
         help="file to load memory from, or save it to",
-        default='./out/8room_with_floor/8room_memory.pt'
+        default='./out/gen_data/tum_desk_memory.pt'
     )
 
     # lora path
@@ -342,5 +282,6 @@ if __name__ == "__main__":
         default=0.05
     )
 
+    import os
     args = parser.parse_args()
     main(args)
