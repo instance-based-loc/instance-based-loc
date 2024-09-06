@@ -29,7 +29,8 @@ intrinsic_matrix = np.array([[fx, 0, cx],
 
 intrinsic_inverse = np.linalg.inv(intrinsic_matrix)
 
-for i in tqdm(range(len(pose_data))[36:50]):
+for i in tqdm(range(len(pose_data))[18:32]):
+# for i in tqdm(range(len(pose_data))[36:41]):
     rgb_image_path = os.path.join(rgb_images_save_path, f"{i}.png")
     depth_image_path = os.path.join(depth_images_save_path, f"{i}.npy")
 
@@ -50,8 +51,8 @@ for i in tqdm(range(len(pose_data))[36:50]):
         return q / norm if norm > 0 else q
 
     # Normalize the quaternion
-    orientation = normalize_quaternion(np.array([stored_orientation[1], stored_orientation[2], stored_orientation[3], stored_orientation[0]]))
-    rotation_matrix = o3d.geometry.get_rotation_matrix_from_quaternion(orientation)
+    # orientation = normalize_quaternion(np.array([stored_orientation[1], stored_orientation[2], stored_orientation[3], stored_orientation[0]]))
+    rotation_matrix = o3d.geometry.get_rotation_matrix_from_quaternion(normalize_quaternion(stored_orientation))
 
     # Construct the transformation matrix
     transformation_matrix = np.eye(4)
