@@ -136,10 +136,11 @@ def main(args):
         # Remove below floors
         # memory.remove_points_below_floor()
 
-        # Recluster
+        ##################               Recluster
         # memory.recluster_objects_with_dbscan(eps=.1, min_points_per_cluster=600, visualize=True)
         # memory.recluster_via_agglomerative_clustering(distance_threshold=2000)
-        memory.recluster_via_combined(eps=0.15, embedding_distance_threshold=0.4)
+        # memory.recluster_via_combined(eps=0.15, embedding_distance_threshold=0.4)
+        memory.recluster_via_clustering_and_IoU(eps=0.15, embedding_distance_threshold=0.4, IoU_threshold=0.4)
 
         print("\nMemory is")
         print(memory)
@@ -171,6 +172,8 @@ def main(args):
     else:
         memory.load(args.memory_load_path)
         print("Memory loaded")
+
+    exit(0)
 
     ########### begin localisation ############
 
@@ -357,7 +360,7 @@ if __name__ == "__main__":
         "--load-memory",
         type=bool,
         help="should memory be loaded from a file",
-        default=True
+        default=False
     )
     parser.add_argument(
         "--memory-load-path",

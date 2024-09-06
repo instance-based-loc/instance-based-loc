@@ -1,5 +1,6 @@
 import numpy
 import open3d as o3d
+import sys, os
 sys.path.append(os.path.join(os.getcwd(), "Objectron"))
 
 def calculate_3d_IoU(pcd1, pcd2):

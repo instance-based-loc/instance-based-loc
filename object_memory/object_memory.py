@@ -22,6 +22,8 @@ from utils.fpfh_register import register_point_clouds, evaluate_transform, downs
 from .object_finder_phrases import check_if_floor
 from .lora_module import LoraRevolver, LoraConfig
 
+from utils.IoU_ops import calculate_obj_aligned_3d_IoU
+
 print("\033[34mLoaded modules for object_memory.object_memory\033[0m")
 
 def default_load_rgb(path: str) -> np.ndarray:
@@ -523,6 +525,147 @@ class ObjectMemory():
         for i, _ in enumerate(self.memory):
             self.memory[i].id = i
 
+    def recluster_via_clustering_and_IoU(self, distance_func=None, embedding_distance_threshold=0.4, eps=0.4, min_points_per_cluster=150, IoU_threshold=0.4):
+        if distance_func == None:
+            def df(all_obj_embs, all_obj_centroids):       # expects N x D 
+                norms = np.linalg.norm(all_obj_embs, axis=1, keepdims=True)
+                normalized_embeddings = all_obj_embs / norms
+
+                emb_distance_matrix = 1 - np.dot(normalized_embeddings, normalized_embeddings.T)
+                
+                # compute pairwise distances, NxNx3
+                centroid_distances = np.linalg.norm(all_obj_centroids[np.newaxis, :, :] - all_obj_centroids[:, np.newaxis, :])
+                
+                return emb_distance_matrix
+            
+            distance_func = df
+
+        all_mean_embs = np.array([obj.mean_emb for obj in self.memory])
+        all_centroids = np.array([obj.centroid for obj in self.memory])
+        distance_matrix = df(all_mean_embs, all_centroids)
+
+        import matplotlib.pyplot as plt
+        cax = plt.imshow(distance_matrix)
+        cbar = plt.colorbar(cax)
+        plt.savefig('/home2/aneesh.chavan/instance-based-loc/lora_sims.png')
+
+        # import pdb;
+        # pdb.set_trace()
+
+        # sklearn agglomerative clustering
+        self._log("Clustering agglomeratively")
+        agg_clustering = AgglomerativeClustering(
+                            n_clusters=None, 
+                            distance_threshold=embedding_distance_threshold, 
+                            metric='precomputed', 
+                            linkage='average')
+        agg_clustering.fit(distance_matrix)
+
+        # Get the cluster labels
+        labels = agg_clustering.labels_
+
+        unique_labels = set(labels)
+
+        self._log(f"{len(unique_labels)} clusters initially")
+
+        def is_point_in_array(points_array, query_point):
+            return np.any(np.all(points_array == query_point, axis=1))
+
+        # DBScan within clusters ONLY
+        objects_post_dbscan = []
+        for u in unique_labels:
+            # print("debugs: ", len(objects_post_dbscan), " label ", u)
+
+            # get objects assigned label `u`
+            objs_to_consider = []
+            for i, obj in enumerate(self.memory):
+                if labels[i] == u:
+                    objs_to_consider.append(obj)
+
+            # print(len(objs_to_consider), " objs to consider")
+
+            # dbscan these points
+            all_points = np.concatenate([obj.pcd for obj in objs_to_consider], axis=-1).T  # Shape: 3xN
+            point_cloud = o3d.geometry.PointCloud()
+            point_cloud.points = o3d.utility.Vector3dVector(all_points)
+            dbscan_labels = np.array(point_cloud.cluster_dbscan(eps=eps, min_points=min_points_per_cluster, print_progress=False))
+
+            # print(dbscan_labels, np.unique(dbscan_labels))
+
+            # assign each object to 
+            new_object_assignments = np.full(len(objs_to_consider), -1)
+            for index, obj in enumerate(objs_to_consider):
+                query_point = obj.pcd[:,0]
+                for label in np.unique(dbscan_labels):
+                    if label == -1:
+                        continue
+
+                    cluster_points = all_points[dbscan_labels == label]
+                    if is_point_in_array(cluster_points, query_point):
+                        if new_object_assignments[index] != -1:
+                            self._log("\t\tMULTIPLE LABELS IN COMBINED RECLUSTERING")
+
+                        new_object_assignments[index] = label
+
+            # create new objects for each dbscan cluster 
+            dbscanned_objects = []
+            for label in np.unique(dbscan_labels):
+                if label == -1:
+                    continue
+
+                to_combine = [objs_to_consider[i] for i in range(len(objs_to_consider)) if new_object_assignments[i] == label] 
+                if len(to_combine) == 0:
+                    continue
+
+                combined_obj_info = to_combine[0]
+                for obj_info in to_combine[1:]:
+                    combined_obj_info = combined_obj_info + obj_info
+                
+                dbscanned_objects.append(combined_obj_info)
+
+            # add the new objects into objects_post_dbscan, update count
+            objects_post_dbscan = objects_post_dbscan + dbscanned_objects
+
+        # reassign memory
+        pre_IoU_memory = objects_post_dbscan
+
+        # check IoU between all new memory objects
+        # distance_matrix = df(all_mean_embs, all_centroids, distance_threshold=distance_threshold)
+        IoUs = np.zeros((len(pre_IoU_memory), len(pre_IoU_memory)))
+        IoU_threshold = 1 - IoU_threshold       # agg clustering discards high values, we want the opposite
+        for i in range(len(pre_IoU_memory)):
+            for j in range(i, len(pre_IoU_memory)):
+                IoUs[i][j] = 1 - calculate_obj_aligned_3d_IoU(np.asarray(pre_IoU_memory[i].pointcloud.points),
+                                                          np.asarray(pre_IoU_memory[j].pointcloud.points))
+                IoUs[j][i] = IoUs[i][j]                                                          
+
+        # sklearn agglomerative clustering
+        self._log("Clustering with IoUs")
+        agg_clustering = AgglomerativeClustering(n_clusters=None, distance_threshold=IoU_threshold, metric='precomputed', linkage='complete')
+        agg_clustering.fit(IoUs)
+
+        # Get the cluster labels
+        labels = agg_clustering.labels_
+
+        unique_labels = set(labels)
+
+        self._log(f"{len(unique_labels)} objects clustered")
+
+        # reassign memory
+        new_memory = [None for _ in unique_labels]
+        for new_label, old_obj_info in zip(labels, pre_IoU_memory):
+            if new_memory[new_label] == None:
+                new_memory[new_label] = old_obj_info
+            else:
+                new_memory[new_label] = new_memory[new_label] + old_obj_info
+
+        
+        # save new memory, fix IDs
+        print("Clustering done")
+        self.memory = new_memory
+        for i, _ in enumerate(self.memory):
+            self.memory[i].id = i
+
     def save(self, save_directory: str):
         os.makedirs(save_directory, exist_ok=True)
 
@@ -755,9 +898,9 @@ class ObjectMemory():
         del sv
 
         print("Phrases: ", detected_phrases)
-        print(cosine_similarities)
-        print("                 V?")
-        print(closest_similarities)
+        # print(cosine_similarities)
+        # print("                 V?")
+        # print(closest_similarities)
         print("Assignments being considered: ", assns_to_consider)
 
         assn_data = [ assn for assn in assns_to_consider ]

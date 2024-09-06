@@ -31,26 +31,37 @@ def register_point_clouds(source, target, voxel_size, global_dist_factor = 1.5, 
         source_down, source_fpfh = downsample_and_compute_fpfh(source, voxel_size)
         target_down, target_fpfh = downsample_and_compute_fpfh(target, voxel_size)
 
+
         distance_threshold = voxel_size * global_dist_factor
         # print(":: RANSAC registration on downsampled point clouds.")
         # print("   Since the downsampling voxel size is %.3f," % voxel_size)
         # print("   we use a liberal distance threshold %.3f." % distance_threshold)
-        result_ransac = o3d.pipelines.registration.registration_ransac_based_on_feature_matching(
-            source_down, target_down, source_fpfh, target_fpfh, True,
-            distance_threshold,
-            o3d.pipelines.registration.TransformationEstimationPointToPoint(False),
-            3, [
-                o3d.pipelines.registration.CorrespondenceCheckerBasedOnEdgeLength(
-                    0.9),
-                o3d.pipelines.registration.CorrespondenceCheckerBasedOnDistance(
-                    distance_threshold)
-            ], o3d.pipelines.registration.RANSACConvergenceCriteria(4000000, 0.99))
+        # result_ransac = o3d.pipelines.registration.registration_fast_based_on_feature_matching(
+        #     source_down, target_down, source_fpfh, target_fpfh, True,
+        #     distance_threshold,
+        #     o3d.pipelines.registration.TransformationEstimationPointToPoint(False),
+        #     3, [
+        #         o3d.pipelines.registration.CorrespondenceCheckerBasedOnEdgeLength(
+        #             0.9),
+        #         o3d.pipelines.registration.CorrespondenceCheckerBasedOnDistance(
+        #             distance_threshold)
+        #     ], o3d.pipelines.registration.RANSACConvergenceCriteria(4000000, 0.99))
+
+        fgr_option = o3d.pipelines.registration.FastGlobalRegistrationOption(
+        maximum_correspondence_distance=0.5,  # Adjust based on your data
+        )
+        
+        # Perform fast global registration
+        result_ransac = o3d.pipelines.registration.registration_fgr_based_on_feature_matching(
+            source_down, target_down, source_fpfh, target_fpfh, fgr_option
+        )
 
         # Refine the registration using ICP
         result_icp = o3d.pipelines.registration.registration_icp(
             source_down, target_down, voxel_size*local_dist_factor, result_ransac.transformation,
             o3d.pipelines.registration.TransformationEstimationPointToPoint()
         )
+
     except:
         result_icp = o3d.pipelines.registration.registration_icp(
             source, target, voxel_size*local_dist_factor, np.eye(4),
