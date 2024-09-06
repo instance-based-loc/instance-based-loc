@@ -13,14 +13,15 @@ import cv2
 stage = "val"
 split = "val"
 num_sampled_episodes = 1000
-num_saved_episodes = 5
+num_saved_episodes = 20
 max_timesteps = 150
 min_timesteps = 30
-save_path = "./out/hm3d_trial_obj_nav_sq_image"
+save_path = "/scratch/vineeth.bhat/instance-loc/hm3d_trajectories/object_nav_trajectories"
+save_path = "/scratch/vineeth.bhat/instance-loc/hm3d_trajectories/instance_nav_trajectories"
 
 # Load the configuration from a YAML file
-# config_path = "dataloader/hm3d_config_instance_image_nav_mod.yaml"
-config_path = "dataloader/objnav_modded.yaml"
+config_path = "dataloader/hm3d_config_instance_image_nav_mod.yaml"
+# config_path = "dataloader/objnav_modded.yaml"
 
 # Check if the configuration file exists
 if not os.path.exists(config_path):
@@ -30,8 +31,8 @@ if not os.path.exists(config_path):
 habitat_config = habitat.get_config(config_path)
 
 # Define data paths
-# data_path = f"/scratch/vineeth.bhat/instance-loc/data/datasets/instance_imagenav/hm3d/v3/{stage}/{stage}.json.gz"
-data_path = f"/scratch/vineeth.bhat/instance-loc/data/datasets/objectnav/hm3d/v2/{stage}/{stage}.json.gz"
+data_path = f"/scratch/vineeth.bhat/instance-loc/data/datasets/instance_imagenav/hm3d/v3/{stage}/{stage}.json.gz"
+# data_path = f"/scratch/vineeth.bhat/instance-loc/data/datasets/objectnav/hm3d/v2/{stage}/{stage}.json.gz"
 scene_dataset = f"/scratch/vineeth.bhat/instance-loc/data/scene_datasets/hm3d/hm3d_annotated_basis.scene_dataset_config.json"
 
 # Check if the data paths exist
@@ -48,8 +49,8 @@ sensor_height=0.88
 image_width=600
 image_height=600
 image_hfov=90
-step_size=0.25
-turn_angle=30
+step_size=0.2
+turn_angle=15
 with read_write(habitat_config):
     habitat_config.habitat.dataset.split = split
     habitat_config.habitat.dataset.scenes_dir = "/scratch/vineeth.bhat/instance-loc/data/scene_datasets"
