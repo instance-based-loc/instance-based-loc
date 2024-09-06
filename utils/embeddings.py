@@ -39,7 +39,7 @@ def get_clip_embedding(cropped_img, device="cpu"):
 
     clip_features /= clip_features.norm(dim=-1, keepdim=True)
 
-    return clip_features
+    return clip_features[0]
 
 def get_dino_embedding(cropped_img, device="cpu"):
     # Load and preprocess the image for DinoV2
