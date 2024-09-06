@@ -24,8 +24,7 @@ class ObjectInfo:
         Returns a string representation of the object information.
         """
         return (
-            f"ObjectInfo == ID: {self.id}, Names: {self.names}, Mean_Emb: {self.mean_emb.shape}, Num. Points: {self.pcd.shape} \
-             true mean emb: {self.mean_emb[:6]}"
+            f"ObjectInfo == ID: {self.id}, Names: {self.names}, Mean_Emb: {self.mean_emb.shape}, Num. Points: {self.pcd.shape}"
         )
     
     def _add_name(self, new_name: str):

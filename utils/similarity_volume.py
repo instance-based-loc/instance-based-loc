@@ -4,6 +4,7 @@ import os, sys, time
 import itertools
 import warnings
 import matplotlib.pyplot as plt
+
 from numba import jit, njit
 from tqdm import tqdm
 
@@ -111,7 +112,9 @@ class SimVolume():
         assert self.aug.shape[0] >= subvolume_size
 
         self.chosen_objects = [i for i in itertools.combinations([j for j in range(self.aug.shape[0])], subvolume_size)]
+
         for chosen in tqdm(self.chosen_objects):
+
             # print(chosen)
 
             sub_aug = self.aug[list(chosen)]    # pick out the rows of self.aug that are in chosen
@@ -246,6 +249,7 @@ class SimVolume():
             to_pick = max(1, i)
             correct_length = [f for f in all_filtered_topk if len(f[0]) == i]
             correct_length = sorted(correct_length, key= lambda x: x[-1], reverse=True)[:to_pick]
+
             filtered_topk += correct_length
 
         assns = [a[0] for a in filtered_topk]

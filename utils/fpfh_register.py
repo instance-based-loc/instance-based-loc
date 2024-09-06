@@ -36,6 +36,7 @@ def register_point_clouds(source, target, voxel_size, global_dist_factor = 1.5, 
         # print(":: RANSAC registration on downsampled point clouds.")
         # print("   Since the downsampling voxel size is %.3f," % voxel_size)
         # print("   we use a liberal distance threshold %.3f." % distance_threshold)
+
         # result_ransac = o3d.pipelines.registration.registration_fast_based_on_feature_matching(
         #     source_down, target_down, source_fpfh, target_fpfh, True,
         #     distance_threshold,
@@ -55,6 +56,7 @@ def register_point_clouds(source, target, voxel_size, global_dist_factor = 1.5, 
         result_ransac = o3d.pipelines.registration.registration_fgr_based_on_feature_matching(
             source_down, target_down, source_fpfh, target_fpfh, fgr_option
         )
+
 
         # Refine the registration using ICP
         result_icp = o3d.pipelines.registration.registration_icp(
