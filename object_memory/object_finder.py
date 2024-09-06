@@ -237,13 +237,22 @@ class ObjectFinder():
             H, W, _ = image.shape
             boxes_xyxy = gd_box_cxcywh_to_xyxy(cxcy_boxes) * torch.Tensor([W, H, W, H])
 
+            # print(boxes_xyxy)
+
             transformed_boxes = cls.sam_predictor.transform.apply_boxes_torch(boxes_xyxy.to(cls.device), image.shape[:2])
+            
+            # print(transformed_boxes)
+            
             masks, _, _ = cls.sam_predictor.predict_torch(
                 point_coords = None,
                 point_labels = None,
                 boxes = transformed_boxes,
                 multimask_output = False,
                 )
+            
+            # masks = torch.logical_not(masks)
+            # print(torch.any(masks))
+
             return boxes_xyxy, masks
 
     @classmethod
@@ -288,3 +297,46 @@ class ObjectFinder():
                                          int(bb[0]):int(bb[2]), :] for bb in boxes]
 
         return grounded_objects, boxes, masks, phrases
+    
+    @classmethod
+    def find_for_training(cls, rgb_path, depth_path, caption:list[str] = None):
+        """
+        Utility fn to find and return rgb and depth images to assemble a training dataset
+
+        Args:
+            rgb_path (str): the input image's path 
+            keywords (list[str]): List of keywords to detect and segment in the image.
+
+        Returns:
+            tuple[list, list, torch.Tensor, torch.Tensor, list]: grounded_rgb, grounded_depth, boxes, masks, phrases
+        """
+        print("FFT: ", rgb_path, depth_path, " | caption : ", caption)
+        rgb_source, rgb_image = gd_load_image(rgb_path)
+        depth_source = np.asarray(PIL.Image.open(depth_path))
+
+        # Use of RAM
+        if caption is None or len(caption) == 0: 
+            img_ram = cls.ram_transform(PIL.Image.fromarray(rgb_source)).unsqueeze(0).to(cls.device)
+            caption = inference_ram(img_ram, cls.ram_model)[0].split("|")
+
+        filtered_caption = filter_caption(caption)
+        cls._log(f"Filtered caption post RAM: {filtered_caption}")
+
+        # Use of GroundingDINO
+        cxcy_boxes, phrases = cls._get_bounding_boxes_and_phrases(rgb_image, filtered_caption)
+
+        if cxcy_boxes is None or phrases is None:
+            cls._log("Grounding DINO could not find anything.")
+            return None, None, None, None
+
+        # Use of SAM
+        boxes, masks = cls._segment_from_bounding_boxes(rgb_source, cxcy_boxes)
+
+        # ground objects
+        grounded_rgb = [rgb_source[int(bb[1]):int(bb[3]),
+                                   int(bb[0]):int(bb[2]), :] for bb in boxes]
+                                
+        grounded_depth = [depth_source[int(bb[1]):int(bb[3]),
+                                   int(bb[0]):int(bb[2])] for bb in boxes]
+
+        return grounded_rgb, grounded_depth, boxes, masks, phrases

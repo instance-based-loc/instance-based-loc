@@ -37,3 +37,8 @@ __pycache__/
 # Environments
 .env
 models/*
+pcds*
+*log
+gen_data/*
+*dator*
+

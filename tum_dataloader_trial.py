@@ -24,7 +24,10 @@ def main(args):
     # plt.axis('off')
     # plt.show()
 
-    # pcd = dataloader.get_visible_pointcloud(pose, 100, 0.05, 20)
+    pcd = dataloader.get_visible_pointcloud(pose, 100, 0.05, 20)
+    o3d.io.write_point_cloud(args.map_pcd_cache_path, pcd)
+
+    # o3d.visualization.draw_geometries([pcd])
 
     # proj_depth = get_sense_of_depthmap_from_pointcloud(pcd, depth.shape[0], depth.shape[1], args.focal_length, args.focal_length)
 
@@ -41,7 +44,7 @@ if __name__ == "__main__":
         "--data-path",
         type=str,
         help="Path to synthetic data",
-        default="/home/sarthak/Downloads/rgbd_dataset_freiburg2_desk/synced_data"
+        default="/scratch/sarthak/synced_data2"
     )
     parser.add_argument(
         "-e",
@@ -67,7 +70,7 @@ if __name__ == "__main__":
         "--map-pcd-cache-path",
         type=str,
         help="Location where the map's pointcloud is cached for future use",
-        default="./.cache/tum_cache.pcd"
+        default="./cache/tum_cache.pcd"
     )
     args = parser.parse_args()
 
