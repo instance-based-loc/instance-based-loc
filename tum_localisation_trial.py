@@ -139,8 +139,8 @@ def main(args):
         ##################               Recluster
         # memory.recluster_objects_with_dbscan(eps=.1, min_points_per_cluster=600, visualize=True)
         # memory.recluster_via_agglomerative_clustering(distance_threshold=2000)
-        # memory.recluster_via_combined(eps=0.15, embedding_distance_threshold=0.4)
-        memory.recluster_via_clustering_and_IoU(eps=0.15, embedding_distance_threshold=0.4, IoU_threshold=0.4)
+        # memory.recluster_via_combined(eps=0.05, embedding_distance_threshold=0.6)
+        memory.recluster_via_clustering_and_IoU(eps=0.05, embedding_distance_threshold=0.6, IoU_threshold=0.6)
 
         print("\nMemory is")
         print(memory)
@@ -173,6 +173,19 @@ def main(args):
         memory.load(args.memory_load_path)
         print("Memory loaded")
 
+    color_gen = lambda n: [(float((np.sin(i * 2 * np.pi / n) * 0.5 + 0.5)),
+                        float((np.sin((i + 1) * 2 * np.pi / n) * 0.5 + 0.5)),
+                        float((np.sin((i + 2) * 2 * np.pi / n) * 0.5 + 0.5)))
+                        for i in range(n)]
+
+    combined_pcd = o3d.geometry.PointCloud()
+    colors = color_gen(len(memory.memory))
+    for pcd, color in zip(memory.memory, colors):
+        pcd.pointcloud.paint_uniform_color(np.random.random(3))
+        combined_pcd += pcd.pointcloud
+
+    save_path = f"/home2/aneesh.chavan/instance-based-loc/pcds/cached_{args.testname}_after_cons.ply"
+    o3d.io.write_point_cloud(save_path, combined_pcd)
     exit(0)
 
     ########### begin localisation ############
@@ -360,7 +373,7 @@ if __name__ == "__main__":
         "--load-memory",
         type=bool,
         help="should memory be loaded from a file",
-        default=False
+        default=True
     )
     parser.add_argument(
         "--memory-load-path",

@@ -666,6 +666,44 @@ class ObjectMemory():
         for i, _ in enumerate(self.memory):
             self.memory[i].id = i
 
+    def _recluster_IoU(self, IoU_threshold=0.6):
+        IoUs = np.zeros((len(self.memory), len(self.memory)))
+        IoU_threshold = 1 - IoU_threshold       # agg clustering discards high values, we want the opposite
+        for i in range(len(self.memory)):
+            for j in range(i, len(self.memory)):
+                if i == j:
+                    IoUs[i][j] = 1
+                    continue
+
+                IoUs[i][j] = 1 - calculate_obj_aligned_3d_IoU(np.asarray(self.memory[i].pointcloud.points),
+                                                              np.asarray(self.memory[j].pointcloud.points))
+                IoUs[j][i] = IoUs[i][j]
+
+        # sklearn agglomerative clustering
+        self._log("Clustering agglomeratively")
+        agg_clustering = AgglomerativeClustering(n_clusters=None, distance_threshold=IoU_threshold, metric='precomputed', linkage='average')
+        agg_clustering.fit(IoUs)
+
+        # Get the cluster labels
+        labels = agg_clustering.labels_
+
+        unique_labels = set(labels)
+
+        self._log(f"{len(unique_labels)} objects clustered")
+
+        # reassign memory
+        new_memory = [None for _ in unique_labels]
+        for new_label, old_obj_info in zip(labels, self.memory):
+            if new_memory[new_label] == None:
+                new_memory[new_label] = old_obj_info
+            else:
+                new_memory[new_label] = new_memory[new_label] + old_obj_info
+        
+        # save new memory, fix IDs
+        self.memory = new_memory
+        for i, _ in enumerate(self.memory):
+            self.memory[i].id = i
+
     def save(self, save_directory: str):
         os.makedirs(save_directory, exist_ok=True)
 
