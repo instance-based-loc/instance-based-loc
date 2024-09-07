@@ -105,7 +105,8 @@ class ObjectMemory():
             raise NotImplementedError
 
         ##  HARDCODED TO LORA
-        self.get_embeddings_func = self.loraModule.encode_image
+        if self.get_embeddings_func == None:
+            self.get_embeddings_func = self.loraModule.encode_image
 
         self.memory: list[ObjectInfo] = []
         self.floors = None # stoors all floors or ground in one pcd
@@ -368,19 +369,24 @@ class ObjectMemory():
         for i, obj_info in enumerate(self.memory):
             obj_info.id = i
 
+    """
+    CLUSTERING PARAMETERS: LOWER PARAM IS MORE LENIENT CLUSTERING 
+                           HIGHER PARAM IS STRICTER
+    """
     def recluster_via_agglomerative_clustering(self, distance_func=None, embedding_distance_threshold=0.4, distance_threshold=0.1):
         if distance_func == None:
             def df(all_obj_embs, all_obj_centroids, distance_threshold=0.1):       # expects N x D 
                 norms = np.linalg.norm(all_obj_embs, axis=1, keepdims=True)
                 normalized_embeddings = all_obj_embs / norms
 
-                emb_distance_matrix = 1 - np.dot(normalized_embeddings, normalized_embeddings.T)
+                emb_distance_matrix = np.dot(normalized_embeddings, normalized_embeddings.T)
+                print(emb_distance_matrix)
                 
-                # compute pairwise distances, NxNx3
-                centroid_distances = np.linalg.norm(all_obj_centroids[np.newaxis, :, :] - all_obj_centroids[:, np.newaxis, :])
+                # # compute pairwise distances, NxNx3
+                # centroid_distances = np.linalg.norm(all_obj_centroids[np.newaxis, :, :] - all_obj_centroids[:, np.newaxis, :])
                 
-                # mask out all pairs where centroid distance is greater than the allowed threshold
-                emb_distance_matrix = np.where(centroid_distances < distance_threshold, emb_distance_matrix, 1)
+                # # mask out all pairs where centroid distance is greater than the allowed threshold
+                # emb_distance_matrix = np.where(centroid_distances < distance_threshold, emb_distance_matrix, 1)
                 
                 return emb_distance_matrix
             
@@ -390,10 +396,23 @@ class ObjectMemory():
         all_centroids = np.array([obj.centroid for obj in self.memory])
         distance_matrix = df(all_mean_embs, all_centroids, distance_threshold=distance_threshold)
 
+        # normalise and reverse cosine sims
+        distance_matrix -= np.min(distance_matrix)
+        distance_matrix /= np.max(distance_matrix)
+        distance_matrix = 1 - distance_matrix
+
+        import matplotlib.pyplot as plt
+        cax = plt.imshow(distance_matrix)
+        cbar = plt.colorbar(cax)
+        plt.savefig('/home2/aneesh.chavan/instance-based-loc/check.png')
+
         # sklearn agglomerative clustering
         self._log("Clustering agglomeratively")
-        agg_clustering = AgglomerativeClustering(n_clusters=None, distance_threshold=embedding_distance_threshold, metric='precomputed', linkage='average')
-        agg_clustering.fit(distance_matrix)
+        agg_clustering = AgglomerativeClustering(
+            n_clusters=None, 
+            distance_threshold=embedding_distance_threshold,   # negative to take high values
+            metric='precomputed', linkage='average')
+        agg_clustering.fit(distance_matrix)                    # negative to take high values
 
         # Get the cluster labels
         labels = agg_clustering.labels_
@@ -415,6 +434,10 @@ class ObjectMemory():
         for i, _ in enumerate(self.memory):
             self.memory[i].id = i
 
+    """
+    CLUSTERING PARAMETERS: LOWER PARAM IS MORE LENIENT CLUSTERING 
+                           HIGHER PARAM IS STRICTER
+    """
     def recluster_via_combined(self, distance_func=None, embedding_distance_threshold=0.4, eps=0.4, min_points_per_cluster=150):
         if distance_func == None:
             def df(all_obj_embs, all_obj_centroids):       # expects N x D 
@@ -433,6 +456,10 @@ class ObjectMemory():
         all_mean_embs = np.array([obj.mean_emb for obj in self.memory])
         all_centroids = np.array([obj.centroid for obj in self.memory])
         distance_matrix = df(all_mean_embs, all_centroids)
+
+        distance_matrix -= np.min(distance_matrix)
+        distance_matrix /= np.max(distance_matrix)
+        distance_matrix = 1 - distance_matrix
 
         import matplotlib.pyplot as plt
         cax = plt.imshow(distance_matrix)
@@ -524,8 +551,14 @@ class ObjectMemory():
         self.memory = new_memory
         for i, _ in enumerate(self.memory):
             self.memory[i].id = i
-
-    def recluster_via_clustering_and_IoU(self, distance_func=None, embedding_distance_threshold=0.4, eps=0.4, min_points_per_cluster=150, IoU_threshold=0.4):
+    
+    """
+    CLUSTERING PARAMETERS: LOWER PARAM IS MORE LENIENT CLUSTERING 
+                           HIGHER PARAM IS STRICTER
+    """
+    def recluster_via_clustering_and_IoU(self, distance_func=None, embedding_distance_threshold=0.4, eps=0.4, min_points_per_cluster=150, IoU_threshold=0.25):
+        self._recluster_IoU(IoU_threshold)
+        
         if distance_func == None:
             def df(all_obj_embs, all_obj_centroids):       # expects N x D 
                 norms = np.linalg.norm(all_obj_embs, axis=1, keepdims=True)
@@ -543,6 +576,11 @@ class ObjectMemory():
         all_mean_embs = np.array([obj.mean_emb for obj in self.memory])
         all_centroids = np.array([obj.centroid for obj in self.memory])
         distance_matrix = df(all_mean_embs, all_centroids)
+
+        # normalise cosine dists
+        distance_matrix -= np.min(distance_matrix)
+        distance_matrix /= np.max(distance_matrix)
+        distance_matrix = 1 - distance_matrix
 
         import matplotlib.pyplot as plt
         cax = plt.imshow(distance_matrix)
@@ -629,40 +667,40 @@ class ObjectMemory():
         # reassign memory
         pre_IoU_memory = objects_post_dbscan
 
-        # check IoU between all new memory objects
-        # distance_matrix = df(all_mean_embs, all_centroids, distance_threshold=distance_threshold)
-        IoUs = np.zeros((len(pre_IoU_memory), len(pre_IoU_memory)))
-        IoU_threshold = 1 - IoU_threshold       # agg clustering discards high values, we want the opposite
-        for i in range(len(pre_IoU_memory)):
-            for j in range(i, len(pre_IoU_memory)):
-                IoUs[i][j] = 1 - calculate_obj_aligned_3d_IoU(np.asarray(pre_IoU_memory[i].pointcloud.points),
-                                                          np.asarray(pre_IoU_memory[j].pointcloud.points))
-                IoUs[j][i] = IoUs[i][j]                                                          
+        # # check IoU between all new memory objects
+        # # distance_matrix = df(all_mean_embs, all_centroids, distance_threshold=distance_threshold)
+        # IoUs = np.zeros((len(pre_IoU_memory), len(pre_IoU_memory)))
+        # IoU_threshold = 1 - IoU_threshold       # agg clustering discards high values, we want the opposite
+        # for i in range(len(pre_IoU_memory)):
+        #     for j in range(i, len(pre_IoU_memory)):
+        #         IoUs[i][j] = 1 - calculate_obj_aligned_3d_IoU(np.asarray(pre_IoU_memory[i].pointcloud.points),
+        #                                                   np.asarray(pre_IoU_memory[j].pointcloud.points))
+        #         IoUs[j][i] = IoUs[i][j]                                                          
 
-        # sklearn agglomerative clustering
-        self._log("Clustering with IoUs")
-        agg_clustering = AgglomerativeClustering(n_clusters=None, distance_threshold=IoU_threshold, metric='precomputed', linkage='complete')
-        agg_clustering.fit(IoUs)
+        # # sklearn agglomerative clustering
+        # self._log("Clustering with IoUs")
+        # agg_clustering = AgglomerativeClustering(n_clusters=None, distance_threshold=IoU_threshold, metric='precomputed', linkage='complete')
+        # agg_clustering.fit(IoUs)
 
-        # Get the cluster labels
-        labels = agg_clustering.labels_
+        # # Get the cluster labels
+        # labels = agg_clustering.labels_
 
-        unique_labels = set(labels)
+        # unique_labels = set(labels)
 
-        self._log(f"{len(unique_labels)} objects clustered")
+        # self._log(f"{len(unique_labels)} objects clustered")
 
-        # reassign memory
-        new_memory = [None for _ in unique_labels]
-        for new_label, old_obj_info in zip(labels, pre_IoU_memory):
-            if new_memory[new_label] == None:
-                new_memory[new_label] = old_obj_info
-            else:
-                new_memory[new_label] = new_memory[new_label] + old_obj_info
+        # # reassign memory
+        # new_memory = [None for _ in unique_labels]
+        # for new_label, old_obj_info in zip(labels, pre_IoU_memory):
+        #     if new_memory[new_label] == None:
+        #         new_memory[new_label] = old_obj_info
+        #     else:
+        #         new_memory[new_label] = new_memory[new_label] + old_obj_info
 
         
         # save new memory, fix IDs
         print("Clustering done")
-        self.memory = new_memory
+        self.memory = pre_IoU_memory
         for i, _ in enumerate(self.memory):
             self.memory[i].id = i
 
@@ -703,6 +741,8 @@ class ObjectMemory():
         self.memory = new_memory
         for i, _ in enumerate(self.memory):
             self.memory[i].id = i
+            self.memory[i]._compute_means()
+
 
     def save(self, save_directory: str):
         os.makedirs(save_directory, exist_ok=True)
