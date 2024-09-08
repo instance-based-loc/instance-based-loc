@@ -67,7 +67,7 @@ def main(args):
         sam_checkpoint_path = args.sam_checkpoint_path,
         camera_focal_lenth_x = args.focal_length_x,
         camera_focal_lenth_y = args.focal_length_y,
-        get_embeddings_func = get_dator_embeddings,
+        get_embeddings_func = get_dator_embeddings if args.use_dator==1 else None,
         lora_path=args.lora_path
     )
 
@@ -264,7 +264,7 @@ if __name__ == "__main__":
         "--testname",
         type=str,
         help="Experiment name",
-        default="dator_embeddings"
+        default="lora_embeddings"
     )
     # dataset params
     parser.add_argument(
@@ -362,7 +362,7 @@ if __name__ == "__main__":
         "--loc-sampling-period",
         type=int,
         help="eval sampling period",
-        default=23
+        default=61
     )
     # Memory dump/load args
     parser.add_argument(
@@ -406,6 +406,13 @@ if __name__ == "__main__":
         "--fpfh-voxel-size",
         type=float,
         default=0.05
+    )
+
+    parser.add_argument(
+        "-k",
+        "--use-dator",  
+        type=int,
+        default=0
     )
 
     import os
