@@ -1,7 +1,10 @@
-import numpy
+import numpy as np
 import open3d as o3d
 import sys, os
-sys.path.append(os.path.join(os.getcwd(), "Objectron"))
+sys.path.append(os.path.abspath(os.path.join("Objectron")))
+
+from objectron.dataset import iou
+from objectron.dataset import box
 
 def calculate_3d_IoU(pcd1, pcd2):
     """
@@ -97,8 +100,8 @@ def calculate_obj_aligned_3d_IoU(pcd1, pcd2):
     Uses object aligned bounding boxes isntead of axis aligned
 
     Parameters:
-    - pcd1 (numpy.ndarray): First 3D point cloud represented as a 3xN array.
-    - pcd2 (numpy.ndarray): Second 3D point cloud represented as a 3xN array.
+    - pcd1 (numpy.ndarray): First 3D point cloud represented as a Nx3 array.
+    - pcd2 (numpy.ndarray): Second 3D point cloud represented as a Nx3 array.
 
     Returns:
     - IoU (float): 3D Intersection over Union between the two point clouds.
@@ -111,12 +114,13 @@ def calculate_obj_aligned_3d_IoU(pcd1, pcd2):
 
     try:
         bb1 = o3d.geometry.OrientedBoundingBox.create_from_points(
-            points=o3d.utility.Vector3dVector(pcd1.T) #, robust=True
+            points=o3d.utility.Vector3dVector(pcd1) #, robust=True
         )
         bb2 = o3d.geometry.OrientedBoundingBox.create_from_points(
-            points=o3d.utility.Vector3dVector(pcd2.T) #, robust=True
+            points=o3d.utility.Vector3dVector(pcd2) #, robust=True
         )
-    except:
+    except :
+        print("OBB failure")
         return 0
 
     bb1_vertices = np.zeros((9,3), dtype=np.float32)
