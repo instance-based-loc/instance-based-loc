@@ -21,12 +21,6 @@ from utils.quaternion_ops import QuaternionOps
 from utils.logging import get_mem_stats
 from utils.embeddings import get_dator_embeddings
 
-def dummy_get_embs(
-    **kwargs
-):
-    return torch.tensor([1, 2, 3], device=torch.device(kwargs["device"]))
-
-
 tgt = []
 pred = []
 trans_errors = []
@@ -69,11 +63,11 @@ def main(args):
     # define and create memory
     memory = ObjectMemory(
         device = args.device,
-        ram_pretrained_path = args.ram_pretrained_path,
+        ram_pretrained_path = args.ram_pretrained_path  ,
         sam_checkpoint_path = args.sam_checkpoint_path,
         camera_focal_lenth_x = args.focal_length_x,
         camera_focal_lenth_y = args.focal_length_y,
-        get_embeddings_func = get_dator_embeddings,
+        get_embeddings_func = get_dator_embeddings if args.use_dator==1 else None,
         lora_path=args.lora_path
     )
 
@@ -138,9 +132,11 @@ def main(args):
 
         ##################               Recluster
         # memory.recluster_objects_with_dbscan(eps=.1, min_points_per_cluster=600, visualize=True)
-        # memory.recluster_via_agglomerative_clustering(distance_threshold=2000)
-        # memory.recluster_via_combined(eps=0.15, embedding_distance_threshold=0.4)
-        memory.recluster_via_clustering_and_IoU(eps=0.15, embedding_distance_threshold=0.4, IoU_threshold=0.4)
+        # memory.recluster_via_agglomerative_clustering(embedding_distance_threshold=0.3)
+        memory._recluster_IoU(0.3)
+        # memory.recluster_via_combined(eps=0.05, embedding_distance_threshold=0.5, min_points_per_cluster=1)
+
+        memory.recluster_via_clustering_and_IoU(eps=0.05, embedding_distance_threshold=0.5, IoU_threshold=0.25, min_points_per_cluster=50)
 
         print("\nMemory is")
         print(memory)
@@ -173,7 +169,20 @@ def main(args):
         memory.load(args.memory_load_path)
         print("Memory loaded")
 
-    exit(0)
+    color_gen = lambda n: [(float((np.sin(i * 2 * np.pi / n) * 0.5 + 0.5)),
+                        float((np.sin((i + 1) * 2 * np.pi / n) * 0.5 + 0.5)),
+                        float((np.sin((i + 2) * 2 * np.pi / n) * 0.5 + 0.5)))
+                        for i in range(n)]
+
+    combined_pcd = o3d.geometry.PointCloud()
+    colors = color_gen(len(memory.memory))
+    for pcd, color in zip(memory.memory, colors):
+        pcd.pointcloud.paint_uniform_color(np.random.random(3))
+        combined_pcd += pcd.pointcloud
+
+    save_path = f"/home2/aneesh.chavan/instance-based-loc/pcds/cached_{args.testname}_after_cons.ply"
+    o3d.io.write_point_cloud(save_path, combined_pcd)
+    # exit(0)
 
     ########### begin localisation ############
 
@@ -255,7 +264,7 @@ if __name__ == "__main__":
         "--testname",
         type=str,
         help="Experiment name",
-        default="dator"
+        default="lora_embeddings"
     )
     # dataset params
     parser.add_argument(
@@ -327,7 +336,7 @@ if __name__ == "__main__":
         "--last-file-index",
         type=int,
         help="last file to sample",
-        default=1000
+        default=1500
     )
     parser.add_argument(
         "--sampling-period",
@@ -347,13 +356,13 @@ if __name__ == "__main__":
         "--loc-last-file-index",
         type=int,
         help="eval last file to sample",
-        default=900
+        default=1450
     )
     parser.add_argument(
         "--loc-sampling-period",
         type=int,
         help="eval sampling period",
-        default=41
+        default=61
     )
     # Memory dump/load args
     parser.add_argument(
@@ -366,7 +375,7 @@ if __name__ == "__main__":
         "--memory-load-path",
         type=str,
         help="file to load memory from, or save it to",
-        default='./out/8room_with_floor/tum_desk_memory.pt'
+        default='./out/8room_with_floor/large_tum_memory.pt'
     )
 
     # lora path
@@ -397,6 +406,13 @@ if __name__ == "__main__":
         "--fpfh-voxel-size",
         type=float,
         default=0.05
+    )
+
+    parser.add_argument(
+        "-k",
+        "--use-dator",  
+        type=int,
+        default=0
     )
 
     import os

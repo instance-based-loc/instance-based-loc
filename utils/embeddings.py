@@ -104,6 +104,6 @@ def get_dator_embeddings(**kwargs) -> torch.Tensor:
                                     int(bb[0]):int(bb[2])]
 
         rgb_t, depth_t = get_model_input(images, depth_img)
-        emb = dator_model(rgb_t, depth_t).detach()
+        emb = dator_model(rgb_t, depth_t).detach().squeeze()
 
         return emb
