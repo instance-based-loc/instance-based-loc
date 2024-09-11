@@ -1,14 +1,16 @@
 import numpy as np
 import open3d as o3d
-from microstructpy.geometry import Ellipsoid
-import os
 
-def fit_ellipsoid_to_point_cloud(pcl):
+def fit_ellipsoid_to_point_cloud(pcl, scaling_factor=1.1, max_iterations=20):
     """
     Fit an ellipsoid to a given point cloud and return the ellipsoid as a point cloud.
 
     Parameters:
     - pcl: open3d.geometry.PointCloud
+    - scaling_factor: float
+        Factor by which to scale the ellipsoid to ensure it encloses all points.
+    - max_iterations: int
+        Number of iterations to refine the ellipsoid fit.
 
     Returns:
     - ellipsoid_pcl: open3d.geometry.PointCloud
@@ -16,39 +18,38 @@ def fit_ellipsoid_to_point_cloud(pcl):
     """
     points = np.asarray(pcl.points)
 
-    # Step 2: Fit an ellipsoid to the points
-    ellipsoid = Ellipsoid().best_fit(points)
+    centroid = np.mean(points, axis=0)
+    centered_points = points - centroid
 
-    # Step 3: Access the ellipsoid parameters
-    center = ellipsoid.center
-    axes = ellipsoid.axes
+    covariance_matrix = np.cov(centered_points, rowvar=False)
 
-    # Step 4: Create a mesh for the ellipsoid for visualization
-    u = np.linspace(0, 2 * np.pi, 100)
-    v = np.linspace(0, np.pi, 100)
-    x = center[0] + axes[0] * np.outer(np.cos(u), np.sin(v))
-    y = center[1] + axes[1] * np.outer(np.sin(u), np.sin(v))
-    z = center[2] + axes[2] * np.outer(np.ones(np.size(u)), np.cos(v))
+    U, S, Vt = np.linalg.svd(covariance_matrix)
 
-    # Create a mesh from the ellipsoid data
-    ellipsoid_mesh = o3d.geometry.TriangleMesh()
-    ellipsoid_mesh.vertices = o3d.utility.Vector3dVector(np.vstack((x.flatten(), y.flatten(), z.flatten())).T)
+    axes_lengths = np.sqrt(S)
 
-    # Create triangles for the ellipsoid mesh
-    triangles = []
-    for i in range(len(u) - 1):
-        for j in range(len(v) - 1):
-            idx1 = i * len(v) + j
-            idx2 = (i + 1) * len(v) + j
-            idx3 = (i + 1) * len(v) + (j + 1)
-            idx4 = i * len(v) + (j + 1)
-            triangles.append([idx1, idx2, idx3])
-            triangles.append([idx1, idx3, idx4])
-            
-    ellipsoid_mesh.triangles = o3d.utility.Vector3iVector(triangles)
+    axes_lengths *= scaling_factor
 
-    # Step 5: Create a point cloud from the ellipsoid mesh vertices
-    ellipsoid_pcl = o3d.geometry.PointCloud()
-    ellipsoid_pcl.points = ellipsoid_mesh.vertices
+    u = np.linspace(0, 2 * np.pi, 200)
+    v = np.linspace(0, np.pi, 200)
+    
+    ellipsoid_points = []
+    
+    for _ in range(max_iterations):
+        ellipsoid_points = []
+        for i in range(len(u)):
+            for j in range(len(v)):
+                x = axes_lengths[0] * np.cos(u[i]) * np.sin(v[j])
+                y = axes_lengths[1] * np.sin(u[i]) * np.sin(v[j])
+                z = axes_lengths[2] * np.cos(v[j])
+                point = np.dot([x, y, z], U.T) + centroid
+                ellipsoid_points.append(point)
+
+        ellipsoid_pcl = o3d.geometry.PointCloud()
+        ellipsoid_pcl.points = o3d.utility.Vector3dVector(ellipsoid_points)
+
+        if all(np.linalg.norm(np.dot(point - centroid, U) / axes_lengths) <= 1 for point in points):
+            break
+
+        axes_lengths *= scaling_factor
 
     return ellipsoid_pcl
