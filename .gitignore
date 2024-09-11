@@ -4,6 +4,9 @@ dev-*
 # The data dir for symlinks to data being used
 data/*
 
+# temp files
+temp*
+
 # Some data that could be added to Git
 !data/our-synthetic
 data/our-synthetic/*
@@ -38,3 +41,4 @@ pcds*
 *log
 gen_data/*
 *dator*
+

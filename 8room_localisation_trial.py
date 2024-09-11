@@ -59,6 +59,7 @@ def main(args):
             print(f"Using {mem_usage} GB of memory and {gpu_usage} GB of GPU")
 
 
+
         # save memory point cloud
         pcd_list = []
         
@@ -80,6 +81,7 @@ def main(args):
         o3d.io.write_point_cloud(save_path, combined_pcd)
 
 
+
         # Downsample
         memory.downsample_all_objects(voxel_size=0.01)
 
@@ -88,6 +90,7 @@ def main(args):
 
         # Recluster
         memory.recluster_objects_with_dbscan(visualize=True)
+
 
 
         # save
@@ -110,6 +113,7 @@ def main(args):
         save_path = f"/home2/aneesh.chavan/instance-based-loc/pcds/cached_{args.testname}_after_cons.ply"
         o3d.io.write_point_cloud(save_path, combined_pcd)
 
+
         print("\nMemory is")
         print(memory)
 
@@ -119,7 +123,6 @@ def main(args):
         memory.load(args.memory_load_path)
         print("Memory loaded")
 
-    exit(0)
 
     ########### begin localisation ############
 
@@ -141,9 +144,11 @@ def main(args):
     rot_errors = []
     chosen_assignments = []
 
+
     import matplotlib.pyplot as plt
     import imageio
     import os
+
     print("Begin localisation")
     for idx in tqdm(eval_dataloader.environment_indices, total=len(eval_dataloader.environment_indices)):
         print(f"Localistion {idx}/{len(eval_dataloader.environment_indices)} currently.")
@@ -197,7 +202,9 @@ if __name__ == "__main__":
         "--testname",
         type=str,
         help="Experiment name",
+
         default="8room_agg_clustering"
+
     )
     # dataset params
     parser.add_argument(

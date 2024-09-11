@@ -205,24 +205,24 @@ def get_mask_coloured_pointclouds_from_depth(
     
     return pointclouds
 
+import open3d as o3d
+import numpy as np
+
 def voxel_down_sample_with_colors(pcd: o3d.geometry.PointCloud, voxel_size: float) -> o3d.geometry.PointCloud:
     """
-    Downsamples an Open3D point cloud using a voxel grid and preserves the averaged colors.
+    Downsamples an Open3D point cloud using a voxel grid and preserves the averaged colors and normals.
     
     Args:
         pcd (o3d.geometry.PointCloud): The input point cloud to be downsampled.
         voxel_size (float): The voxel grid size for downsampling.
     
     Returns:
-        o3d.geometry.PointCloud: The downsampled point cloud with preserved colors.
+        o3d.geometry.PointCloud: The downsampled point cloud with preserved colors and normals.
     """
-    # Downsample the point cloud
-    downsampled_pcd = pcd.voxel_down_sample(voxel_size)
-    
-    # Compute the voxel grid indices
+    # Compute voxel grid indices for the entire point cloud
     voxel_indices = np.floor(np.asarray(pcd.points) / voxel_size).astype(np.int64)
     
-    # Create a dictionary to average points and colors within each voxel
+    # Create dictionaries to accumulate points, colors, and normals within each voxel
     voxel_dict = {}
     
     for i, idx in enumerate(voxel_indices):
@@ -230,27 +230,40 @@ def voxel_down_sample_with_colors(pcd: o3d.geometry.PointCloud, voxel_size: floa
         if key not in voxel_dict:
             voxel_dict[key] = {
                 "points": [],
-                "colors": []
+                "colors": [],
+                "normals": []
             }
         voxel_dict[key]["points"].append(pcd.points[i])
         if pcd.has_colors():
             voxel_dict[key]["colors"].append(pcd.colors[i])
+        if pcd.has_normals():
+            voxel_dict[key]["normals"].append(pcd.normals[i])
     
-    # Average points and colors in each voxel
+    # Average points, colors, and normals in each voxel
     downsampled_points = []
     downsampled_colors = []
+    downsampled_normals = []
     
     for voxel in voxel_dict.values():
         downsampled_points.append(np.mean(voxel["points"], axis=0))
         if pcd.has_colors():
             downsampled_colors.append(np.mean(voxel["colors"], axis=0))
+        if pcd.has_normals():
+            # Average normals and normalize them
+            averaged_normal = np.mean(voxel["normals"], axis=0)
+            averaged_normal = averaged_normal / np.linalg.norm(averaged_normal)  # Normalize
+            downsampled_normals.append(averaged_normal)
     
-    # Assign the averaged points and colors to the downsampled point cloud
+    # Create the downsampled point cloud
+    downsampled_pcd = o3d.geometry.PointCloud()
     downsampled_pcd.points = o3d.utility.Vector3dVector(downsampled_points)
     if pcd.has_colors():
         downsampled_pcd.colors = o3d.utility.Vector3dVector(downsampled_colors)
+    if pcd.has_normals():
+        downsampled_pcd.normals = o3d.utility.Vector3dVector(downsampled_normals)
     
     return downsampled_pcd
+
 
 def combine_point_clouds(pcds: list[o3d.geometry.PointCloud]):
     combined_pcd = o3d.geometry.PointCloud()

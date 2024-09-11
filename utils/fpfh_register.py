@@ -127,6 +127,7 @@ def register_point_clouds(source, target, voxel_size, global_dist_factor = 1.5, 
         #     source_down, target_down, source_fpfh, target_fpfh, fgr_option
         # )
 
+
         # Refine the registration using ICP
         result_icp = o3d.pipelines.registration.registration_colored_icp(
             source_down, target_down, voxel_size*local_dist_factor, result_ransac.transformation,

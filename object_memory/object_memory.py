@@ -10,6 +10,7 @@ import copy
 from scipy.spatial.transform import Rotation
 from sklearn.cluster import AgglomerativeClustering
 
+
 from .object_finder import ObjectFinder
 from .object_info import ObjectInfo
 from utils.logging import conditional_log
@@ -21,8 +22,8 @@ from utils.similarity_volume import SimVolume
 from utils.fpfh_register import register_point_clouds, evaluate_transform, downsample_and_compute_fpfh
 from .object_finder_phrases import check_if_floor
 from .lora_module import LoraRevolver, LoraConfig
-
 from utils.IoU_ops import calculate_obj_aligned_3d_IoU
+
 
 print("\033[34mLoaded modules for object_memory.object_memory\033[0m")
 
@@ -854,9 +855,11 @@ class ObjectMemory():
                  fpfh_voxel_size = 0.05, topK=5, useLora=True,
                  save_localised_pcd_path=None,
                  consider_floor=False,
+
                  perform_semantic_icp=True,
                  depth_factor = 1.,
                  max_detected_object_num=7):
+
         """
         Given an image and a corresponding depth image in an unknown frame, consult the stored memory
         and output a pose in the world frame of the point clouds stored in memory.
@@ -885,10 +888,12 @@ class ObjectMemory():
                                                                                       depth_factor=depth_factor)
 
 
+
         # TODO deal with no objects detected
         if detected_embs is None:
             return np.array([0.,0.,0.,0.,0.,0.,1.]), [[],[]]
  
+
         # take top 7 largest pointclouds, phrases, embs
         if len(detected_pointclouds) > max_detected_object_num:
             print(f"Taking top {max_detected_object_num} objects")
@@ -900,7 +905,6 @@ class ObjectMemory():
             detected_embs = [e for _, e, _ in pairs[:max_detected_object_num]]
             detected_pointclouds = [pcd for _, _, pcd in pairs[:max_detected_object_num]]
 
-            print(len(pairs))
 
         # Correlate embeddings with objects in memory for all seen objects
         # TODO maybe a KNN search will do better?
@@ -921,6 +925,7 @@ class ObjectMemory():
         # Detected x Mem x Emb sized
         cosine_similarities = np.inner(detected_embs, memory_embs)
         print(cosine_similarities.shape, f" {len(detected_embs)} objects detected")
+
 
         # get the closest similarity from each object
         closest_similarities = np.zeros_like(cosine_similarities)
@@ -954,6 +959,7 @@ class ObjectMemory():
             for j, m in enumerate(self.memory):
                 init_pcd += m
 
+
             o3d.io.write_point_cloud(os.path.join(subsave_root , "_init_pcd_" + str(subtest_name) + ".ply"), init_pcd)
             print("Initial ICP point clouds saved")
 
@@ -976,9 +982,6 @@ class ObjectMemory():
         del sv
 
         print("Phrases: ", detected_phrases)
-        # print(cosine_similarities)
-        # print("                 V?")
-        # print(closest_similarities)
         print("Assignments being considered: ", assns_to_consider)
 
         assn_data = [ assn for assn in assns_to_consider ]
@@ -986,10 +989,10 @@ class ObjectMemory():
         # clean up outliers from detected pcds before registration
         cleaned_detected_pcds = []
         for obj in detected_pointclouds:
-            print(obj)
             obj_filtered, _ = obj.remove_radius_outlier(nb_points=outlier_removal_config["radius_nb_points"],
                                                             radius=outlier_removal_config["radius"])
             cleaned_detected_pcds.append(obj_filtered)
+
         detected_pointclouds = cleaned_detected_pcds
 
         # prepare a full memory and detected pcd
@@ -1001,6 +1004,7 @@ class ObjectMemory():
         for pcd in all_memory_points:
             all_memory_pcd = all_memory_pcd + pcd.pointcloud        # get pcd from obj memory
 
+
         all_detected_points = []
         for obj in detected_pointclouds:
             all_detected_points.append(obj)
@@ -1009,10 +1013,10 @@ class ObjectMemory():
         for pcd in all_detected_points:
             all_detected_pcd = all_detected_pcd + pcd 
 
+
         # go through all top K assingments, record ICP costs
         for assn_num, assn in tqdm(enumerate(assn_data)):
             # use ALL object pointclouds together
-
             # centering all the pointclouds
             chosen_detected_pcd = o3d.geometry.PointCloud()
             chosen_memory_pcd = o3d.geometry.PointCloud()
@@ -1101,6 +1105,7 @@ class ObjectMemory():
 
         # USE THE BEST CHOSEN ASSIGNMENT
         # GET TX/RX error
+
         best_assn_acc_to_fitness = sorted(assn_data, key=lambda x: x[-1], reverse=True)    # reverse required for fitness
         best_assn_acc_to_rmse = sorted(assn_data, key=lambda x: x[-2])
 
@@ -1142,6 +1147,7 @@ class ObjectMemory():
             # centering all the pointclouds (needed as best_transform is between centered pcds)
             all_detected_pcd.translate(-detected_mean)
             all_memory_pcd.translate(-memory_mean)
+
 
             # remove outliers from detected pcds
             all_detected_pcd_filtered, _ = all_detected_pcd.remove_radius_outlier(nb_points=outlier_removal_config["radius_nb_points"],

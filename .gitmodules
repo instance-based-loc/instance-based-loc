@@ -4,6 +4,9 @@
 [submodule "object_memory/Grounded-Segment-Anything"]
 	path = object_memory/Grounded-Segment-Anything
 	url = git@github.com:IDEA-Research/Grounded-Segment-Anything.git
+[submodule "dataloader/habitat-lab"]
+	path = dataloader/habitat-lab
+	url = https://github.com/facebookresearch/habitat-lab.git
 [submodule "Objectron"]
 	path = Objectron
 	url = git@github.com:google-research-datasets/Objectron.git
