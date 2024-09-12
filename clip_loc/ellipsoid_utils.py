@@ -1,7 +1,7 @@
 import numpy as np
 import open3d as o3d
 
-def fit_ellipsoid_to_point_cloud(pcl, scaling_factor=1.1, max_iterations=20):
+def fit_ellipsoid_to_point_cloud(pcl, scaling_factor=1.05, max_iterations=20):
     """
     Fit an ellipsoid to a given point cloud and return the ellipsoid as a point cloud.
 
