@@ -81,7 +81,7 @@ def main(args):
             pcd.paint_uniform_color(np.random.rand(3))
             combined_pcd += pcd
     
-        save_path = f"/home2/sarthak.chittawa/instance-based-loc/pcds/cached_{args.testname}_before_cons.ply"
+        save_path = f"/home2/{get_user()}/instance-based-loc/pcds/cached_{args.testname}_before_cons.ply"
         o3d.io.write_point_cloud(save_path, combined_pcd)
 
         # Downsample
@@ -92,7 +92,8 @@ def main(args):
 
         # Recluster
         # memory.recluster_objects_with_dbscan(eps=.1, min_points_per_cluster=600, visualize=True)
-        memory.recluster_via_agglomerative_clustering(distance_threshold=2000)
+        # memory.recluster_via_agglomerative_clustering(distance_threshold=2000)
+        memory.recluster_via_combined(eps=0.15)
 
         print("\nMemory is")
         print(memory)
@@ -115,7 +116,7 @@ def main(args):
             pcd.paint_uniform_color(np.random.rand(3))
             combined_pcd += pcd
 
-        save_path = f"/home2/sarthak.chittawa/instance-based-loc/pcds/cached_{args.testname}_after_cons.ply"
+        save_path = f"/home2/{get_user()}/instance-based-loc/pcds/cached_{args.testname}_after_cons.ply"
         o3d.io.write_point_cloud(save_path, combined_pcd)
     #######
 

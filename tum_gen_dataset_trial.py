@@ -126,7 +126,7 @@ def main(args):
         memory.load(args.memory_load_path)
         print("Memory loaded")
 
-    memory.dump_dataset('/home2/aneesh.chavan/instance-based-loc/gen_data/tum_desk_trial')
+    memory.dump_dataset('/home2/aneesh.chavan/instance-based-loc/gen_data/tum_desk_npys')
 
     exit(0)
 
