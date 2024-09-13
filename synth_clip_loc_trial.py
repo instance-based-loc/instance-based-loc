@@ -11,6 +11,12 @@ from utils.logging import get_mem_stats
 
 from clip_loc.clip_loc_object_memory import ClipLocObjectMemory
 
+def get_intrinsic_matrix(fx, fy, cx, cy):
+    K = np.array([[fx, 0, cx],
+                  [0, fy, cy],
+                  [0, 0, 1]], dtype=np.float32)
+    return K
+
 def main(args):
     dataloader = SynthDataloader(
         evaluation_indices=args.eval_img_inds,
@@ -75,13 +81,24 @@ def main(args):
 
     print(f"Loaded clip-loc memory with {len(clip_loc_memory)} objects")
 
+    intrinsic_matrix = get_intrinsic_matrix(300, 300, 300, 300) # Or, use the intrinsic matrix I hardcoded for HM3D
+
+    actual_poses = []
+    calc_poses = []
+
     for idx in dataloader.evaluation_indices:
         print(f"Processing index {idx} now")
 
-        img_path, _, _ = dataloader.get_image_data(idx)
-        clip_loc_memory.localize(img_path)
-    
+        img_path, _, actual_pose = dataloader.get_image_data(idx)
+        calc_pose = clip_loc_memory.localize(img_path, intrinsic_matrix)
 
+        calc_poses.append(calc_pose)
+        actual_poses.append(actual_pose)
+
+    for i in range(len(actual_poses)):
+        print("i:")
+        print("\t actual    :", actual_poses[i])
+        print("\t calculated:", calc_poses[i])
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -97,7 +114,7 @@ if __name__ == "__main__":
         type=int,
         nargs='+',
         help="Indices to be evaluated",
-        default=[3]
+        default=range(8)
     )
     parser.add_argument(
         "--focal-length",

@@ -22,6 +22,12 @@ class ClipLocObjectInfo:
                 "id": self.id
             }, f)
 
+    def __repr__(self):
+        return (f"ClipLocObjectInfo(id={self.id}, text='{self.text}', "
+                f"text_embedding_shape={self.text_embedding.shape}, "
+                f"pointcloud_points={len(np.asarray(self.pointcloud.points))}, "
+                f"ellipsoid_points={len(np.asarray(self.ellipsoid.points))})")
+
     @classmethod
     def load(cls, load_directory: str):
         pointcloud = o3d.io.read_point_cloud(os.path.join(load_directory, "pointcloud.ply"))
