@@ -99,14 +99,14 @@ class ObjectMemory():
             log_enabled = self.log_enabled
         )
 
-        self.loraModule = LoraRevolver(self.device)
-        if lora_path != None:
-            self.loraModule.load_lora_ckpt_from_file(lora_path, "5x40")
-        else:
-            raise NotImplementedError
-
         ##  HARDCODED TO LORA
         if self.get_embeddings_func == None:
+            self._log("self.get_embeddings_func is None")
+            self.loraModule = LoraRevolver(self.device)
+            if lora_path != None:
+                self.loraModule.load_lora_ckpt_from_file(lora_path, "5x40")
+            else:
+                raise NotImplementedError
             self.get_embeddings_func = self.loraModule.encode_image
 
         self.memory: list[ObjectInfo] = []

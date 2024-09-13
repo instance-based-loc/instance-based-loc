@@ -270,3 +270,20 @@ def combine_point_clouds(pcds: list[o3d.geometry.PointCloud]):
     for pcd in pcds:
         combined_pcd += pcd  # Merge point clouds
     return combined_pcd
+
+def compute_center(point_cloud: o3d.geometry.PointCloud):
+    points = np.asarray(point_cloud.points)
+    center = np.mean(points, axis=0)
+    return center
+
+def decompose_pose_matrix(pose_matrix):
+    translation = pose_matrix[:3, 3]
+
+    rotation_matrix = pose_matrix[:3, :3]
+
+    rotation = Rotation.from_matrix(rotation_matrix)
+    quaternion = rotation.as_quat() 
+
+    result = np.concatenate((translation, quaternion))
+
+    return result

@@ -1,6 +1,9 @@
 # Any of you rfiles that you don't want to pust to github
 dev-*
 
+# Model files
+*.pt
+
 # The data dir for symlinks to data being used
 data/*
 
