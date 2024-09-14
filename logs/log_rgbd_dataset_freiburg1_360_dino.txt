@@ -1,0 +1,1221 @@
+[34mLoaded modules for object_memory.object_finder[0m
+[34mLoaded modules for object_memory.object_memory[0m
+/encoder/layer/0/crossattention/self/query is tied
+/encoder/layer/0/crossattention/self/key is tied
+/encoder/layer/0/crossattention/self/value is tied
+/encoder/layer/0/crossattention/output/dense is tied
+/encoder/layer/0/crossattention/output/LayerNorm is tied
+/encoder/layer/0/intermediate/dense is tied
+/encoder/layer/0/output/dense is tied
+/encoder/layer/0/output/LayerNorm is tied
+/encoder/layer/1/crossattention/self/query is tied
+/encoder/layer/1/crossattention/self/key is tied
+/encoder/layer/1/crossattention/self/value is tied
+/encoder/layer/1/crossattention/output/dense is tied
+/encoder/layer/1/crossattention/output/LayerNorm is tied
+/encoder/layer/1/intermediate/dense is tied
+/encoder/layer/1/output/dense is tied
+/encoder/layer/1/output/LayerNorm is tied
+--------------
+/scratch/sarthak/checkpoint/ram_swin_large_14m.pth
+--------------
+load checkpoint from /scratch/sarthak/checkpoint/ram_swin_large_14m.pth
+vit: swin_l
+final text_encoder_type: bert-base-uncased
+Retrieving map's pointcloud from cache
+Using 7.085 GB of memory and 13.293 GB of GPU
+Using 7.085 GB of memory and 13.376 GB of GPU
+Using 7.085 GB of memory and 13.377 GB of GPU
+Using 7.086 GB of memory and 13.377 GB of GPU
+Using 7.087 GB of memory and 13.377 GB of GPU
+Using 7.087 GB of memory and 13.377 GB of GPU
+Using 7.088 GB of memory and 13.377 GB of GPU
+Using 7.088 GB of memory and 13.377 GB of GPU
+Using 7.088 GB of memory and 13.377 GB of GPU
+Using 7.088 GB of memory and 13.377 GB of GPU
+Using 7.089 GB of memory and 13.377 GB of GPU
+Using 7.089 GB of memory and 13.377 GB of GPU
+Using 7.089 GB of memory and 13.377 GB of GPU
+Using 7.089 GB of memory and 13.377 GB of GPU
+Using 7.089 GB of memory and 13.377 GB of GPU
+Using 7.089 GB of memory and 13.377 GB of GPU
+Using 7.089 GB of memory and 13.377 GB of GPU
+Using 7.089 GB of memory and 13.377 GB of GPU
+Using 7.089 GB of memory and 13.378 GB of GPU
+Using 7.089 GB of memory and 13.378 GB of GPU
+Using 7.089 GB of memory and 13.378 GB of GPU
+Using 7.088 GB of memory and 13.378 GB of GPU
+Using 7.088 GB of memory and 13.378 GB of GPU
+Using 7.089 GB of memory and 13.378 GB of GPU
+\Before memory is
+	ObjectInfo == ID: 0, Names: ['bulletin board'], Mean_Emb: (768,), Num. Points: (3, 92064)              true mean emb: [-0.67521274 -0.10322805 -0.16742252  1.4772943  -2.1039271  -5.8423157 ]
+	ObjectInfo == ID: 1, Names: ['table'], Mean_Emb: (768,), Num. Points: (3, 14755)              true mean emb: [-1.447767   -1.7224728   0.5023445  -0.575001   -0.89479023 -4.939403  ]
+	ObjectInfo == ID: 2, Names: ['teddy'], Mean_Emb: (768,), Num. Points: (3, 4804)              true mean emb: [-1.8109422  -1.0396872   1.1958439   0.06482811 -0.4111521  -1.4402474 ]
+	ObjectInfo == ID: 3, Names: ['attach'], Mean_Emb: (768,), Num. Points: (3, 115657)              true mean emb: [-1.1750909  -0.5267217   0.28354847  3.0151765  -3.310736   -3.7423577 ]
+	ObjectInfo == ID: 4, Names: ['appliance'], Mean_Emb: (768,), Num. Points: (3, 6631)              true mean emb: [-1.4662216  -0.28097916  0.7272242   0.02952106 -0.64472604 -3.3271394 ]
+	ObjectInfo == ID: 5, Names: ['mower'], Mean_Emb: (768,), Num. Points: (3, 10835)              true mean emb: [ 1.9719048  0.6941502  1.5598143 -1.2746775  0.5357073 -2.5943506]
+	ObjectInfo == ID: 6, Names: ['appliance'], Mean_Emb: (768,), Num. Points: (3, 19053)              true mean emb: [ 0.20222972 -0.41841775  0.05069595 -2.3164275  -1.0117565  -0.08802257]
+	ObjectInfo == ID: 7, Names: ['chair'], Mean_Emb: (768,), Num. Points: (3, 18613)              true mean emb: [ 0.5264882  -1.5185825   1.7290558  -0.5984787   0.48843375 -3.0595481 ]
+	ObjectInfo == ID: 8, Names: ['electronic'], Mean_Emb: (768,), Num. Points: (3, 14535)              true mean emb: [ 1.454127   1.2569708  1.1697072  0.7212862 -1.2887939 -3.5763087]
+	ObjectInfo == ID: 9, Names: ['bookshelf'], Mean_Emb: (768,), Num. Points: (3, 50842)              true mean emb: [ 0.8513343  -2.1902757  -0.90222555  1.755186   -1.6750996  -1.8872802 ]
+	ObjectInfo == ID: 10, Names: ['bulletin board'], Mean_Emb: (768,), Num. Points: (3, 49815)              true mean emb: [-2.3225443  -2.806591   -1.2271408   0.04796262 -2.8387563  -3.3089225 ]
+	ObjectInfo == ID: 11, Names: ['poster'], Mean_Emb: (768,), Num. Points: (3, 33149)              true mean emb: [-3.7758503 -1.9267855 -0.6948244  1.4192668 -1.5107422 -3.5262458]
+	ObjectInfo == ID: 12, Names: ['poster'], Mean_Emb: (768,), Num. Points: (3, 34456)              true mean emb: [-1.7868339  -2.0184984  -0.10573601  0.52820957 -2.4262185  -3.9487314 ]
+	ObjectInfo == ID: 13, Names: ['chair'], Mean_Emb: (768,), Num. Points: (3, 33534)              true mean emb: [ 2.2252715   1.6734284   1.8139203   1.0734009  -0.96647966 -1.9858222 ]
+	ObjectInfo == ID: 14, Names: ['keyboard'], Mean_Emb: (768,), Num. Points: (3, 8809)              true mean emb: [-0.56376266  1.2836303  -1.1904488   0.15480125  0.17702197 -4.3310533 ]
+	ObjectInfo == ID: 15, Names: ['table'], Mean_Emb: (768,), Num. Points: (3, 66608)              true mean emb: [ 0.2931101   3.257407   -0.43486103 -0.47509214 -0.8302709  -1.863366  ]
+	ObjectInfo == ID: 16, Names: ['laptop'], Mean_Emb: (768,), Num. Points: (3, 5074)              true mean emb: [ 0.18547904 -0.6204984  -0.19599277  0.7951226  -0.59643453 -5.988153  ]
+	ObjectInfo == ID: 17, Names: ['monitor'], Mean_Emb: (768,), Num. Points: (3, 1507)              true mean emb: [-2.1805322  -1.1238106  -0.00580048 -0.03682454  0.74555975 -2.5575469 ]
+	ObjectInfo == ID: 18, Names: ['mouse'], Mean_Emb: (768,), Num. Points: (3, 1407)              true mean emb: [-0.24106793  0.16363923  2.179715   -2.788816    0.54512703 -4.0754695 ]
+	ObjectInfo == ID: 19, Names: ['chair'], Mean_Emb: (768,), Num. Points: (3, 15191)              true mean emb: [ 1.6580603  -1.8639517   0.19291519  2.0661337  -1.8465195  -3.0821378 ]
+	ObjectInfo == ID: 20, Names: ['table'], Mean_Emb: (768,), Num. Points: (3, 66130)              true mean emb: [ 2.846106   -0.41431332  1.643434    2.9745471  -2.3794937  -2.2443604 ]
+	ObjectInfo == ID: 21, Names: ['mark'], Mean_Emb: (768,), Num. Points: (3, 3852)              true mean emb: [ 3.131048    0.9154991   0.34146455 -0.82699996  1.3457943  -6.900753  ]
+	ObjectInfo == ID: 22, Names: ['bookshelf'], Mean_Emb: (768,), Num. Points: (3, 73669)              true mean emb: [ 1.7505655  -0.5255572   0.65727264  1.1960317   0.12745538 -1.5866257 ]
+	ObjectInfo == ID: 23, Names: ['chair'], Mean_Emb: (768,), Num. Points: (3, 3295)              true mean emb: [ 0.27420682  0.9603693   0.24918093 -0.9866632   0.823319   -3.7078319 ]
+	ObjectInfo == ID: 24, Names: ['glass door'], Mean_Emb: (768,), Num. Points: (3, 14852)              true mean emb: [-1.7617291  -0.25449026 -0.65187895 -0.5359732   0.81727976 -2.4021235 ]
+	ObjectInfo == ID: 25, Names: ['tripod'], Mean_Emb: (768,), Num. Points: (3, 2769)              true mean emb: [-2.6327326 -1.750107  -2.8984783  1.339948   1.0417749 -2.153348 ]
+	ObjectInfo == ID: 26, Names: ['bookshelf'], Mean_Emb: (768,), Num. Points: (3, 4472)              true mean emb: [ 0.8240487  -0.9240036   2.1345394  -0.43125626 -0.098727   -2.9495769 ]
+	ObjectInfo == ID: 27, Names: ['bookshelf'], Mean_Emb: (768,), Num. Points: (3, 73827)              true mean emb: [ 1.046463   -1.9362279  -1.4311143   3.452823   -1.3503875  -0.35590515]
+	ObjectInfo == ID: 28, Names: ['selfie'], Mean_Emb: (768,), Num. Points: (3, 31548)              true mean emb: [-1.974576    1.2994865   2.1416929  -0.23468974  0.7415311  -2.5006473 ]
+	ObjectInfo == ID: 29, Names: ['tripod'], Mean_Emb: (768,), Num. Points: (3, 2259)              true mean emb: [-2.6624901  -2.808991   -1.0105075   1.0884956   0.20057629 -3.1186159 ]
+	ObjectInfo == ID: 30, Names: ['counter top'], Mean_Emb: (768,), Num. Points: (3, 24725)              true mean emb: [ 1.6576582 -0.6944421  0.5191917  2.821019  -1.0595078 -3.2516825]
+	ObjectInfo == ID: 31, Names: ['table'], Mean_Emb: (768,), Num. Points: (3, 52331)              true mean emb: [ 2.6165679  -1.2883234   0.8004904   4.1742253  -0.37366217 -1.7064328 ]
+	ObjectInfo == ID: 32, Names: ['bookshelf'], Mean_Emb: (768,), Num. Points: (3, 102697)              true mean emb: [ 0.59295744 -0.05806594 -0.817973    2.9040558   2.2981844  -4.2469554 ]
+	ObjectInfo == ID: 33, Names: ['selfie'], Mean_Emb: (768,), Num. Points: (3, 38820)              true mean emb: [-2.2727582  -0.02767992  1.2299321  -0.7641536   0.38098696 -1.8628408 ]
+	ObjectInfo == ID: 34, Names: ['stool'], Mean_Emb: (768,), Num. Points: (3, 2402)              true mean emb: [ 0.0261607 -1.5343987  3.1937945  0.7273215  0.9673032 -2.7202682]
+	ObjectInfo == ID: 35, Names: ['lamp'], Mean_Emb: (768,), Num. Points: (3, 7079)              true mean emb: [-0.9856017   0.19733721  0.8180061  -0.80573946 -0.64192665 -3.9531562 ]
+	ObjectInfo == ID: 36, Names: ['selfie'], Mean_Emb: (768,), Num. Points: (3, 11954)              true mean emb: [-1.0817182   2.2263496   0.55565846  0.22328104 -0.71711355 -2.196388  ]
+	ObjectInfo == ID: 37, Names: ['stand'], Mean_Emb: (768,), Num. Points: (3, 132944)              true mean emb: [ 0.39942518  0.12775217  0.514672    2.5555916   0.91807634 -3.0546672 ]
+	ObjectInfo == ID: 38, Names: ['book'], Mean_Emb: (768,), Num. Points: (3, 9457)              true mean emb: [-2.9030418  0.3264316 -0.9013882  1.5291158 -2.8817425 -4.735928 ]
+	ObjectInfo == ID: 39, Names: ['table'], Mean_Emb: (768,), Num. Points: (3, 69210)              true mean emb: [ 0.8897229  -0.36635903  0.9603799   1.3451501  -0.3619318  -0.68492854]
+	ObjectInfo == ID: 40, Names: ['radiator'], Mean_Emb: (768,), Num. Points: (3, 39698)              true mean emb: [ 0.57318884 -1.5096428  -0.97237635  3.901835   -1.5454589  -1.4386259 ]
+	ObjectInfo == ID: 41, Names: ['battery'], Mean_Emb: (768,), Num. Points: (3, 11713)              true mean emb: [-1.0433809  -1.3625472  -1.0615324   0.29966235 -1.4924048  -3.49829   ]
+	ObjectInfo == ID: 42, Names: ['counter top'], Mean_Emb: (768,), Num. Points: (3, 81031)              true mean emb: [ 2.0371025 -1.7073983  0.7901043  3.0494926 -1.1590722 -1.8174363]
+	ObjectInfo == ID: 43, Names: ['package'], Mean_Emb: (768,), Num. Points: (3, 4619)              true mean emb: [-8.6137778e-05 -1.0481691e+00  1.6307598e+00 -1.4788506e+00
+ -6.7297184e-01 -4.0338235e+00]
+	ObjectInfo == ID: 44, Names: ['blind'], Mean_Emb: (768,), Num. Points: (3, 20426)              true mean emb: [-2.5532382 -2.625162  -2.0233662  2.2771714  0.6229219 -3.34655  ]
+	ObjectInfo == ID: 45, Names: ['blind'], Mean_Emb: (768,), Num. Points: (3, 3206)              true mean emb: [-2.412809   -3.9266262  -0.21567376  0.8055212  -0.02319574 -4.5104203 ]
+	ObjectInfo == ID: 46, Names: ['book'], Mean_Emb: (768,), Num. Points: (3, 14513)              true mean emb: [ 0.23717885 -0.88060886  1.6923128   0.8641066  -1.1397098  -2.791201  ]
+	ObjectInfo == ID: 47, Names: ['book'], Mean_Emb: (768,), Num. Points: (3, 18389)              true mean emb: [-0.993618    0.33251128 -1.2355837  -0.275785   -1.1179309  -4.190625  ]
+	ObjectInfo == ID: 48, Names: ['laptop'], Mean_Emb: (768,), Num. Points: (3, 1941)              true mean emb: [-0.7795913   1.6824067  -0.15285198 -0.82818526 -2.801912   -5.1825533 ]
+	ObjectInfo == ID: 49, Names: ['package'], Mean_Emb: (768,), Num. Points: (3, 10641)              true mean emb: [-0.59624404  0.65271264  0.29245892 -0.5991617  -0.156004   -3.0795958 ]
+	ObjectInfo == ID: 50, Names: ['book'], Mean_Emb: (768,), Num. Points: (3, 15325)              true mean emb: [-1.0257344  1.9706677 -0.5747833 -0.2886574 -1.933141  -2.8610313]
+	ObjectInfo == ID: 51, Names: ['table'], Mean_Emb: (768,), Num. Points: (3, 74385)              true mean emb: [-0.38182315  1.861941   -0.03059223  1.317274   -2.0973914  -0.20542078]
+	ObjectInfo == ID: 52, Names: ['teddy'], Mean_Emb: (768,), Num. Points: (3, 9475)              true mean emb: [-0.85670835 -2.1978383   2.2527752  -1.0706819  -0.955967   -2.0764647 ]
+	ObjectInfo == ID: 53, Names: ['blind'], Mean_Emb: (768,), Num. Points: (3, 15245)              true mean emb: [-1.5235877 -2.8540022 -2.5475326  3.5415847 -0.5227503 -5.1373863]
+	ObjectInfo == ID: 54, Names: ['blind'], Mean_Emb: (768,), Num. Points: (3, 4273)              true mean emb: [-2.0255172  -0.89535666 -1.246597    2.9798355  -1.0358568  -4.6348004 ]
+	ObjectInfo == ID: 55, Names: ['lamp'], Mean_Emb: (768,), Num. Points: (3, 2996)              true mean emb: [-2.1843421 -0.8912417 -0.3657179  2.5445113  0.8089346 -3.781928 ]
+	ObjectInfo == ID: 56, Names: ['sink'], Mean_Emb: (768,), Num. Points: (3, 2232)              true mean emb: [-1.0055472   0.9239297   2.157267   -0.05579294 -0.33392423 -4.1335783 ]
+	ObjectInfo == ID: 57, Names: ['chair'], Mean_Emb: (768,), Num. Points: (3, 5386)              true mean emb: [-1.3102677   0.9446586  -1.2627795   1.000221   -0.56697696 -1.9156749 ]
+	ObjectInfo == ID: 58, Names: ['table'], Mean_Emb: (768,), Num. Points: (3, 9613)              true mean emb: [-2.2009945   1.2871715  -0.1252019  -0.838309    0.40641823 -1.5126958 ]
+	ObjectInfo == ID: 59, Names: ['table'], Mean_Emb: (768,), Num. Points: (3, 36489)              true mean emb: [ 0.42414623  0.72039783  0.23903528  0.11637107 -0.17126718 -2.2803738 ]
+	ObjectInfo == ID: 60, Names: ['office desk'], Mean_Emb: (768,), Num. Points: (3, 6081)              true mean emb: [ 0.21237959 -0.13048485 -1.3666376   1.1704443  -2.3192523  -1.425622  ]
+	ObjectInfo == ID: 61, Names: ['keyboard'], Mean_Emb: (768,), Num. Points: (3, 1108)              true mean emb: [ 0.15488215  0.00254375  1.3584518   0.4976506  -0.25378448 -2.344916  ]
+	ObjectInfo == ID: 62, Names: ['table'], Mean_Emb: (768,), Num. Points: (3, 63743)              true mean emb: [ 2.4620423  -1.6458699   0.8137912   0.76392263 -0.22751215 -1.1845042 ]
+	ObjectInfo == ID: 63, Names: ['electronic'], Mean_Emb: (768,), Num. Points: (3, 34241)              true mean emb: [ 1.3659015   0.6037538   0.39762497 -1.451722   -2.1710327  -0.64995044]
+	ObjectInfo == ID: 64, Names: ['speaker'], Mean_Emb: (768,), Num. Points: (3, 2043)              true mean emb: [-2.6172452  -1.5473725   0.76673335  0.5252789  -0.4601619  -3.3940182 ]
+	ObjectInfo == ID: 65, Names: ['toy'], Mean_Emb: (768,), Num. Points: (3, 511)              true mean emb: [-0.8195658  -0.18501331  1.7263674  -0.43642995 -1.0688399  -4.4137774 ]
+	ObjectInfo == ID: 66, Names: ['toy'], Mean_Emb: (768,), Num. Points: (3, 2816)              true mean emb: [-0.69549966  0.16119577  2.168281    0.01098447 -1.1563518  -4.675728  ]
+	ObjectInfo == ID: 67, Names: ['board'], Mean_Emb: (768,), Num. Points: (3, 107558)              true mean emb: [ 0.26089054 -0.12572026 -0.35915905  0.82553977 -2.9354045  -5.372681  ]
+	ObjectInfo == ID: 68, Names: ['lamp'], Mean_Emb: (768,), Num. Points: (3, 12092)              true mean emb: [-2.811781  -1.0222634  5.195927   2.5719635  0.3068287 -4.0305424]
+	ObjectInfo == ID: 69, Names: ['easel'], Mean_Emb: (768,), Num. Points: (3, 12211)              true mean emb: [-0.37271458 -0.49635595  2.663635    1.6300248  -2.2211044  -4.532613  ]
+	ObjectInfo == ID: 70, Names: ['attach'], Mean_Emb: (768,), Num. Points: (3, 55344)              true mean emb: [-1.9603133  -0.29875612  0.9795558  -0.5183846  -2.2741194  -5.627226  ]
+	ObjectInfo == ID: 71, Names: ['attach'], Mean_Emb: (768,), Num. Points: (3, 40119)              true mean emb: [-1.9808072  -0.8200369  -0.99028885  1.131463   -1.2684969  -1.3814806 ]
+	ObjectInfo == ID: 72, Names: ['speaker'], Mean_Emb: (768,), Num. Points: (3, 2908)              true mean emb: [-1.0491573  -1.3787696   0.8999808   2.0099213  -0.48736957 -4.805776  ]
+	ObjectInfo == ID: 73, Names: ['chair'], Mean_Emb: (768,), Num. Points: (3, 1429)              true mean emb: [ 0.15568179 -1.5051147  -0.61748046  1.1844356  -1.563497   -3.3579135 ]
+	ObjectInfo == ID: 74, Names: ['laptop'], Mean_Emb: (768,), Num. Points: (3, 5802)              true mean emb: [-0.04237337  0.35711446 -0.42946506  0.34104216 -2.6954777  -4.785126  ]
+	ObjectInfo == ID: 75, Names: ['office chair'], Mean_Emb: (768,), Num. Points: (3, 5436)              true mean emb: [-1.3960186 -0.6340604  2.2523346  1.9890697 -1.1507238 -5.9027753]
+	ObjectInfo == ID: 76, Names: ['chair'], Mean_Emb: (768,), Num. Points: (3, 30328)              true mean emb: [ 0.9461665   1.3636403   2.3960266   0.64661056 -2.6726563  -1.5125284 ]
+	ObjectInfo == ID: 77, Names: ['table'], Mean_Emb: (768,), Num. Points: (3, 48330)              true mean emb: [ 0.6755964  2.649771   0.2958361 -1.517362  -1.9937704 -1.7201413]
+	ObjectInfo == ID: 78, Names: ['desktop'], Mean_Emb: (768,), Num. Points: (3, 7652)              true mean emb: [-3.21447   -1.6980296  0.4800337 -0.8875052 -1.9942034 -2.079236 ]
+	ObjectInfo == ID: 79, Names: ['laptop'], Mean_Emb: (768,), Num. Points: (3, 2606)              true mean emb: [-2.370917    1.7307497   1.2391291   0.3338165  -0.46454003 -5.096713  ]
+
+Clustering done
+
+Memory is
+	ObjectInfo == ID: 0, Names: ['keyboard'], Mean_Emb: (768,), Num. Points: (3, 4423)              true mean emb: [-0.56376266  1.2836303  -1.1904488   0.15480125  0.17702197 -4.3310533 ]
+	ObjectInfo == ID: 1, Names: ['lamp'], Mean_Emb: (768,), Num. Points: (3, 5376)              true mean emb: [-0.9856017   0.19733721  0.8180061  -0.80573946 -0.64192665 -3.9531562 ]
+	ObjectInfo == ID: 2, Names: ['bookshelf'], Mean_Emb: (768,), Num. Points: (3, 2810)              true mean emb: [ 0.8240487  -0.9240036   2.1345394  -0.43125626 -0.098727   -2.9495769 ]
+	ObjectInfo == ID: 3, Names: ['mark'], Mean_Emb: (768,), Num. Points: (3, 563)              true mean emb: [ 3.131048    0.9154991   0.34146455 -0.82699996  1.3457943  -6.900753  ]
+	ObjectInfo == ID: 4, Names: ['chair'], Mean_Emb: (768,), Num. Points: (3, 28925)              true mean emb: [ 1.6580603  -1.8639517   0.19291519  2.0661337  -1.8465195  -3.0821378 ]
+	ObjectInfo == ID: 5, Names: ['tripod'], Mean_Emb: (768,), Num. Points: (3, 2512)              true mean emb: [-2.6327326 -1.750107  -2.8984783  1.339948   1.0417749 -2.153348 ]
+	ObjectInfo == ID: 6, Names: ['chair'], Mean_Emb: (768,), Num. Points: (3, 3963)              true mean emb: [-1.3102677   0.9446586  -1.2627795   1.000221   -0.56697696 -1.9156749 ]
+	ObjectInfo == ID: 7, Names: ['book'], Mean_Emb: (768,), Num. Points: (3, 3441)              true mean emb: [-0.993618    0.33251128 -1.2355837  -0.275785   -1.1179309  -4.190625  ]
+	ObjectInfo == ID: 8, Names: ['chair'], Mean_Emb: (768,), Num. Points: (3, 2647)              true mean emb: [ 0.27420682  0.9603693   0.24918093 -0.9866632   0.823319   -3.7078319 ]
+	ObjectInfo == ID: 9, Names: ['mower'], Mean_Emb: (768,), Num. Points: (3, 7747)              true mean emb: [ 1.9719048  0.6941502  1.5598143 -1.2746775  0.5357073 -2.5943506]
+	ObjectInfo == ID: 10, Names: ['selfie'], Mean_Emb: (768,), Num. Points: (3, 32324)              true mean emb: [-2.2727582  -0.02767992  1.2299321  -0.7641536   0.38098696 -1.8628408 ]
+	ObjectInfo == ID: 11, Names: ['laptop'], Mean_Emb: (768,), Num. Points: (3, 1453)              true mean emb: [-0.7795913   1.6824067  -0.15285198 -0.82818526 -2.801912   -5.1825533 ]
+	ObjectInfo == ID: 12, Names: ['laptop'], Mean_Emb: (768,), Num. Points: (3, 3881)              true mean emb: [ 0.18547904 -0.6204984  -0.19599277  0.7951226  -0.59643453 -5.988153  ]
+	ObjectInfo == ID: 13, Names: ['keyboard'], Mean_Emb: (768,), Num. Points: (3, 180)              true mean emb: [ 0.15488215  0.00254375  1.3584518   0.4976506  -0.25378448 -2.344916  ]
+	ObjectInfo == ID: 14, Names: ['stool'], Mean_Emb: (768,), Num. Points: (3, 1739)              true mean emb: [ 0.0261607 -1.5343987  3.1937945  0.7273215  0.9673032 -2.7202682]
+	ObjectInfo == ID: 15, Names: ['bulletin board', 'poster'], Mean_Emb: (768,), Num. Points: (3, 66155)              true mean emb: [-2.3225443  -2.806591   -1.2271408   0.04796262 -2.8387563  -3.3089225 ]
+	ObjectInfo == ID: 16, Names: ['book'], Mean_Emb: (768,), Num. Points: (3, 5595)              true mean emb: [ 0.23717885 -0.88060886  1.6923128   0.8641066  -1.1397098  -2.791201  ]
+	ObjectInfo == ID: 17, Names: ['teddy'], Mean_Emb: (768,), Num. Points: (3, 5467)              true mean emb: [-0.85670835 -2.1978383   2.2527752  -1.0706819  -0.955967   -2.0764647 ]
+	ObjectInfo == ID: 18, Names: ['book', 'battery', 'package'], Mean_Emb: (768,), Num. Points: (3, 6604)              true mean emb: [-2.9030418  0.3264316 -0.9013882  1.5291158 -2.8817425 -4.735928 ]
+	ObjectInfo == ID: 19, Names: ['radiator'], Mean_Emb: (768,), Num. Points: (3, 25549)              true mean emb: [ 0.57318884 -1.5096428  -0.97237635  3.901835   -1.5454589  -1.4386259 ]
+	ObjectInfo == ID: 20, Names: ['poster'], Mean_Emb: (768,), Num. Points: (3, 31652)              true mean emb: [-3.7758503 -1.9267855 -0.6948244  1.4192668 -1.5107422 -3.5262458]
+	ObjectInfo == ID: 21, Names: ['package'], Mean_Emb: (768,), Num. Points: (3, 1591)              true mean emb: [-8.6137778e-05 -1.0481691e+00  1.6307598e+00 -1.4788506e+00
+ -6.7297184e-01 -4.0338235e+00]
+	ObjectInfo == ID: 22, Names: ['desktop'], Mean_Emb: (768,), Num. Points: (3, 1177)              true mean emb: [-3.21447   -1.6980296  0.4800337 -0.8875052 -1.9942034 -2.079236 ]
+	ObjectInfo == ID: 23, Names: ['office chair'], Mean_Emb: (768,), Num. Points: (3, 2421)              true mean emb: [-1.3960186 -0.6340604  2.2523346  1.9890697 -1.1507238 -5.9027753]
+	ObjectInfo == ID: 24, Names: ['lamp', 'sink'], Mean_Emb: (768,), Num. Points: (3, 3977)              true mean emb: [-2.1843421 -0.8912417 -0.3657179  2.5445113  0.8089346 -3.781928 ]
+	ObjectInfo == ID: 25, Names: ['appliance'], Mean_Emb: (768,), Num. Points: (3, 4952)              true mean emb: [-1.4662216  -0.28097916  0.7272242   0.02952106 -0.64472604 -3.3271394 ]
+	ObjectInfo == ID: 26, Names: ['table', 'easel'], Mean_Emb: (768,), Num. Points: (3, 19545)              true mean emb: [-1.447767   -1.7224728   0.5023445  -0.575001   -0.89479023 -4.939403  ]
+	ObjectInfo == ID: 27, Names: ['teddy'], Mean_Emb: (768,), Num. Points: (3, 2828)              true mean emb: [-1.8109422  -1.0396872   1.1958439   0.06482811 -0.4111521  -1.4402474 ]
+	ObjectInfo == ID: 28, Names: ['table', 'counter top'], Mean_Emb: (768,), Num. Points: (3, 35187)              true mean emb: [ 2.846106   -0.41431332  1.643434    2.9745471  -2.3794937  -2.2443604 ]
+	ObjectInfo == ID: 29, Names: ['mouse'], Mean_Emb: (768,), Num. Points: (3, 397)              true mean emb: [-0.24106793  0.16363923  2.179715   -2.788816    0.54512703 -4.0754695 ]
+	ObjectInfo == ID: 30, Names: ['chair'], Mean_Emb: (768,), Num. Points: (3, 930)              true mean emb: [ 0.15568179 -1.5051147  -0.61748046  1.1844356  -1.563497   -3.3579135 ]
+	ObjectInfo == ID: 31, Names: ['counter top'], Mean_Emb: (768,), Num. Points: (3, 24696)              true mean emb: [ 2.0371025 -1.7073983  0.7901043  3.0494926 -1.1590722 -1.8174363]
+	ObjectInfo == ID: 32, Names: ['bookshelf'], Mean_Emb: (768,), Num. Points: (3, 62363)              true mean emb: [ 1.7505655  -0.5255572   0.65727264  1.1960317   0.12745538 -1.5866257 ]
+	ObjectInfo == ID: 33, Names: ['bookshelf'], Mean_Emb: (768,), Num. Points: (3, 60287)              true mean emb: [ 0.59295744 -0.05806594 -0.817973    2.9040558   2.2981844  -4.2469554 ]
+	ObjectInfo == ID: 34, Names: ['bulletin board', 'attach', 'board'], Mean_Emb: (768,), Num. Points: (3, 244398)              true mean emb: [-0.67521274 -0.10322805 -0.16742252  1.4772943  -2.1039271  -5.8423157 ]
+	ObjectInfo == ID: 35, Names: ['blind'], Mean_Emb: (768,), Num. Points: (3, 20407)              true mean emb: [-2.5532382 -2.625162  -2.0233662  2.2771714  0.6229219 -3.34655  ]
+	ObjectInfo == ID: 36, Names: ['bookshelf', 'attach'], Mean_Emb: (768,), Num. Points: (3, 78917)              true mean emb: [ 0.8513343  -2.1902757  -0.90222555  1.755186   -1.6750996  -1.8872802 ]
+	ObjectInfo == ID: 37, Names: ['electronic'], Mean_Emb: (768,), Num. Points: (3, 12453)              true mean emb: [ 1.3659015   0.6037538   0.39762497 -1.451722   -2.1710327  -0.64995044]
+	ObjectInfo == ID: 38, Names: ['laptop'], Mean_Emb: (768,), Num. Points: (3, 1886)              true mean emb: [-0.04237337  0.35711446 -0.42946506  0.34104216 -2.6954777  -4.785126  ]
+	ObjectInfo == ID: 39, Names: ['chair'], Mean_Emb: (768,), Num. Points: (3, 9938)              true mean emb: [ 0.5264882  -1.5185825   1.7290558  -0.5984787   0.48843375 -3.0595481 ]
+	ObjectInfo == ID: 40, Names: ['electronic', 'toy'], Mean_Emb: (768,), Num. Points: (3, 11995)              true mean emb: [ 1.454127   1.2569708  1.1697072  0.7212862 -1.2887939 -3.5763087]
+
+Memory dumped
+Retrieving map's pointcloud from cache
+Begin localisation
+(2, 41)  2 objects detected
+Getting assignments
+(2, 41)
+Phrases:  ['chair', 'laptop']
+Assignments being considered:  [[[0, 4]], [[0, 4], [1, 23]], [[0, 4], [1, 25]]]
+PointCloud with 36620 points.
+PointCloud with 68 points.
+Assn:  [[0, 4], [1, 23]]  | chosen RMSE:  0.9737437631213022  | full RMSE:  0.943261444502004  | chosen fitness:  0.006761053632604076  | full memory fitness:  0.943261444502004
+Assn:  [[0, 4], [1, 25]]  | chosen RMSE:  0.973443847642937  | full RMSE:  0.9335005589333915  | chosen fitness:  0.006887730890524836  | full memory fitness:  0.9335005589333915
+Assn:  [[0, 4]]  | chosen RMSE:  0.9749863462588749  | full RMSE:  0.9324372222373695  | chosen fitness:  0.006874744136741992  | full memory fitness:  0.9324372222373695
+Best assn:  [[0, 4], [1, 23]]
+R:  [[ 0.72659742 -0.31570578 -0.61023442]
+ [ 0.68666306  0.30335935  0.66065645]
+ [-0.02345274 -0.89905671  0.43720362]]
+t:  [-0.07142052  0.03984133 -0.24117491]
+Localistion 1/33 currently.
+Target pose:  [-0.4251      0.6645     -1.5234     -0.50381232 -0.20410499  0.33770826
+  0.76841879]
+Estimated pose:  [-0.7086632   0.72098656 -1.53200077 -0.49649634 -0.18678752  0.31907948
+  0.78535985]
+Translation error:  0.2892624993216378
+Rotation_error:  0.031425000672856
+(4, 41)  4 objects detected
+Getting assignments
+(4, 41)
+Phrases:  ['bookshelf', 'bulletin board', 'bulletin board', 'poster']
+Assignments being considered:  [[[0, 36]], [[0, 36], [1, 20]], [[0, 36], [2, 15]], [[0, 36], [1, 20], [2, 15]], [[0, 36], [1, 20], [3, 15]], [[0, 32], [1, 20], [2, 15]]]
+PointCloud with 79185 points.
+PointCloud with 36190 points.
+PointCloud with 38298 points.
+PointCloud with 27975 points.
+Assn:  [[0, 36]]  | chosen RMSE:  0.9599151322270213  | full RMSE:  0.7056676484351345  | chosen fitness:  0.010708393418183524  | full memory fitness:  0.7056676484351345
+Assn:  [[0, 36], [1, 20], [2, 15]]  | chosen RMSE:  0.9475239148825405  | full RMSE:  0.6510556304880398  | chosen fitness:  0.010764454710220722  | full memory fitness:  0.6510556304880398
+Assn:  [[0, 36], [2, 15]]  | chosen RMSE:  0.9383810010214505  | full RMSE:  0.6503179278262545  | chosen fitness:  0.010657209254907532  | full memory fitness:  0.6503179278262545
+Assn:  [[0, 36], [1, 20], [3, 15]]  | chosen RMSE:  0.9074274313379422  | full RMSE:  0.5453659610779267  | chosen fitness:  0.010976882419147354  | full memory fitness:  0.5453659610779267
+Assn:  [[0, 36], [1, 20]]  | chosen RMSE:  0.9641247443053774  | full RMSE:  0.518230614660464  | chosen fitness:  0.011318164218439992  | full memory fitness:  0.518230614660464
+Assn:  [[0, 32], [1, 20], [2, 15]]  | chosen RMSE:  0.27976833474328106  | full RMSE:  0.2824850670263426  | chosen fitness:  0.00960558956701076  | full memory fitness:  0.2824850670263426
+Best assn:  [[0, 36]]
+R:  [[ 0.87566443  0.02609993 -0.48221427]
+ [ 0.4804564  -0.14781982  0.86447149]
+ [-0.04871818 -0.98866986 -0.14198044]]
+t:  [ 0.0362978  -0.08444225  0.03630874]
+Localistion 2/33 currently.
+Target pose:  [-0.3026      0.6919     -1.7201      0.73491285  0.171403   -0.15970279
+ -0.63641113]
+Estimated pose:  [ 1.54758212  0.72819799 -1.59627182  0.7357759   0.17211638 -0.18039883
+ -0.6296555 ]
+Translation error:  1.8546764819807513
+Rotation_error:  0.021799936883054996
+(5, 41)  5 objects detected
+Getting assignments
+(5, 41)
+Phrases:  ['bulletin board', 'chair', 'table', 'desktop', 'poster']
+Assignments being considered:  [[[0, 20]], [[0, 20], [3, 12]], [[0, 20], [4, 15]], [[0, 20], [3, 12], [4, 15]], [[0, 20], [1, 14], [3, 12]], [[0, 20], [3, 26], [4, 15]]]
+PointCloud with 44199 points.
+PointCloud with 12856 points.
+PointCloud with 10265 points.
+PointCloud with 7383 points.
+PointCloud with 84003 points.
+Assn:  [[0, 20], [4, 15]]  | chosen RMSE:  0.713493400730132  | full RMSE:  0.47477898132919966  | chosen fitness:  0.009796690617727526  | full memory fitness:  0.47477898132919966
+Assn:  [[0, 20], [3, 12], [4, 15]]  | chosen RMSE:  0.6602004764819992  | full RMSE:  0.47360693648903257  | chosen fitness:  0.009781285961357938  | full memory fitness:  0.47360693648903257
+Assn:  [[0, 20], [3, 26], [4, 15]]  | chosen RMSE:  0.6526254453188963  | full RMSE:  0.44187350737569075  | chosen fitness:  0.009479059158501408  | full memory fitness:  0.44187350737569075
+Assn:  [[0, 20], [1, 14], [3, 12]]  | chosen RMSE:  0.7045786124476175  | full RMSE:  0.3929185806915065  | chosen fitness:  0.011022372477996848  | full memory fitness:  0.3929185806915065
+Assn:  [[0, 20], [3, 12]]  | chosen RMSE:  0.8789118548105634  | full RMSE:  0.3700952128899727  | chosen fitness:  0.010970723737339379  | full memory fitness:  0.3700952128899727
+Assn:  [[0, 20]]  | chosen RMSE:  0.898038150838368  | full RMSE:  0.3677133153115686  | chosen fitness:  0.009824854287996829  | full memory fitness:  0.3677133153115686
+Best assn:  [[0, 20], [4, 15]]
+R:  [[ 0.93965612 -0.3143388  -0.13504629]
+ [ 0.16812037  0.08047226  0.98247634]
+ [-0.29796296 -0.94589393  0.12846301]]
+t:  [-0.0646733   0.02458591 -0.13007968]
+Localistion 3/33 currently.
+Target pose:  [-0.3517      0.8001     -1.6483     -0.66399034 -0.06049912  0.06099911
+  0.7427892 ]
+Estimated pose:  [-0.78640994  0.29223583 -1.79265544 -0.65778432  0.05557233  0.16457113
+  0.73290371]
+Translation error:  0.6839131843851483
+Rotation_error:  0.15615856219185578
+(6, 41)  6 objects detected
+Getting assignments
+(6, 41)
+Phrases:  ['chair', 'keyboard', 'table', 'laptop', 'monitor', 'mouse']
+Assignments being considered:  [[[1, 0]], [[1, 0], [5, 29]], [[0, 4], [1, 0]], [[0, 4], [1, 0], [5, 29]], [[1, 0], [3, 12], [5, 29]], [[0, 4], [1, 0], [3, 12]]]
+PointCloud with 35084 points.
+PointCloud with 8907 points.
+PointCloud with 85143 points.
+PointCloud with 2845 points.
+PointCloud with 34 points.
+PointCloud with 1355 points.
+Assn:  [[0, 4], [1, 0], [3, 12]]  | chosen RMSE:  0.9745275968826732  | full RMSE:  0.35813430317573397  | chosen fitness:  0.010875825645843872  | full memory fitness:  0.35813430317573397
+Assn:  [[0, 4], [1, 0]]  | chosen RMSE:  0.9668106387815413  | full RMSE:  0.3226050766750403  | chosen fitness:  0.010211274208314912  | full memory fitness:  0.3226050766750403
+Assn:  [[0, 4], [1, 0], [5, 29]]  | chosen RMSE:  0.967692138052707  | full RMSE:  0.3203779385849799  | chosen fitness:  0.010149718887883836  | full memory fitness:  0.3203779385849799
+Assn:  [[1, 0]]  | chosen RMSE:  1.0  | full RMSE:  0.25642083161486257  | chosen fitness:  0.009643742388862382  | full memory fitness:  0.25642083161486257
+Assn:  [[1, 0], [3, 12], [5, 29]]  | chosen RMSE:  0.9949645227740902  | full RMSE:  0.2521990176596303  | chosen fitness:  0.009648315511629169  | full memory fitness:  0.2521990176596303
+Assn:  [[1, 0], [5, 29]]  | chosen RMSE:  0.995809783667901  | full RMSE:  0.24907202579580817  | chosen fitness:  0.009586861615436648  | full memory fitness:  0.24907202579580817
+Best assn:  [[0, 4], [1, 0], [3, 12]]
+R:  [[ 0.9921522   0.12216209 -0.02665405]
+ [-0.0576678   0.63621686  0.76935202]
+ [ 0.1109434  -0.76177722  0.63826877]]
+t:  [ 0.10992335 -0.1191103  -0.10641731]
+Localistion 4/33 currently.
+Target pose:  [-0.3501      0.8003     -1.4647     -0.42520901 -0.01100023 -0.0332007
+  0.90441916]
+Estimated pose:  [-0.28886824  0.81044602 -1.48571983 -0.42357602 -0.03806536 -0.04974866
+  0.90369213]
+Translation error:  0.06552940802430529
+Rotation_error:  0.03177476825898649
+(3, 41)  3 objects detected
+Getting assignments
+(3, 41)
+Phrases:  ['chair', 'table', 'mark']
+Assignments being considered:  [[[0, 4]], [[0, 4], [1, 28]], [[0, 4], [2, 3]], [[0, 4], [1, 28], [2, 3]], [[0, 4], [1, 31], [2, 3]], [[0, 30], [1, 28], [2, 3]]]
+PointCloud with 11061 points.
+PointCloud with 47424 points.
+PointCloud with 3628 points.
+Assn:  [[0, 4], [2, 3]]  | chosen RMSE:  0.9829804615698823  | full RMSE:  0.9156215285044998  | chosen fitness:  0.007598930546635355  | full memory fitness:  0.9156215285044998
+Assn:  [[0, 4], [1, 28]]  | chosen RMSE:  0.9995383431649141  | full RMSE:  0.8898298262843527  | chosen fitness:  0.00774341462642187  | full memory fitness:  0.8898298262843527
+Assn:  [[0, 4], [1, 28], [2, 3]]  | chosen RMSE:  0.99975850466086  | full RMSE:  0.8787693397517428  | chosen fitness:  0.007856156521225639  | full memory fitness:  0.8787693397517428
+Assn:  [[0, 30], [1, 28], [2, 3]]  | chosen RMSE:  0.8181540096276142  | full RMSE:  0.5787355304042632  | chosen fitness:  0.010907810018836795  | full memory fitness:  0.5787355304042632
+Assn:  [[0, 4], [1, 31], [2, 3]]  | chosen RMSE:  0.4633490573631929  | full RMSE:  0.17777276898555858  | chosen fitness:  0.01084101789636709  | full memory fitness:  0.17777276898555858
+Assn:  [[0, 4]]  | chosen RMSE:  0.7148539915016725  | full RMSE:  0.07096743032859466  | chosen fitness:  0.010839769144950209  | full memory fitness:  0.07096743032859466
+Best assn:  [[0, 4], [2, 3]]
+R:  [[ 0.97945054  0.20065823 -0.02032029]
+ [-0.16545605  0.85703754  0.48796614]
+ [ 0.11532967 -0.47457658  0.872626  ]]
+t:  [ 0.26351467 -0.23751179  0.07761389]
+Localistion 5/33 currently.
+Target pose:  [-0.276       0.7059     -1.3359     -0.22730048 -0.0475001  -0.08990019
+  0.96850203]
+Estimated pose:  [ 0.35228094  0.41029698 -1.16964063 -0.24989348 -0.03521718 -0.09504988
+  0.96295302]
+Translation error:  0.7139749732879285
+Rotation_error:  0.026807978909901404
+(4, 41)  4 objects detected
+Getting assignments
+(4, 41)
+Phrases:  ['keyboard', 'table', 'monitor', 'mouse']
+Assignments being considered:  [[[0, 0]], [[0, 0], [3, 29]], [[0, 25], [3, 29]]]
+PointCloud with 8217 points.
+PointCloud with 106766 points.
+PointCloud with 15461 points.
+PointCloud with 1298 points.
+Assn:  [[0, 0]]  | chosen RMSE:  1.0  | full RMSE:  0.3003294317681529  | chosen fitness:  0.011062109682619035  | full memory fitness:  0.3003294317681529
+Assn:  [[0, 0], [3, 29]]  | chosen RMSE:  1.0  | full RMSE:  0.23826114678690166  | chosen fitness:  0.009203964998657409  | full memory fitness:  0.23826114678690166
+Assn:  [[0, 25], [3, 29]]  | chosen RMSE:  1.0  | full RMSE:  0.08337508159888267  | chosen fitness:  0.009662857201523179  | full memory fitness:  0.08337508159888267
+Best assn:  [[0, 0]]
+R:  [[ 0.93168921  0.30628159  0.19531206]
+ [-0.35479148  0.65185703  0.67022788]
+ [ 0.07796292 -0.69373914  0.71599427]]
+t:  [-0.0166226  -0.04007472 -0.00784805]
+Localistion 6/33 currently.
+Target pose:  [-0.2004      0.7265     -1.4545     -0.43530356  0.05030041 -0.15560127
+  0.88530725]
+Estimated pose:  [-1.83208853  0.93257012 -1.02364596 -0.37544571  0.03230154 -0.18196704
+  0.90823187]
+Translation error:  1.7001492776818905
+Rotation_error:  0.07162267225418502
+(5, 41)  5 objects detected
+Getting assignments
+(5, 41)
+Phrases:  ['bookshelf', 'chair', 'glass door', 'stool', 'tripod']
+Assignments being considered:  [[[0, 32]], [[0, 32], [1, 8]], [[0, 32], [4, 5]], [[0, 32], [1, 8], [4, 5]], [[0, 32], [1, 8], [3, 14]], [[0, 32], [3, 14], [4, 5]]]
+PointCloud with 73693 points.
+PointCloud with 3297 points.
+PointCloud with 15644 points.
+PointCloud with 0 points.
+[1;33m[Open3D WARNING] [KDTreeFlann::SetRawData] Failed due to no data.[0;m
+PointCloud with 2810 points.
+Assn:  [[0, 32]]  | chosen RMSE:  1.0  | full RMSE:  0.8373304212692679  | chosen fitness:  0.0012154051962038606  | full memory fitness:  0.8373304212692679
+Assn:  [[0, 32], [1, 8]]  | chosen RMSE:  1.0  | full RMSE:  0.8373304212692679  | chosen fitness:  0.001215400714770966  | full memory fitness:  0.8373304212692679
+Assn:  [[0, 32], [4, 5]]  | chosen RMSE:  0.9997254722530884  | full RMSE:  0.8373304212692679  | chosen fitness:  0.0012154531471290488  | full memory fitness:  0.8373304212692679
+Assn:  [[0, 32], [1, 8], [4, 5]]  | chosen RMSE:  0.9997368157208743  | full RMSE:  0.8373304212692679  | chosen fitness:  0.0012154408847313465  | full memory fitness:  0.8373304212692679
+Assn:  [[0, 32], [1, 8], [3, 14]]  | chosen RMSE:  1.0  | full RMSE:  0.8373304212692679  | chosen fitness:  0.001215401425503167  | full memory fitness:  0.8373304212692679
+Assn:  [[0, 32], [3, 14], [4, 5]]  | chosen RMSE:  0.9997254722530884  | full RMSE:  0.8373304212692679  | chosen fitness:  0.0012154531471290525  | full memory fitness:  0.8373304212692679
+Best assn:  [[0, 32]]
+R:  [[ 0.77040801  0.07238475  0.63342872]
+ [-0.63698724  0.04561242  0.76952373]
+ [ 0.02680957 -0.99633326  0.08124834]]
+t:  [-0.00566009 -0.0551788  -0.01799158]
+Localistion 7/33 currently.
+Target pose:  [-0.224       0.7834     -1.6298     -0.64100545  0.22020187 -0.25750219
+  0.68870586]
+Estimated pose:  [-0.22229053  0.76094099 -1.60935724 -0.64100454  0.22020222 -0.25750141
+  0.6887069 ]
+Translation error:  0.030417684562692754
+Rotation_error:  1.628340646985859e-06
+(1, 41)  1 objects detected
+Getting assignments
+(1, 41)
+Phrases:  ['selfie']
+Assignments being considered:  [[[0, 10]]]
+PointCloud with 11544 points.
+Assn:  [[0, 10]]  | chosen RMSE:  0.9845807345807346  | full RMSE:  0.6891025641025641  | chosen fitness:  0.010523169416876595  | full memory fitness:  0.6891025641025641
+Best assn:  [[0, 10]]
+R:  [[ 0.89910659 -0.01484151  0.43747807]
+ [-0.43371817 -0.16520201  0.88577472]
+ [ 0.05912602 -0.98614808 -0.15497125]]
+t:  [-0.02364712 -0.03399009 -0.11009495]
+Localistion 8/33 currently.
+Target pose:  [-0.2439      0.724      -1.7272      0.71229867 -0.32959938  0.28099947
+ -0.55229897]
+Estimated pose:  [ 0.20856023 -0.18729269 -1.67115365  0.74486238 -0.15055119  0.16667646
+ -0.62827807]
+Translation error:  1.0189778341621623
+Rotation_error:  0.2284464834759435
+(3, 41)  3 objects detected
+Getting assignments
+(3, 41)
+Phrases:  ['home appliance', 'leash', 'stool']
+Assignments being considered:  [[[0, 32]], [[0, 32], [1, 10]], [[0, 36], [1, 10]], [[0, 32], [1, 10], [2, 26]]]
+PointCloud with 33077 points.
+PointCloud with 41630 points.
+PointCloud with 2072 points.
+Assn:  [[0, 32], [1, 10]]  | chosen RMSE:  0.6735437055681255  | full RMSE:  0.3412927934969517  | chosen fitness:  0.010362266441055206  | full memory fitness:  0.3412927934969517
+Assn:  [[0, 32], [1, 10], [2, 26]]  | chosen RMSE:  0.6505914230628941  | full RMSE:  0.32904747016830804  | chosen fitness:  0.010434702782423599  | full memory fitness:  0.32904747016830804
+Assn:  [[0, 32]]  | chosen RMSE:  0.6598923365390431  | full RMSE:  0.10735501016101298  | chosen fitness:  0.012073701444585586  | full memory fitness:  0.10735501016101298
+Assn:  [[0, 36], [1, 10]]  | chosen RMSE:  0.22869612949004592  | full RMSE:  0.07925590120368924  | chosen fitness:  0.012091217404434418  | full memory fitness:  0.07925590120368924
+Best assn:  [[0, 32], [1, 10]]
+R:  [[ 0.5778548   0.19405651  0.79273319]
+ [-0.7408315  -0.28280927  0.60925167]
+ [ 0.34242155 -0.93934072 -0.01965952]]
+t:  [ 0.00040138 -0.14668284  0.08303659]
+Localistion 9/33 currently.
+Target pose:  [-0.1849      0.6218     -1.5914     -0.55259113  0.27759555 -0.38089389
+  0.68738897]
+Estimated pose:  [-0.82171397  0.17191934 -1.3139744   0.68562446 -0.19937117  0.41391272
+ -0.56466495]
+Translation error:  0.8275805721397989
+Rotation_error:  0.20025529703996225
+(3, 41)  3 objects detected
+Getting assignments
+(3, 41)
+Phrases:  ['table', 'scissors', 'stool']
+Assignments being considered:  [[[0, 28]], [[0, 28], [1, 24]], [[0, 28], [2, 26]]]
+PointCloud with 29981 points.
+PointCloud with 1218 points.
+PointCloud with 766 points.
+Assn:  [[0, 28], [2, 26]]  | chosen RMSE:  0.9244681543165701  | full RMSE:  0.5872027534418023  | chosen fitness:  0.010350412825631213  | full memory fitness:  0.5872027534418023
+Assn:  [[0, 28]]  | chosen RMSE:  0.5879056735932757  | full RMSE:  0.15168961201501877  | chosen fitness:  0.011475594656445716  | full memory fitness:  0.15168961201501877
+Assn:  [[0, 28], [1, 24]]  | chosen RMSE:  0.5615564601429534  | full RMSE:  0.15115769712140176  | chosen fitness:  0.011413632122802815  | full memory fitness:  0.15115769712140176
+Best assn:  [[0, 28], [2, 26]]
+R:  [[ 0.25288723  0.67742836  0.69075239]
+ [ 0.09247301  0.69376626 -0.71423884]
+ [-0.96306635  0.24449783  0.11280078]]
+t:  [ 0.77065821  0.29818069 -0.16518257]
+Localistion 10/33 currently.
+Target pose:  [-0.1584      0.5979     -1.3764     -0.31919883  0.17289937 -0.5172981
+  0.77499716]
+Estimated pose:  [-0.49710976  1.78819362 -1.2292533   0.334036    0.57621139 -0.20380585
+  0.71753994]
+Translation error:  1.246264558115671
+Rotation_error:  0.8572454876638778
+(4, 41)  4 objects detected
+Getting assignments
+(4, 41)
+Phrases:  ['boy', 'home appliance', 'kitchen', 'kitchen counter']
+Assignments being considered:  [[[0, 27]], [[0, 27], [3, 38]], [[0, 26], [3, 38]]]
+PointCloud with 18602 points.
+PointCloud with 69418 points.
+PointCloud with 110975 points.
+PointCloud with 5953 points.
+Assn:  [[0, 26], [3, 38]]  | chosen RMSE:  0.6250865404194665  | full RMSE:  0.08058708147512028  | chosen fitness:  0.010208067137733215  | full memory fitness:  0.08058708147512028
+Assn:  [[0, 27]]  | chosen RMSE:  0.417159445220944  | full RMSE:  0.041830530969133334  | chosen fitness:  0.010665678984599006  | full memory fitness:  0.041830530969133334
+Assn:  [[0, 27], [3, 38]]  | chosen RMSE:  0.0  | full RMSE:  0.015882232392923013  | chosen fitness:  0.012327811640356831  | full memory fitness:  0.015882232392923013
+Best assn:  [[0, 26], [3, 38]]
+R:  [[-0.98657353 -0.05456045 -0.1539345 ]
+ [-0.0787415  -0.66685335  0.74101713]
+ [-0.14308196  0.74318891  0.65360369]]
+t:  [-0.055411   -0.28629242 -0.38788376]
+Localistion 11/33 currently.
+Target pose:  [-0.1126      0.6316     -1.4323     -0.37430395  0.30160318 -0.57950611
+  0.65810694]
+Estimated pose:  [-2.12485232 -1.33032258 -2.30789849 -0.08166414  0.4080798   0.90926214
+ -0.00664854]
+Translation error:  2.9436325052701537
+Rotation_error:  1.1835360013388039
+(2, 41)  2 objects detected
+Getting assignments
+(2, 41)
+Phrases:  ['bookshelf', 'selfie']
+Assignments being considered:  [[[0, 33]], [[0, 33], [1, 10]], [[0, 32], [1, 10]]]
+PointCloud with 135462 points.
+PointCloud with 28213 points.
+Assn:  [[0, 32], [1, 10]]  | chosen RMSE:  0.4796207025068583  | full RMSE:  0.168991452364805  | chosen fitness:  0.011637770359015408  | full memory fitness:  0.168991452364805
+Assn:  [[0, 33]]  | chosen RMSE:  0.2758419583930074  | full RMSE:  0.08123613835071576  | chosen fitness:  0.01135442831738942  | full memory fitness:  0.08123613835071576
+Assn:  [[0, 33], [1, 10]]  | chosen RMSE:  0.21703906006561943  | full RMSE:  0.06090266449157151  | chosen fitness:  0.011518359208292651  | full memory fitness:  0.06090266449157151
+Best assn:  [[0, 32], [1, 10]]
+R:  [[ 0.16911862 -0.23249209  0.95778198]
+ [-0.71621936  0.63859254  0.28147715]
+ [-0.67707364 -0.73358503 -0.05851744]]
+t:  [ 0.03445114 -0.31504493  0.04648193]
+Localistion 12/33 currently.
+Target pose:  [-0.1286      0.6141     -1.6253      0.54368124 -0.49928277  0.47538359
+ -0.47868348]
+Estimated pose:  [-0.06654154  1.36266145 -1.10754609 -0.38374585  0.61805974 -0.18287386
+  0.66128544]
+Translation error:  0.9122853772579189
+Rotation_error:  0.4009166610805382
+(3, 41)  3 objects detected
+Getting assignments
+(3, 41)
+Phrases:  ['appliance', 'lamp', 'stare']
+Assignments being considered:  [[[0, 33]], [[0, 33], [1, 20]], [[0, 32], [1, 20]]]
+PointCloud with 80987 points.
+PointCloud with 6342 points.
+PointCloud with 7305 points.
+Assn:  [[0, 32], [1, 20]]  | chosen RMSE:  0.3861728564720972  | full RMSE:  0.1220594762538837  | chosen fitness:  0.012396499210768684  | full memory fitness:  0.1220594762538837
+Assn:  [[0, 33]]  | chosen RMSE:  0.4137462646020103  | full RMSE:  0.11082577727051762  | chosen fitness:  0.011202062483957841  | full memory fitness:  0.11082577727051762
+Assn:  [[0, 33], [1, 20]]  | chosen RMSE:  0.281856598069193  | full RMSE:  0.10319573901464714  | chosen fitness:  0.011319660694334353  | full memory fitness:  0.10319573901464714
+Best assn:  [[0, 32], [1, 20]]
+R:  [[-0.2010695   0.6149669  -0.76248722]
+ [-0.35866069 -0.77055082 -0.52689083]
+ [-0.91155557  0.16753252  0.37549872]]
+t:  [ 1.00738248 -0.42828857  0.0884214 ]
+Localistion 13/33 currently.
+Target pose:  [-0.1243      0.5232     -1.6791     -0.56081106  0.57461134 -0.46930926
+  0.36750725]
+Estimated pose:  [ 3.42073113  2.96293203 -1.97933173 -0.54634755 -0.11728167  0.76601551
+ -0.31775714]
+Translation error:  4.313893507015627
+Rotation_error:  1.331241850843858
+(3, 41)  3 objects detected
+Getting assignments
+(3, 41)
+Phrases:  ['armchair', 'table', 'speaker']
+Assignments being considered:  [[[0, 8]], [[0, 8], [2, 24]], [[0, 8], [1, 38]], [[0, 8], [1, 38], [2, 24]]]
+PointCloud with 4952 points.
+PointCloud with 11088 points.
+PointCloud with 3358 points.
+Assn:  [[0, 8]]  | chosen RMSE:  0.9466882067851373  | full RMSE:  0.2231157851324879  | chosen fitness:  0.011358289458975584  | full memory fitness:  0.2231157851324879
+Assn:  [[0, 8], [2, 24]]  | chosen RMSE:  0.0  | full RMSE:  0.0  | chosen fitness:  0.0  | full memory fitness:  0.0
+Assn:  [[0, 8], [1, 38]]  | chosen RMSE:  0.0  | full RMSE:  0.0  | chosen fitness:  0.0  | full memory fitness:  0.0
+Assn:  [[0, 8], [1, 38], [2, 24]]  | chosen RMSE:  0.0  | full RMSE:  0.0  | chosen fitness:  0.0  | full memory fitness:  0.0
+Best assn:  [[0, 8]]
+R:  [[ 0.89717602  0.01380049 -0.44145752]
+ [ 0.43943563 -0.12837289  0.88905384]
+ [-0.0444018  -0.99162994 -0.12123751]]
+t:  [ 0.01639989  0.08753557 -0.05195332]
+Localistion 14/33 currently.
+Target pose:  [-0.0471      0.5148     -1.499       0.32539794 -0.46019709  0.70209556
+ -0.43519725]
+Estimated pose:  [-0.41436902 -0.95550571 -1.34522826  0.7325958   0.15466787 -0.16580061
+ -0.64178766]
+Translation error:  1.5232633260039248
+Rotation_error:  1.2343827715232554
+(2, 41)  2 objects detected
+Getting assignments
+(2, 41)
+Phrases:  ['book', 'table']
+Assignments being considered:  [[[0, 18]], [[0, 18], [1, 31]], [[0, 7], [1, 31]]]
+PointCloud with 10568 points.
+PointCloud with 71280 points.
+Assn:  [[0, 18], [1, 31]]  | chosen RMSE:  0.8504056299481967  | full RMSE:  0.6538705893852018  | chosen fitness:  0.008055722987450517  | full memory fitness:  0.6538705893852018
+Assn:  [[0, 7], [1, 31]]  | chosen RMSE:  0.821009676473463  | full RMSE:  0.5528540709608054  | chosen fitness:  0.009271964707981046  | full memory fitness:  0.5528540709608054
+Assn:  [[0, 18]]  | chosen RMSE:  1.0  | full RMSE:  0.5032010556152868  | chosen fitness:  0.009703665995451149  | full memory fitness:  0.5032010556152868
+Best assn:  [[0, 18], [1, 31]]
+R:  [[ 9.92875653e-01  7.90069919e-02 -8.91954751e-02]
+ [ 7.63133104e-05 -7.48987644e-01 -6.62583959e-01]
+ [-1.19155074e-01  6.57856675e-01 -7.43657625e-01]]
+t:  [-0.00223207  0.03266102 -0.02111483]
+Localistion 15/33 currently.
+Target pose:  [-0.0797      0.5168     -1.3523      0.18259998 -0.33539997  0.84519993
+ -0.37389997]
+Estimated pose:  [ 0.05925833  0.44984371 -0.13539223  0.93347749  0.02117976 -0.05579956
+  0.35363483]
+Translation error:  1.2266446439359096
+Rotation_error:  1.5547590844202104
+(3, 41)  3 objects detected
+Getting assignments
+(3, 41)
+Phrases:  ['table', 'mouse', 'office chair']
+Assignments being considered:  [[[0, 37]], [[0, 28], [2, 37]], [[0, 37], [1, 13]]]
+PointCloud with 59051 points.
+PointCloud with 967 points.
+PointCloud with 35533 points.
+Assn:  [[0, 28], [2, 37]]  | chosen RMSE:  0.9210225831007358  | full RMSE:  0.7117560255779636  | chosen fitness:  0.009044333061382644  | full memory fitness:  0.7117560255779636
+Assn:  [[0, 37]]  | chosen RMSE:  0.8290630133274627  | full RMSE:  0.5499890111040178  | chosen fitness:  0.009596687590385457  | full memory fitness:  0.5499890111040178
+Assn:  [[0, 37], [1, 13]]  | chosen RMSE:  0.8080909060615149  | full RMSE:  0.5409676507833513  | chosen fitness:  0.009811701763587302  | full memory fitness:  0.5409676507833513
+Best assn:  [[0, 28], [2, 37]]
+R:  [[ 0.67615514 -0.6641536  -0.31892667]
+ [ 0.73675746  0.61047912  0.29069517]
+ [ 0.00163183 -0.43152663  0.90209872]]
+t:  [ 0.08150653  0.23359096 -0.06884678]
+Localistion 16/33 currently.
+Target pose:  [-0.1689      0.5058     -1.2706      0.14420619 -0.20680888  0.89303833
+ -0.372716  ]
+Estimated pose:  [-0.22700851 -0.1934442  -1.08973643 -0.20222345 -0.08975698  0.39225771
+  0.89285119]
+Translation error:  0.724590005145509
+Rotation_error:  1.5638743539938325
+(4, 41)  4 objects detected
+Getting assignments
+(4, 41)
+Phrases:  ['chair', 'table', 'laptop', 'office desk']
+Assignments being considered:  [[[0, 24]], [[0, 24], [3, 31]], [[0, 38], [3, 31]]]
+PointCloud with 8986 points.
+PointCloud with 30686 points.
+PointCloud with 2898 points.
+PointCloud with 30953 points.
+Assn:  [[0, 38], [3, 31]]  | chosen RMSE:  0.7400035053456521  | full RMSE:  0.7075313864443206  | chosen fitness:  0.007257387608869964  | full memory fitness:  0.7075313864443206
+Assn:  [[0, 24], [3, 31]]  | chosen RMSE:  0.7602593955782568  | full RMSE:  0.6915627252818999  | chosen fitness:  0.008067788877380421  | full memory fitness:  0.6915627252818999
+Assn:  [[0, 24]]  | chosen RMSE:  0.8829290006677053  | full RMSE:  0.04674981977448007  | chosen fitness:  0.011398154792303924  | full memory fitness:  0.04674981977448007
+Best assn:  [[0, 38], [3, 31]]
+R:  [[ 0.89679903 -0.14271754 -0.41878778]
+ [-0.43986877 -0.38946292 -0.80921821]
+ [-0.04761268  0.90991777 -0.41204695]]
+t:  [-0.03287809 -0.13633655 -0.04555678]
+Localistion 17/33 currently.
+Target pose:  [-0.136       0.4672     -1.5096      0.17369594 -0.56128688  0.76908202
+ -0.25159412]
+Estimated pose:  [ 0.61183911  0.77172174  0.08929011  0.8213265  -0.17733091 -0.14196561
+  0.52328032]
+Translation error:  1.7912136670933543
+Rotation_error:  1.5694391802817702
+(2, 41)  2 objects detected
+Getting assignments
+(2, 41)
+Phrases:  ['blind', 'blind']
+Assignments being considered:  [[[0, 35]], [[0, 35], [1, 26]], [[0, 35], [1, 24]]]
+PointCloud with 19342 points.
+PointCloud with 3233 points.
+Assn:  [[0, 35], [1, 24]]  | chosen RMSE:  0.8563006958911396  | full RMSE:  0.7218651655511724  | chosen fitness:  0.00791482960947083  | full memory fitness:  0.7218651655511724
+Assn:  [[0, 35], [1, 26]]  | chosen RMSE:  0.856389344443952  | full RMSE:  0.7204467887061744  | chosen fitness:  0.00801801457796015  | full memory fitness:  0.7204467887061744
+Assn:  [[0, 35]]  | chosen RMSE:  0.9987072754537463  | full RMSE:  0.7188511147555516  | chosen fitness:  0.007939544520554311  | full memory fitness:  0.7188511147555516
+Best assn:  [[0, 35], [1, 24]]
+R:  [[-0.9246601  -0.11530584  0.36291632]
+ [-0.37990131  0.21413264 -0.89990122]
+ [ 0.02605164 -0.96997514 -0.24180475]]
+t:  [ 0.59538211 -0.29576997  0.01341382]
+Localistion 18/33 currently.
+Target pose:  [-0.0602      0.5065     -1.6455     -0.15269639  0.76968182 -0.60718566
+  0.12489705]
+Estimated pose:  [-0.03923169  0.50525645 -1.6401401  -0.16047742  0.77145925 -0.60595435
+  0.10916477]
+Translation error:  0.021678217177433068
+Rotation_error:  0.01768424454009142
+(4, 41)  4 objects detected
+Getting assignments
+(4, 41)
+Phrases:  ['table', 'laptop', 'monitor', 'monitor']
+Assignments being considered:  [[[1, 11]], [[1, 11], [3, 12]], [[1, 11], [3, 26]], [[1, 11], [2, 26], [3, 12]], [[0, 22], [1, 11], [3, 12]], [[0, 22], [1, 11], [3, 26]]]
+PointCloud with 30913 points.
+PointCloud with 2235 points.
+PointCloud with 3016 points.
+PointCloud with 2319 points.
+Assn:  [[0, 22], [1, 11], [3, 26]]  | chosen RMSE:  0.5828938834212233  | full RMSE:  0.20222470566832135  | chosen fitness:  0.011226749479894793  | full memory fitness:  0.20222470566832135
+Assn:  [[1, 11], [2, 26], [3, 12]]  | chosen RMSE:  0.2089059196617336  | full RMSE:  0.0448319775450269  | chosen fitness:  0.010471196342741304  | full memory fitness:  0.0448319775450269
+Assn:  [[1, 11], [3, 12]]  | chosen RMSE:  0.4031195079086116  | full RMSE:  0.025807625334615485  | chosen fitness:  0.012797345849898398  | full memory fitness:  0.025807625334615485
+Assn:  [[1, 11], [3, 26]]  | chosen RMSE:  0.0  | full RMSE:  0.009486186553005692  | chosen fitness:  0.012687946800364754  | full memory fitness:  0.009486186553005692
+Assn:  [[0, 22], [1, 11], [3, 12]]  | chosen RMSE:  0.0  | full RMSE:  0.0037944746212022766  | chosen fitness:  0.011588784795407668  | full memory fitness:  0.0037944746212022766
+Assn:  [[1, 11]]  | chosen RMSE:  0.0  | full RMSE:  0.0  | chosen fitness:  0.0  | full memory fitness:  0.0
+Best assn:  [[0, 22], [1, 11], [3, 26]]
+R:  [[-0.25783193 -0.87805702  0.40316072]
+ [-0.60702366 -0.17742367 -0.7746245 ]
+ [ 0.75169473 -0.44445103 -0.4872559 ]]
+t:  [-0.33015005 -0.05747793 -0.10338537]
+Localistion 19/33 currently.
+Target pose:  [-0.1392      0.4435     -1.5338      0.0974022  -0.55541257  0.8216186
+ -0.08350189]
+Estimated pose:  [-3.10979959  0.8576256   0.01782884 -0.59305304  0.62603198 -0.48682638
+ -0.13918379]
+Translation error:  3.3769089378977766
+Rotation_error:  0.653708158549645
+(2, 41)  2 objects detected
+Getting assignments
+(2, 41)
+Phrases:  ['book', 'book']
+Assignments being considered:  [[[0, 16]], [[0, 16], [1, 7]], [[0, 16], [1, 18]]]
+PointCloud with 17580 points.
+PointCloud with 20477 points.
+Assn:  [[0, 16]]  | chosen RMSE:  1.0  | full RMSE:  0.999421919751951  | chosen fitness:  0.0040853331828770555  | full memory fitness:  0.999421919751951
+Assn:  [[0, 16], [1, 7]]  | chosen RMSE:  0.9601124628846205  | full RMSE:  0.8817563128990724  | chosen fitness:  0.00969970472062839  | full memory fitness:  0.8817563128990724
+Assn:  [[0, 16], [1, 18]]  | chosen RMSE:  0.9459757731823317  | full RMSE:  0.7588091546890191  | chosen fitness:  0.008898198960911707  | full memory fitness:  0.7588091546890191
+Best assn:  [[0, 16]]
+R:  [[-0.99166486 -0.02065479  0.12717775]
+ [-0.05829643 -0.80832455 -0.5858438 ]
+ [ 0.11490138 -0.58837472  0.80038295]]
+t:  [-0.00076264  0.00374226  0.00937532]
+Localistion 20/33 currently.
+Target pose:  [-0.2424      0.4508     -1.3359      0.05849845 -0.31449166  0.94737489
+ -0.01239967]
+Estimated pose:  [-0.12177171  0.40959325 -1.32268896  0.06379015 -0.30941775  0.94873236
+ -0.00991893]
+Translation error:  0.12815502918766777
+Rotation_error:  0.007857727558649887
+(3, 41)  3 objects detected
+Getting assignments
+(3, 41)
+Phrases:  ['binder', 'binder', 'table']
+Assignments being considered:  [[[0, 16]], [[0, 16], [1, 26]], [[0, 16], [1, 25]]]
+PointCloud with 15302 points.
+PointCloud with 24323 points.
+PointCloud with 198898 points.
+Assn:  [[0, 16], [1, 26]]  | chosen RMSE:  1.0  | full RMSE:  0.4443303161539977  | chosen fitness:  0.009045205481656823  | full memory fitness:  0.4443303161539977
+Assn:  [[0, 16], [1, 25]]  | chosen RMSE:  0.9996719242902208  | full RMSE:  0.26628040063222413  | chosen fitness:  0.009815130640787956  | full memory fitness:  0.26628040063222413
+Assn:  [[0, 16]]  | chosen RMSE:  0.9998039471964449  | full RMSE:  0.17693471908369424  | chosen fitness:  0.009717351132359218  | full memory fitness:  0.17693471908369424
+Best assn:  [[0, 16], [1, 26]]
+R:  [[-0.14452455  0.95352745  0.2643824 ]
+ [-0.98812278 -0.15317453  0.01228567]
+ [ 0.05221138 -0.25946669  0.96433967]]
+t:  [-0.39569773  0.09717527 -0.01477974]
+Localistion 21/33 currently.
+Target pose:  [-0.2221      0.4229     -1.3473     -0.02769845 -0.37417902  0.91714858
+  0.13439247]
+Estimated pose:  [-1.67997224  0.81265656 -1.23429089  0.10525006 -0.08217413  0.75200378
+ -0.64549218]
+Translation error:  1.513298615592168
+Rotation_error:  0.8882351138864256
+(3, 41)  3 objects detected
+Getting assignments
+(3, 41)
+Phrases:  ['lamp', 'chair', 'office desk']
+Assignments being considered:  [[[0, 26]], [[0, 26], [1, 6]], [[0, 25], [1, 6]]]
+PointCloud with 2584 points.
+PointCloud with 23106 points.
+PointCloud with 26461 points.
+Assn:  [[0, 26], [1, 6]]  | chosen RMSE:  0.7851304009342156  | full RMSE:  0.17961993518571784  | chosen fitness:  0.011203108623638354  | full memory fitness:  0.17961993518571784
+Assn:  [[0, 26]]  | chosen RMSE:  0.8374613003095975  | full RMSE:  0.04471801952098794  | chosen fitness:  0.011175602810132525  | full memory fitness:  0.04471801952098794
+Assn:  [[0, 25], [1, 6]]  | chosen RMSE:  0.0  | full RMSE:  0.015053021150932903  | chosen fitness:  0.012872692430145358  | full memory fitness:  0.015053021150932903
+Best assn:  [[0, 26], [1, 6]]
+R:  [[-0.58009877 -0.81453695  0.00386977]
+ [ 0.55302837 -0.39733614 -0.73231387]
+ [ 0.59803431 -0.42267429  0.68095625]]
+t:  [-0.12000413  0.11142438  0.06083259]
+Localistion 22/33 currently.
+Target pose:  [-0.1999      0.4121     -1.55       -0.13420324 -0.64181548  0.73051762
+  0.1908046 ]
+Estimated pose:  [-1.80909326  1.63906331 -2.15853014  0.18458136 -0.35419147  0.81522867
+  0.41938089]
+Translation error:  2.1131140180897416
+Rotation_error:  0.4988927634189088
+(5, 41)  5 objects detected
+Getting assignments
+(5, 41)
+Phrases:  ['blind', 'blind', 'glass door', 'kitchen sink', 'sink']
+Assignments being considered:  [[[2, 35]], [[2, 35], [3, 24]], [[2, 35], [4, 24]], [[2, 35], [3, 24], [4, 40]], [[2, 35], [3, 27], [4, 24]], [[2, 35], [3, 24], [4, 38]]]
+PointCloud with 9256 points.
+PointCloud with 679 points.
+PointCloud with 3367 points.
+PointCloud with 5704 points.
+PointCloud with 2879 points.
+Assn:  [[2, 35], [3, 24], [4, 38]]  | chosen RMSE:  0.6068046593480265  | full RMSE:  0.1634417455743104  | chosen fitness:  0.01166133387560782  | full memory fitness:  0.1634417455743104
+Assn:  [[2, 35], [3, 24]]  | chosen RMSE:  0.3083379348426284  | full RMSE:  0.11925346507479072  | chosen fitness:  0.010844639018324342  | full memory fitness:  0.11925346507479072
+Assn:  [[2, 35], [3, 27], [4, 24]]  | chosen RMSE:  0.22676611078521747  | full RMSE:  0.09908055441196652  | chosen fitness:  0.011182526290928403  | full memory fitness:  0.09908055441196652
+Assn:  [[2, 35]]  | chosen RMSE:  0.6724292101341282  | full RMSE:  0.08727871552079045  | chosen fitness:  0.011250747702219305  | full memory fitness:  0.08727871552079045
+Assn:  [[2, 35], [4, 24]]  | chosen RMSE:  0.3492700144392748  | full RMSE:  0.08265861579982617  | chosen fitness:  0.011214648757801834  | full memory fitness:  0.08265861579982617
+Assn:  [[2, 35], [3, 24], [4, 40]]  | chosen RMSE:  0.0  | full RMSE:  0.0  | chosen fitness:  0.0  | full memory fitness:  0.0
+Best assn:  [[2, 35], [3, 24], [4, 38]]
+R:  [[-0.20638489  0.34327744  0.91627827]
+ [-0.94547857 -0.31108559 -0.09641593]
+ [ 0.25194356 -0.88622026  0.38876483]]
+t:  [ 0.56919205 -0.25112252 -0.07524232]
+Localistion 23/33 currently.
+Target pose:  [-0.2337      0.5153     -1.6856      0.20149379  0.78597576 -0.55378292
+ -0.18699423]
+Estimated pose:  [-1.78710216 -1.83385279 -3.55375835  0.42306497 -0.35585618  0.6903324
+ -0.46671574]
+Translation error:  3.379584699708768
+Rotation_error:  1.0593138809219895
+(3, 41)  3 objects detected
+Getting assignments
+(3, 41)
+Phrases:  ['armchair', 'table', 'table']
+Assignments being considered:  [[[0, 6]], [[0, 6], [2, 26]], [[0, 6], [1, 38]]]
+PointCloud with 20761 points.
+PointCloud with 16217 points.
+PointCloud with 8714 points.
+Assn:  [[0, 6], [2, 26]]  | chosen RMSE:  0.6697543431053203  | full RMSE:  0.1975530215150255  | chosen fitness:  0.011906760007535948  | full memory fitness:  0.1975530215150255
+Assn:  [[0, 6]]  | chosen RMSE:  0.3854417573947394  | full RMSE:  0.06590207708638841  | chosen fitness:  0.012360738183507957  | full memory fitness:  0.06590207708638841
+Assn:  [[0, 6], [1, 38]]  | chosen RMSE:  0.20251521298174444  | full RMSE:  0.04416818052485281  | chosen fitness:  0.013088392843021988  | full memory fitness:  0.04416818052485281
+Best assn:  [[0, 6], [2, 26]]
+R:  [[ 0.84474167  0.46031357  0.27298887]
+ [-0.53257586  0.77325524  0.34415008]
+ [-0.05267312 -0.4361052   0.89835282]]
+t:  [ 0.07521611 -0.05282174  0.01940848]
+Localistion 24/33 currently.
+Target pose:  [-0.2661      0.4995     -1.5471     -0.24549461 -0.58458716  0.68818488
+  0.35269225]
+Estimated pose:  [-1.05936288 -0.52071654 -2.28538893 -0.20804663  0.08683425 -0.26474323
+  0.93759663]
+Translation error:  1.4883475197054068
+Rotation_error:  1.4214387241613173
+(4, 41)  4 objects detected
+Getting assignments
+(4, 41)
+Phrases:  ['attach', 'table', 'table', 'mouse']
+Assignments being considered:  [[[0, 6]], [[0, 6], [1, 31]], [[0, 6], [3, 40]], [[0, 6], [1, 31], [3, 40]], [[0, 6], [1, 31], [3, 29]]]
+PointCloud with 18599 points.
+PointCloud with 24313 points.
+PointCloud with 14886 points.
+PointCloud with 1882 points.
+Assn:  [[0, 6], [1, 31]]  | chosen RMSE:  0.36699214653585327  | full RMSE:  0.13750230399302937  | chosen fitness:  0.011613125372606746  | full memory fitness:  0.13750230399302937
+Assn:  [[0, 6], [1, 31], [3, 40]]  | chosen RMSE:  0.3582256156095818  | full RMSE:  0.13237487223311384  | chosen fitness:  0.011475334747972741  | full memory fitness:  0.13237487223311384
+Assn:  [[0, 6], [1, 31], [3, 29]]  | chosen RMSE:  0.38564061348871476  | full RMSE:  0.11654015650396286  | chosen fitness:  0.01014222073646978  | full memory fitness:  0.11654015650396286
+Assn:  [[0, 6], [3, 40]]  | chosen RMSE:  0.6607099262731312  | full RMSE:  0.1106419343487659  | chosen fitness:  0.011608113378703206  | full memory fitness:  0.1106419343487659
+Assn:  [[0, 6]]  | chosen RMSE:  0.7672455508360665  | full RMSE:  0.07434776051877545  | chosen fitness:  0.012335703293586756  | full memory fitness:  0.07434776051877545
+Best assn:  [[0, 6], [1, 31]]
+R:  [[-0.70474044  0.69441448 -0.1453597 ]
+ [-0.56004954 -0.67029421 -0.486878  ]
+ [-0.4355289  -0.26171399  0.86128995]]
+t:  [ 0.10126296  0.29654419 -0.34765823]
+Localistion 25/33 currently.
+Target pose:  [-0.2042      0.479      -1.4145     -0.202801   -0.41080202  0.76790377
+  0.4477022 ]
+Estimated pose:  [ 0.08640045  0.5626839  -2.36743706 -0.16144954 -0.20806026  0.89948938
+ -0.34866004]
+Translation error:  0.9997703014751036
+Rotation_error:  0.8594698788954971
+(2, 41)  2 objects detected
+Getting assignments
+(2, 41)
+Phrases:  ['desktop', 'laptop']
+Assignments being considered:  [[[0, 31]], [[0, 31], [1, 37]], [[0, 28], [1, 37]]]
+PointCloud with 19689 points.
+PointCloud with 37752 points.
+Assn:  [[0, 28], [1, 37]]  | chosen RMSE:  0.8647829947250222  | full RMSE:  0.516547413868143  | chosen fitness:  0.010798512672164222  | full memory fitness:  0.516547413868143
+Assn:  [[0, 31]]  | chosen RMSE:  1.0  | full RMSE:  0.3567312546787138  | chosen fitness:  0.008837991587845555  | full memory fitness:  0.3567312546787138
+Assn:  [[0, 31], [1, 37]]  | chosen RMSE:  0.625145801779217  | full RMSE:  0.24900332515102452  | chosen fitness:  0.011243445910970195  | full memory fitness:  0.24900332515102452
+Best assn:  [[0, 28], [1, 37]]
+R:  [[ 0.48008919  0.50149153  0.71973649]
+ [-0.87581542  0.32042563  0.36093596]
+ [-0.04961569 -0.80363777  0.59304689]]
+t:  [0.17880086 0.25099864 0.02521995]
+Localistion 26/33 currently.
+Target pose:  [-0.1931      0.5893     -1.3412     -0.15279601 -0.2523934   0.79247928
+  0.53378604]
+Estimated pose:  [-0.29849136  0.47378372 -1.11907605 -0.37636972  0.24864108 -0.44512135
+  0.773557  ]
+Translation error:  0.27164388170942255
+Rotation_error:  1.5158517848998028
+(5, 41)  5 objects detected
+Getting assignments
+(5, 41)
+Phrases:  ['armchair', 'table', 'projection screen', 'projector', 'vacuum']
+Assignments being considered:  [[[0, 26]], [[0, 26], [4, 9]], [[0, 40], [4, 9]]]
+PointCloud with 11145 points.
+PointCloud with 14227 points.
+PointCloud with 30936 points.
+PointCloud with 1745 points.
+PointCloud with 8477 points.
+Assn:  [[0, 26], [4, 9]]  | chosen RMSE:  0.7978289674854755  | full RMSE:  0.19915821119879745  | chosen fitness:  0.010685061584063581  | full memory fitness:  0.19915821119879745
+Assn:  [[0, 26]]  | chosen RMSE:  0.992552714221624  | full RMSE:  0.1969936114242766  | chosen fitness:  0.010269938680607514  | full memory fitness:  0.1969936114242766
+Assn:  [[0, 40], [4, 9]]  | chosen RMSE:  0.46988074610131486  | full RMSE:  0.0740172867343104  | chosen fitness:  0.011091176642659146  | full memory fitness:  0.0740172867343104
+Best assn:  [[0, 26], [4, 9]]
+R:  [[-0.0536239  -0.58690935 -0.80787492]
+ [ 0.95474062  0.20690369 -0.21368484]
+ [ 0.29256593 -0.78276962  0.54925122]]
+t:  [ 0.01907383  0.09021377 -0.03983628]
+Localistion 27/33 currently.
+Target pose:  [-0.2126      0.6615     -1.4385     -0.3621032  -0.38640341  0.62640553
+  0.57200505]
+Estimated pose:  [-0.41432969  1.5287449  -1.59154142 -0.21807178 -0.42168601  0.59075617
+  0.65240536]
+Translation error:  0.9034546239087082
+Rotation_error:  0.1726236443554065
+(3, 41)  3 objects detected
+Getting assignments
+(3, 41)
+Phrases:  ['attach', 'speaker', 'stool']
+Assignments being considered:  [[[0, 34]], [[0, 34], [2, 14]], [[0, 34], [2, 17]], [[0, 34], [1, 40], [2, 14]], [[0, 34], [1, 40], [2, 17]], [[0, 34], [1, 26], [2, 14]]]
+PointCloud with 102007 points.
+PointCloud with 1010 points.
+PointCloud with 4208 points.
+Assn:  [[0, 34]]  | chosen RMSE:  0.9954708990559471  | full RMSE:  0.8979015109121432  | chosen fitness:  0.0068817512507069545  | full memory fitness:  0.8979015109121432
+Assn:  [[0, 34], [2, 14]]  | chosen RMSE:  0.8903587232840598  | full RMSE:  0.8010818877075172  | chosen fitness:  0.007235718846500895  | full memory fitness:  0.8010818877075172
+Assn:  [[0, 34], [1, 26], [2, 14]]  | chosen RMSE:  0.8887520984890879  | full RMSE:  0.7886308524529005  | chosen fitness:  0.006901483228049755  | full memory fitness:  0.7886308524529005
+Assn:  [[0, 34], [1, 40], [2, 17]]  | chosen RMSE:  0.8239880619287446  | full RMSE:  0.7322421190076478  | chosen fitness:  0.009148658498492042  | full memory fitness:  0.7322421190076478
+Assn:  [[0, 34], [1, 40], [2, 14]]  | chosen RMSE:  0.8417086364484238  | full RMSE:  0.7169651184480508  | chosen fitness:  0.009188937992405725  | full memory fitness:  0.7169651184480508
+Assn:  [[0, 34], [2, 17]]  | chosen RMSE:  0.7838339139440731  | full RMSE:  0.6955045700429024  | chosen fitness:  0.007227299491929785  | full memory fitness:  0.6955045700429024
+Best assn:  [[0, 34]]
+R:  [[ 0.02464281  0.08104048 -0.99640613]
+ [-0.98726106  0.15869189 -0.01150979]
+ [ 0.15718881  0.98399661  0.08391872]]
+t:  [0.00337289 0.0271091  0.01978713]
+Localistion 28/33 currently.
+Target pose:  [-0.1564      0.5852     -1.6049      0.54640114  0.50220105 -0.43490091
+ -0.51000107]
+Estimated pose:  [-0.12764478  0.44539678 -1.14145831  0.44216292 -0.51237934 -0.47449553
+  0.56286176]
+Translation error:  0.48492267180458437
+Rotation_error:  1.474225620467666
+[1;33m[Open3D WARNING] [KDTreeFlann::SetRawData] Failed due to no data.[0;m
+(5, 41)  5 objects detected
+Getting assignments
+(5, 41)
+Phrases:  ['attach', 'bookshelf', 'hook', 'hook', 'speaker']
+Assignments being considered:  [[[1, 36]], [[0, 34], [1, 36]], [[1, 36], [3, 14]], [[0, 34], [1, 36], [3, 14]], [[0, 34], [1, 36], [2, 14]], [[0, 34], [1, 36], [3, 25]]]
+PointCloud with 48623 points.
+PointCloud with 36930 points.
+PointCloud with 1380 points.
+PointCloud with 0 points.
+[1;33m[Open3D WARNING] [KDTreeFlann::SetRawData] Failed due to no data.[0;m
+PointCloud with 655 points.
+Assn:  [[0, 34], [1, 36]]  | chosen RMSE:  0.7855690106601833  | full RMSE:  0.5739340930370641  | chosen fitness:  0.009540783556493359  | full memory fitness:  0.5739340930370641
+Assn:  [[0, 34], [1, 36], [2, 14]]  | chosen RMSE:  0.7629641558919615  | full RMSE:  0.3951334810112129  | chosen fitness:  0.010566165936252913  | full memory fitness:  0.3951334810112129
+Assn:  [[0, 34], [1, 36], [3, 14]]  | chosen RMSE:  0.6180919207031981  | full RMSE:  0.21788577039895865  | chosen fitness:  0.011113705501393397  | full memory fitness:  0.21788577039895865
+Assn:  [[0, 34], [1, 36], [3, 25]]  | chosen RMSE:  0.48660463811483073  | full RMSE:  0.21263330973532166  | chosen fitness:  0.010484164609802999  | full memory fitness:  0.21263330973532166
+Assn:  [[1, 36]]  | chosen RMSE:  0.6850442741476888  | full RMSE:  0.1472173376875471  | chosen fitness:  0.01160680871806889  | full memory fitness:  0.1472173376875471
+Assn:  [[1, 36], [3, 14]]  | chosen RMSE:  0.4239215792466625  | full RMSE:  0.06226449564959236  | chosen fitness:  0.011909523212981046  | full memory fitness:  0.06226449564959236
+Best assn:  [[0, 34], [1, 36]]
+R:  [[ 0.29215889  0.32605597 -0.89907213]
+ [ 0.95502262 -0.14934602  0.25617877]
+ [-0.05074423 -0.93347912 -0.35502359]]
+t:  [ 0.02129511  0.56545918 -0.12278603]
+Localistion 29/33 currently.
+Target pose:  [-0.0995      0.563      -1.6607      0.64051402  0.49041074 -0.3290072
+ -0.49091075]
+Estimated pose:  [-0.08385823  0.8931549  -1.41166245  0.67017321  0.47789085 -0.35431749
+ -0.44378747]
+Translation error:  0.4138437192712891
+Rotation_error:  0.0624411326858709
+(1, 41)  1 objects detected
+Getting assignments
+(1, 41)
+Phrases:  ['chair']
+Assignments being considered:  [[[0, 4]]]
+PointCloud with 23340 points.
+Assn:  [[0, 4]]  | chosen RMSE:  0.9939588688946015  | full RMSE:  0.867395029991431  | chosen fitness:  0.008617810559524501  | full memory fitness:  0.867395029991431
+Best assn:  [[0, 4]]
+R:  [[ 0.72020656 -0.31881698 -0.61616414]
+ [ 0.68721337  0.44956972  0.57063548]
+ [ 0.09508046 -0.83441165  0.54287836]]
+t:  [ 0.01011806  0.01591459 -0.21629297]
+Localistion 30/33 currently.
+Target pose:  [-0.0868      0.6981     -1.4418     -0.37952079 -0.27681517  0.44772453
+  0.76084169]
+Estimated pose:  [-0.48917656  0.54872598 -1.46708044 -0.42654381 -0.21591943  0.30541041
+  0.82350693]
+Translation error:  0.4299518509195261
+Rotation_error:  0.17371096359052063
+(2, 41)  2 objects detected
+Getting assignments
+(2, 41)
+Phrases:  ['chair', 'chair']
+Assignments being considered:  [[[0, 28]], [[0, 28], [1, 38]], [[0, 23], [1, 38]]]
+PointCloud with 5536 points.
+PointCloud with 438 points.
+Assn:  [[0, 28], [1, 38]]  | chosen RMSE:  0.9274585357681354  | full RMSE:  0.8669793935332551  | chosen fitness:  0.008808401169943527  | full memory fitness:  0.8669793935332551
+Assn:  [[0, 23], [1, 38]]  | chosen RMSE:  1.0  | full RMSE:  0.7843859943039035  | chosen fitness:  0.010904447785374536  | full memory fitness:  0.7843859943039035
+Assn:  [[0, 28]]  | chosen RMSE:  1.0  | full RMSE:  0.7781873010554532  | chosen fitness:  0.010592950196678889  | full memory fitness:  0.7781873010554532
+Best assn:  [[0, 28], [1, 38]]
+R:  [[ 0.87828356  0.41715296 -0.23366941]
+ [-0.36293121  0.26346235 -0.89379445]
+ [-0.31128592  0.8698109   0.38279248]]
+t:  [ 0.04233645 -0.14872476  0.05267279]
+Localistion 31/33 currently.
+Target pose:  [-0.0275      0.5911     -1.3134     -0.19969735 -0.13479821  0.42469437
+  0.87268843]
+Estimated pose:  [-0.37683415  2.64234561 -0.27807373  0.55498395  0.02442492 -0.24548247
+  0.7944398 ]
+Translation error:  2.3241220665282496
+Rotation_error:  1.0759207721225672
+(5, 41)  5 objects detected
+Getting assignments
+(5, 41)
+Phrases:  ['chair', 'keyboard', 'table', 'laptop', 'monitor']
+Assignments being considered:  [[[0, 4]], [[0, 4], [3, 12]], [[0, 4], [2, 28]], [[0, 4], [2, 28], [3, 12]], [[0, 4], [3, 12], [4, 25]], [[0, 4], [3, 12], [4, 24]]]
+PointCloud with 31356 points.
+PointCloud with 6959 points.
+PointCloud with 60747 points.
+PointCloud with 3182 points.
+PointCloud with 1574 points.
+Assn:  [[0, 4], [2, 28]]  | chosen RMSE:  0.7994419291445447  | full RMSE:  0.5463661320618408  | chosen fitness:  0.008114885523823319  | full memory fitness:  0.5463661320618408
+Assn:  [[0, 4], [2, 28], [3, 12]]  | chosen RMSE:  0.7867975022301517  | full RMSE:  0.5426479795790589  | chosen fitness:  0.009122237264155807  | full memory fitness:  0.5426479795790589
+Assn:  [[0, 4]]  | chosen RMSE:  0.9971297359357061  | full RMSE:  0.41558541636565044  | chosen fitness:  0.008270471031070334  | full memory fitness:  0.41558541636565044
+Assn:  [[0, 4], [3, 12]]  | chosen RMSE:  0.9317852799814696  | full RMSE:  0.3967634734864904  | chosen fitness:  0.009617055887882406  | full memory fitness:  0.3967634734864904
+Assn:  [[0, 4], [3, 12], [4, 25]]  | chosen RMSE:  0.4605500013846963  | full RMSE:  0.060665607089534265  | chosen fitness:  0.011184022086784354  | full memory fitness:  0.060665607089534265
+Assn:  [[0, 4], [3, 12], [4, 24]]  | chosen RMSE:  0.2592982358968678  | full RMSE:  0.03677695901363001  | chosen fitness:  0.011535060293280735  | full memory fitness:  0.03677695901363001
+Best assn:  [[0, 4], [2, 28]]
+R:  [[ 0.91629274 -0.22818407 -0.32914988]
+ [ 0.39986724  0.47469531  0.78407305]
+ [-0.02266708 -0.8500567   0.5262032 ]]
+t:  [-0.07760995  0.00879091 -0.21165713]
+Localistion 32/33 currently.
+Target pose:  [ 0.0396      0.622      -1.4329     -0.47530782 -0.12960213  0.20630339
+  0.84541391]
+Estimated pose:  [-0.32007843  0.36157597 -1.67385788 -0.47838118 -0.08972091  0.18385806
+  0.85398935]
+Translation error:  0.5052226771083707
+Rotation_error:  0.0466656611352504
+(7, 41)  7 objects detected
+Getting assignments
+(7, 41)
+Phrases:  ['bookshelf', 'bulletin board', 'chair', 'table', 'laptop', 'monitor', 'poster']
+Assignments being considered:  [[[2, 4]], [[2, 4], [6, 20]], [[0, 36], [2, 4]], [[0, 36], [2, 4], [6, 20]], [[1, 15], [2, 4], [6, 20]], [[0, 36], [1, 15], [2, 4]]]
+PointCloud with 9786 points.
+PointCloud with 43153 points.
+PointCloud with 24156 points.
+PointCloud with 12424 points.
+PointCloud with 2195 points.
+PointCloud with 6105 points.
+PointCloud with 30949 points.
+Assn:  [[2, 4], [6, 20]]  | chosen RMSE:  0.9280347030637432  | full RMSE:  0.5484086425697821  | chosen fitness:  0.010410363331326956  | full memory fitness:  0.5484086425697821
+Assn:  [[0, 36], [2, 4]]  | chosen RMSE:  0.991336378370414  | full RMSE:  0.4764907811553457  | chosen fitness:  0.009846618437490512  | full memory fitness:  0.4764907811553457
+Assn:  [[1, 15], [2, 4], [6, 20]]  | chosen RMSE:  0.8164256124744272  | full RMSE:  0.4317013311794219  | chosen fitness:  0.010486282754511807  | full memory fitness:  0.4317013311794219
+Assn:  [[0, 36], [2, 4], [6, 20]]  | chosen RMSE:  0.9434357757159151  | full RMSE:  0.4005265692228832  | chosen fitness:  0.010786619147189789  | full memory fitness:  0.4005265692228832
+Assn:  [[0, 36], [1, 15], [2, 4]]  | chosen RMSE:  0.5899880655873807  | full RMSE:  0.32219357243821745  | chosen fitness:  0.010387781609198884  | full memory fitness:  0.32219357243821745
+Assn:  [[2, 4]]  | chosen RMSE:  0.6002318936601929  | full RMSE:  0.06594541698379906  | chosen fitness:  0.011007214900561559  | full memory fitness:  0.06594541698379906
+Best assn:  [[2, 4], [6, 20]]
+R:  [[ 0.92229848 -0.08590211 -0.37681075]
+ [ 0.38644138  0.19149473  0.90221551]
+ [-0.00534494 -0.97772726  0.20981143]]
+t:  [-0.00525354  0.05726458 -0.09831983]
+Localistion 33/33 currently.
+Target pose:  [ 0.0492      0.6115     -1.513      -0.62886821 -0.14269279  0.15139235
+  0.74916213]
+Estimated pose:  [-0.49950289  0.6018171  -2.03415402 -0.61664259 -0.12184501  0.15493403
+  0.76216872]
+Translation error:  0.7568157906327087
+Rotation_error:  0.027674170241207836
+Pose 1, image 33
+Translation error 0.2892624993216378
+Rotation errors 0.031425000672856
+Assignment:  [[0, 4], [1, 25]]
+Moved objects:  None
+SUCCESS
+
+Pose 2, image 33
+Translation error 1.8546764819807513
+Rotation errors 0.021799936883054996
+Assignment:  [[0, 32], [1, 20], [2, 15]]
+Moved objects:  None
+MISALIGNED
+
+Pose 3, image 33
+Translation error 0.6839131843851483
+Rotation errors 0.15615856219185578
+Assignment:  [[0, 20], [3, 26], [4, 15]]
+Moved objects:  None
+MISALIGNED
+
+Pose 4, image 33
+Translation error 0.06552940802430529
+Rotation errors 0.03177476825898649
+Assignment:  [[0, 4], [1, 0], [3, 12]]
+Moved objects:  None
+SUCCESS
+
+Pose 5, image 33
+Translation error 0.7139749732879285
+Rotation errors 0.026807978909901404
+Assignment:  [[0, 30], [1, 28], [2, 3]]
+Moved objects:  None
+MISALIGNED
+
+Pose 6, image 33
+Translation error 1.7001492776818905
+Rotation errors 0.07162267225418502
+Assignment:  [[0, 25], [3, 29]]
+Moved objects:  None
+MISALIGNED
+
+Pose 7, image 33
+Translation error 0.030417684562692754
+Rotation errors 1.628340646985859e-06
+Assignment:  [[0, 32], [3, 14], [4, 5]]
+Moved objects:  None
+SUCCESS
+
+Pose 8, image 33
+Translation error 1.0189778341621623
+Rotation errors 0.2284464834759435
+Assignment:  [[0, 10]]
+Moved objects:  None
+MISALIGNED
+
+Pose 9, image 33
+Translation error 0.8275805721397989
+Rotation errors 0.20025529703996225
+Assignment:  [[0, 32], [1, 10], [2, 26]]
+Moved objects:  None
+MISALIGNED
+
+Pose 10, image 33
+Translation error 1.246264558115671
+Rotation errors 0.8572454876638778
+Assignment:  [[0, 28], [2, 26]]
+Moved objects:  None
+MISALIGNED
+
+Pose 11, image 33
+Translation error 2.9436325052701537
+Rotation errors 1.1835360013388039
+Assignment:  [[0, 26], [3, 38]]
+Moved objects:  None
+MISALIGNED
+
+Pose 12, image 33
+Translation error 0.9122853772579189
+Rotation errors 0.4009166610805382
+Assignment:  [[0, 32], [1, 10]]
+Moved objects:  None
+MISALIGNED
+
+Pose 13, image 33
+Translation error 4.313893507015627
+Rotation errors 1.331241850843858
+Assignment:  [[0, 32], [1, 20]]
+Moved objects:  None
+MISALIGNED
+
+Pose 14, image 33
+Translation error 1.5232633260039248
+Rotation errors 1.2343827715232554
+Assignment:  [[0, 8], [1, 38], [2, 24]]
+Moved objects:  None
+MISALIGNED
+
+Pose 15, image 33
+Translation error 1.2266446439359096
+Rotation errors 1.5547590844202104
+Assignment:  [[0, 7], [1, 31]]
+Moved objects:  None
+MISALIGNED
+
+Pose 16, image 33
+Translation error 0.724590005145509
+Rotation errors 1.5638743539938325
+Assignment:  [[0, 37], [1, 13]]
+Moved objects:  None
+MISALIGNED
+
+Pose 17, image 33
+Translation error 1.7912136670933543
+Rotation errors 1.5694391802817702
+Assignment:  [[0, 38], [3, 31]]
+Moved objects:  None
+MISALIGNED
+
+Pose 18, image 33
+Translation error 0.021678217177433068
+Rotation errors 0.01768424454009142
+Assignment:  [[0, 35], [1, 24]]
+Moved objects:  None
+SUCCESS
+
+Pose 19, image 33
+Translation error 3.3769089378977766
+Rotation errors 0.653708158549645
+Assignment:  [[0, 22], [1, 11], [3, 26]]
+Moved objects:  None
+MISALIGNED
+
+Pose 20, image 33
+Translation error 0.12815502918766777
+Rotation errors 0.007857727558649887
+Assignment:  [[0, 16], [1, 18]]
+Moved objects:  None
+SUCCESS
+
+Pose 21, image 33
+Translation error 1.513298615592168
+Rotation errors 0.8882351138864256
+Assignment:  [[0, 16], [1, 25]]
+Moved objects:  None
+MISALIGNED
+
+Pose 22, image 33
+Translation error 2.1131140180897416
+Rotation errors 0.4988927634189088
+Assignment:  [[0, 25], [1, 6]]
+Moved objects:  None
+MISALIGNED
+
+Pose 23, image 33
+Translation error 3.379584699708768
+Rotation errors 1.0593138809219895
+Assignment:  [[2, 35], [3, 24], [4, 38]]
+Moved objects:  None
+MISALIGNED
+
+Pose 24, image 33
+Translation error 1.4883475197054068
+Rotation errors 1.4214387241613173
+Assignment:  [[0, 6], [1, 38]]
+Moved objects:  None
+MISALIGNED
+
+Pose 25, image 33
+Translation error 0.9997703014751036
+Rotation errors 0.8594698788954971
+Assignment:  [[0, 6], [1, 31], [3, 29]]
+Moved objects:  None
+MISALIGNED
+
+Pose 26, image 33
+Translation error 0.27164388170942255
+Rotation errors 1.5158517848998028
+Assignment:  [[0, 28], [1, 37]]
+Moved objects:  None
+MISALIGNED
+
+Pose 27, image 33
+Translation error 0.9034546239087082
+Rotation errors 0.1726236443554065
+Assignment:  [[0, 40], [4, 9]]
+Moved objects:  None
+MISALIGNED
+
+Pose 28, image 33
+Translation error 0.48492267180458437
+Rotation errors 1.474225620467666
+Assignment:  [[0, 34], [1, 26], [2, 14]]
+Moved objects:  None
+MISALIGNED
+
+Pose 29, image 33
+Translation error 0.4138437192712891
+Rotation errors 0.0624411326858709
+Assignment:  [[0, 34], [1, 36], [3, 25]]
+Moved objects:  None
+SUCCESS
+
+Pose 30, image 33
+Translation error 0.4299518509195261
+Rotation errors 0.17371096359052063
+Assignment:  [[0, 4]]
+Moved objects:  None
+SUCCESS
+
+Pose 31, image 33
+Translation error 2.3241220665282496
+Rotation errors 1.0759207721225672
+Assignment:  [[0, 23], [1, 38]]
+Moved objects:  None
+MISALIGNED
+
+Pose 32, image 33
+Translation error 0.5052226771083707
+Rotation errors 0.0466656611352504
+Assignment:  [[0, 4], [3, 12], [4, 24]]
+Moved objects:  None
+SUCCESS
+
+Pose 33, image 33
+Translation error 0.7568157906327087
+Rotation errors 0.027674170241207836
+Assignment:  [[0, 36], [1, 15], [2, 4]]
+Moved objects:  None
+MISALIGNED
+

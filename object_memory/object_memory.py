@@ -402,10 +402,12 @@ class ObjectMemory():
         distance_matrix /= np.max(distance_matrix)
         distance_matrix = 1 - distance_matrix
 
+        emb_distance_matrix = np.nan_to_num(emb_distance_matrix)
+
         import matplotlib.pyplot as plt
         cax = plt.imshow(distance_matrix)
         cbar = plt.colorbar(cax)
-        plt.savefig('/home2/aneesh.chavan/instance-based-loc/check.png')
+        # plt.savefig('/home2/aneesh.chavan/instance-based-loc/check.png')
 
         # sklearn agglomerative clustering
         self._log("Clustering agglomeratively")
@@ -456,16 +458,19 @@ class ObjectMemory():
 
         all_mean_embs = np.array([obj.mean_emb for obj in self.memory])
         all_centroids = np.array([obj.centroid for obj in self.memory])
+        print("--- getting dist matrix")
         distance_matrix = df(all_mean_embs, all_centroids)
 
         distance_matrix -= np.min(distance_matrix)
         distance_matrix /= np.max(distance_matrix)
         distance_matrix = 1 - distance_matrix
 
+        distance_matrix = np.nan_to_num(distance_matrix)
+
         import matplotlib.pyplot as plt
         cax = plt.imshow(distance_matrix)
         cbar = plt.colorbar(cax)
-        plt.savefig('/home2/aneesh.chavan/instance-based-loc/lora_sims.png')
+        # plt.savefig('/home2/aneesh.chavan/instance-based-loc/lora_sims.png')
 
         # import pdb;
         # pdb.set_trace()
@@ -566,7 +571,8 @@ class ObjectMemory():
                 normalized_embeddings = all_obj_embs / norms
 
                 emb_distance_matrix = 1 - np.dot(normalized_embeddings, normalized_embeddings.T)
-                
+                emb_distance_matrix = np.nan_to_num(emb_distance_matrix)
+
                 # compute pairwise distances, NxNx3
                 centroid_distances = np.linalg.norm(all_obj_centroids[np.newaxis, :, :] - all_obj_centroids[:, np.newaxis, :])
                 
@@ -586,7 +592,7 @@ class ObjectMemory():
         import matplotlib.pyplot as plt
         cax = plt.imshow(distance_matrix)
         cbar = plt.colorbar(cax)
-        plt.savefig('/home2/aneesh.chavan/instance-based-loc/lora_sims.png')
+        # plt.savefig('/home2/aneesh.chavan/instance-based-loc/lora_sims.png')
 
         # import pdb;
         # pdb.set_trace()
@@ -708,7 +714,7 @@ class ObjectMemory():
     def _recluster_IoU(self, IoU_threshold=0.6):
         IoUs = np.zeros((len(self.memory), len(self.memory)))
         IoU_threshold = 1 - IoU_threshold       # agg clustering discards high values, we want the opposite
-        for i in range(len(self.memory)):
+        for i in tqdm(range(len(self.memory))):
             for j in range(i, len(self.memory)):
                 if i == j:
                     IoUs[i][j] = 1
@@ -717,6 +723,8 @@ class ObjectMemory():
                 IoUs[i][j] = 1 - calculate_obj_aligned_3d_IoU(np.asarray(self.memory[i].pointcloud.points),
                                                               np.asarray(self.memory[j].pointcloud.points))
                 IoUs[j][i] = IoUs[i][j]
+
+        IoU_threshold = np.nan_to_num(IoU_threshold)
 
         # sklearn agglomerative clustering
         self._log("Clustering agglomeratively")

@@ -209,6 +209,7 @@ class ObjectDatasetMemory(ObjectMemory):
         # make root dir
         os.system(f"mkdir -p {dataset_root}")
 
+        print(f"Dumping {len(self.memory)} objects in {dataset_root}")
         # create directories per object, dump all rgb/depth pairs
         for obj in self.memory:
             obj_name = f"{obj.names[0]}_{obj.id}"

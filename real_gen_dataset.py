@@ -1,4 +1,4 @@
-from dataloader.tum_dataloader import TUMDataloader
+from dataloader.real_dataloader import RealDataloader
 from object_memory.object_memory import ObjectMemory
 from object_memory.data_collection import ObjectDatasetMemory
 import argparse
@@ -20,7 +20,7 @@ def dummy_get_embs(
     return torch.tensor([1, 2, 3], device=torch.device(kwargs["device"]))
 
 def main(args):
-    dataloader = TUMDataloader(
+    dataloader = RealDataloader(
         evaluation_indices=args.eval_img_inds,
         data_path=args.data_path,
         focal_length_x=args.focal_length_x,
@@ -82,22 +82,18 @@ def main(args):
             pcd.paint_uniform_color(np.random.rand(3))
             combined_pcd += pcd
     
-        save_path = f"/home/instance-loc/instance-based-loc/pcds/cached_{args.testname}_before_cons.ply"
+        save_path = f"/home2/aneesh.chavan/instance-based-loc/pcds/cached_{args.testname}_before_cons.ply"
         o3d.io.write_point_cloud(save_path, combined_pcd)
 
         # Downsample
-        print("--- downsampling")
         memory.downsample_all_objects(voxel_size=0.005)
 
         # Remove below floors
         # memory.remove_points_below_floor()
 
         # Recluster
-        print("--- reclustering")
-        memory._recluster_IoU(0.25)
         # memory.recluster_objects_with_dbscan(eps=.1, min_points_per_cluster=600, visualize=True)
-        memory.recluster_via_combined(eps=.05, embedding_distance_threshold=0.7, min_points_per_cluster=50)
-
+        memory.recluster_via_combined(eps=.2, min_points_per_cluster=150)
 
         print("\nMemory is")
         print(memory)
@@ -120,7 +116,7 @@ def main(args):
             pcd.paint_uniform_color(np.random.rand(3))
             combined_pcd += pcd
 
-        save_path = f"/home/instance-loc/instance-based-loc/pcds/cached_{args.testname}_after_cons.ply"
+        save_path = f"/home2/aneesh.chavan/instance-based-loc/pcds/cached_{args.testname}_after_cons.ply"
         o3d.io.write_point_cloud(save_path, combined_pcd)
     #######
 
@@ -130,7 +126,7 @@ def main(args):
         memory.load(args.memory_load_path)
         print("Memory loaded")
 
-    memory.dump_dataset(args.dump_dir)
+    memory.dump_dataset('/home2/aneesh.chavan/instance-based-loc/gen_data/real_dataset')
 
     exit(0)
 
@@ -143,14 +139,6 @@ if __name__ == "__main__":
         type=str,
         help="Experiment name",
         default="gen_combined"
-    )
-    # gen params
-    # dataset params
-    parser.add_argument(
-        "--dump-dir",
-        type=str,
-        help="Pasdf",
-        default="/scratch/sarthak/synced_data2"
     )
     # dataset params
     parser.add_argument(
@@ -222,7 +210,7 @@ if __name__ == "__main__":
         "--last-file-index",
         type=int,
         help="last file to sample",
-        default=2500
+        default=2000
     )
     parser.add_argument(
         "--sampling-period",
