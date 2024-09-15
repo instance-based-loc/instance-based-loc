@@ -404,7 +404,7 @@ class ObjectMemory():
         import matplotlib.pyplot as plt
         cax = plt.imshow(distance_matrix)
         cbar = plt.colorbar(cax)
-        plt.savefig('/home2/aneesh.chavan/instance-based-loc/check.png')
+        # plt.savefig('/home2/aneesh.chavan/instance-based-loc/check.png')
 
         # sklearn agglomerative clustering
         self._log("Clustering agglomeratively")
@@ -464,7 +464,7 @@ class ObjectMemory():
         import matplotlib.pyplot as plt
         cax = plt.imshow(distance_matrix)
         cbar = plt.colorbar(cax)
-        plt.savefig('/home2/aneesh.chavan/instance-based-loc/lora_sims.png')
+        # plt.savefig('/home2/aneesh.chavan/instance-based-loc/lora_sims.png')
 
         # import pdb;
         # pdb.set_trace()
@@ -585,7 +585,7 @@ class ObjectMemory():
         import matplotlib.pyplot as plt
         cax = plt.imshow(distance_matrix)
         cbar = plt.colorbar(cax)
-        plt.savefig('/home2/aneesh.chavan/instance-based-loc/lora_sims.png')
+        # plt.savefig('/home2/aneesh.chavan/instance-based-loc/lora_sims.png')
 
         # import pdb;
         # pdb.set_trace()

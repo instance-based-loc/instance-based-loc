@@ -134,9 +134,9 @@ def register_point_clouds(source, target, voxel_size, global_dist_factor = 1.5, 
         )
 
     except:
-        result_icp = o3d.pipelines.registration.registration_colored_icp(
+        result_icp = o3d.pipelines.registration.registration_icp(
             source, target, voxel_size*local_dist_factor, np.eye(4),
-            o3d.pipelines.registration.TransformationEstimationForColoredICP()
+            o3d.pipelines.registration.TransformationEstimationPointToPoint()
         )
 
     return result_icp.transformation, result_icp.inlier_rmse, result_icp.fitness

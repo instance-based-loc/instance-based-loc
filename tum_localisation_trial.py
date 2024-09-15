@@ -121,7 +121,7 @@ def main(args):
             pcd.paint_uniform_color(np.random.rand(3))
             combined_pcd += pcd
     
-        save_path = f"/home2/aneesh.chavan/instance-based-loc/pcds/cached_{args.testname}_before_cons.ply"
+        save_path = f"./pcds/cached_{args.testname}_before_cons.ply"
         o3d.io.write_point_cloud(save_path, combined_pcd)
 
         # Downsample
@@ -159,7 +159,7 @@ def main(args):
             pcd.paint_uniform_color(np.random.rand(3))
             combined_pcd += pcd
 
-        save_path = f"/home2/aneesh.chavan/instance-based-loc/pcds/cached_{args.testname}_after_cons.ply"
+        save_path = f"./pcds/cached_{args.testname}_after_cons.ply"
         o3d.io.write_point_cloud(save_path, combined_pcd)
     #######
 
@@ -180,7 +180,7 @@ def main(args):
         pcd.pointcloud.paint_uniform_color(np.random.random(3))
         combined_pcd += pcd.pointcloud
 
-    save_path = f"/home2/aneesh.chavan/instance-based-loc/pcds/cached_{args.testname}_after_cons.ply"
+    save_path = f"./pcds/cached_{args.testname}_after_cons.ply"
     o3d.io.write_point_cloud(save_path, combined_pcd)
     # exit(0)
 
@@ -375,7 +375,7 @@ if __name__ == "__main__":
         "--memory-load-path",
         type=str,
         help="file to load memory from, or save it to",
-        default='./out/8room_with_floor/large_tum_memory.pt'
+        default='./out/large_tum_memory.pt'
     )
 
     # lora path
