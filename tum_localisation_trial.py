@@ -1,4 +1,5 @@
 from dataloader.tum_dataloader import TUMDataloader
+from dataloader.eightroom_dataloader import EightRoomDataLoader
 from object_memory.object_memory import ObjectMemory
 import argparse
 import matplotlib.pyplot as plt
@@ -71,7 +72,7 @@ def main(args):
         lora_path=args.lora_path
     )
 
-    dataloader = TUMDataloader(
+    dataloader = EightRoomDataLoader(
         evaluation_indices=args.eval_img_inds,
         data_path=args.data_path,
         focal_length_x=args.focal_length_x,
@@ -93,7 +94,7 @@ def main(args):
                 pose,
                 consider_floor = False,
                 add_noise=False,
-                depth_factor=5000.
+                # depth_factor=5000.
             )
 
             mem_usage, gpu_usage = get_mem_stats()
@@ -121,7 +122,7 @@ def main(args):
             pcd.paint_uniform_color(np.random.rand(3))
             combined_pcd += pcd
     
-        save_path = f"/home2/aneesh.chavan/instance-based-loc/pcds/cached_{args.testname}_before_cons.ply"
+        save_path = f"./pcds/cached_{args.testname}_before_cons.ply"
         o3d.io.write_point_cloud(save_path, combined_pcd)
 
         # Downsample
@@ -159,7 +160,7 @@ def main(args):
             pcd.paint_uniform_color(np.random.rand(3))
             combined_pcd += pcd
 
-        save_path = f"/home2/aneesh.chavan/instance-based-loc/pcds/cached_{args.testname}_after_cons.ply"
+        save_path = f"./pcds/cached_{args.testname}_after_cons.ply"
         o3d.io.write_point_cloud(save_path, combined_pcd)
     #######
 
@@ -167,6 +168,9 @@ def main(args):
         print("Memory dumped")
     else:
         memory.load(args.memory_load_path)
+
+        memory.recluster_via_clustering_and_IoU(eps=0.15, embedding_distance_threshold=0.5, IoU_threshold=0.25, min_points_per_cluster=50)
+        print(memory)
         print("Memory loaded")
 
     color_gen = lambda n: [(float((np.sin(i * 2 * np.pi / n) * 0.5 + 0.5)),
@@ -180,13 +184,13 @@ def main(args):
         pcd.pointcloud.paint_uniform_color(np.random.random(3))
         combined_pcd += pcd.pointcloud
 
-    save_path = f"/home2/aneesh.chavan/instance-based-loc/pcds/cached_{args.testname}_after_cons.ply"
+    save_path = f"./pcds/cached_{args.testname}_after_cons.ply"
     o3d.io.write_point_cloud(save_path, combined_pcd)
     # exit(0)
 
     ########### begin localisation ############
 
-    eval_dataloader = TUMDataloader(
+    eval_dataloader = EightRoomDataLoader(
         evaluation_indices=args.eval_img_inds,
         data_path=args.data_path,
         focal_length_x=args.focal_length_x,
@@ -215,7 +219,8 @@ def main(args):
                                             fpfh_voxel_size = args.fpfh_voxel_size, useLora = True,
                                             consider_floor = False,
                                             perform_semantic_icp=False,
-                                            depth_factor=5000.)
+                                            # depth_factor=5000.)
+                                            )
 
 
         translation_error = np.linalg.norm(target_pose[:3] - estimated_pose[:3]) 
@@ -271,7 +276,9 @@ if __name__ == "__main__":
         "--data-path",
         type=str,
         help="Path to the 8room sequence",
-        default="/scratch/sarthak/synced_data2"
+        # default="/scratch/instance-loc/tum_datasets/rgbd_dataset_freiburg2_desk/synced_data"
+        # default="/scratch/instance-loc/tum_datasets/rgbd_dataset_freiburg3_long_office_household/synced_data"
+        default='/scratch/instance-loc/synth_datasets/8-room-v1/1'
     )
     parser.add_argument(
         "-e",
@@ -330,19 +337,19 @@ if __name__ == "__main__":
         "--start-file-index",
         type=int,
         help="beginning of file sampling",
-        default=0
+        default=200
     )
     parser.add_argument(
         "--last-file-index",
         type=int,
         help="last file to sample",
-        default=1500
+        default=3000
     )
     parser.add_argument(
         "--sampling-period",
         type=int,
         help="sampling period",
-        default=30
+        default=23
     )
 
     # eval sampling params
@@ -350,26 +357,27 @@ if __name__ == "__main__":
         "--loc-start-file-index",
         type=int,
         help="eval beginning of file sampling",
-        default=107
+        default=300
     )
     parser.add_argument(
         "--loc-last-file-index",
         type=int,
         help="eval last file to sample",
-        default=1450
+        default=2900
     )
     parser.add_argument(
         "--loc-sampling-period",
         type=int,
         help="eval sampling period",
-        default=61
+        default=100
     )
     # Memory dump/load args
     parser.add_argument(
         "--load-memory",
-        type=bool,
+        # type=bool,
         help="should memory be loaded from a file",
-        default=False
+        default=False,
+        action='store_true'
     )
     parser.add_argument(
         "--memory-load-path",
@@ -405,7 +413,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--fpfh-voxel-size",
         type=float,
-        default=0.05
+        default=0.09
     )
 
     parser.add_argument(

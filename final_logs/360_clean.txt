@@ -1,0 +1,87 @@
+
+
+Pose 1, image 12
+#0.7174487647954527
+0.01937262666323627
+Assignment:  [[0, 8], [2, 9], [4, 44]]
+Moved objects:  None
+MISALIGNED
+
+Pose 2, image 12
+#0.5365389231744679
+0.010565153875254946
+Assignment:  [[0, 37], [2, 8]]
+Moved objects:  None
+SUCCESS
+
+Pose 3, image 12
+#3.586597977060983
+1.0939503988174768
+Assignment:  [[0, 36]]
+Moved objects:  None
+MISALIGNED
+
+Pose 4, image 12
+#0.02904819323037472
+0.02493927278986789
+Assignment:  [[0, 22], [1, 34]]
+Moved objects:  None
+SUCCESS
+
+Pose 5, image 12
+#0.07870605903602855
+0.029133544617633587
+Assignment:  [[0, 41], [2, 16]]
+Moved objects:  None
+SUCCESS
+
+Pose 6, image 12
+#0.49763521421719936
+1.527761170674973
+Assignment:  [[0, 27]]
+Moved objects:  None
+MISALIGNED
+
+Pose 7, image 12
+#0.9264407694665477
+0.7745098419126195
+Assignment:  [[2, 33], [5, 10]]
+Moved objects:  None
+MISALIGNED
+
+Pose 8, image 12
+#1.6074410651735231
+0.8941908139920499
+Assignment:  [[0, 29], [1, 14]]
+Moved objects:  None
+MISALIGNED
+
+Pose 9, image 12
+#0.05146956375781377
+0.020525568519549568
+Assignment:  [[0, 43], [1, 47]]
+Moved objects:  None
+SUCCESS
+
+Pose 10, image 12
+#1.8555325627126922
+0.942321583209227
+Assignment:  [[0, 10], [1, 18]]
+Moved objects:  None
+MISALIGNED
+
+Pose 11, image 12
+#1.4193139973127569
+0.015619856011772138
+Assignment:  [[0, 29], [1, 20]]
+Moved objects:  None
+MISALIGNED
+
+Pose 12, image 12
+#1.7709265185207295
+0.6140737484579041
+Assignment:  [[0, 45]]
+Moved objects:  None
+MISALIGNED
+
+
