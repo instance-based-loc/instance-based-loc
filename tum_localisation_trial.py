@@ -383,7 +383,7 @@ if __name__ == "__main__":
         "--memory-load-path",
         type=str,
         help="file to load memory from, or save it to",
-        default='./out/8room_with_floor/large_tum_memory.pt'
+        default='./out/large_tum_memory.pt'
     )
 
     # lora path
