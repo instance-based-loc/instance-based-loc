@@ -2,7 +2,7 @@
 
 ## Code Release
 
-Will be released by 00:00:00 AOT, 1st October, 2024.
+Will be released by 00:00:00 AOT, 4th October, 2024.
 
 ## Setup
 
