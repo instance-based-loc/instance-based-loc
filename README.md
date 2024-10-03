@@ -22,7 +22,7 @@ Re-Identification</h1>
 </p>
 <!-- <p align="center">
   <a href="">
-    <img src="https://openmask3d.github.io/static/images/teaser.jpeg" alt="Logo" width="100%">
+    <img src="https://instance-based-loc-machine.github.io/static/images/pipeline-new.drawio-cropped-compressed.png" alt="Logo" width="100%">
   </a>
 </p>
 <p align="center">
