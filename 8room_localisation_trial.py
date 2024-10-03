@@ -12,6 +12,7 @@ from tqdm import tqdm
 
 from utils.quaternion_ops import QuaternionOps
 from utils.logging import get_mem_stats
+from utils.embeddings import get_all_clip_embeddings, get_all_dino_embeddings, get_dator_embeddings, get_all_vit_embeddings
 
 def dummy_get_embs(
     **kwargs
@@ -19,6 +20,17 @@ def dummy_get_embs(
     return torch.tensor([1, 2, 3], device=torch.device(kwargs["device"]))
 
 def main(args):
+    if args.embeddings == "clip":
+        embeddings_func = get_all_clip_embeddings
+    elif args.embeddings == "dino":
+        embeddings_func = get_all_dino_embeddings
+    elif args.embeddings == "dator":
+        embeddings_func = get_dator_embeddings
+    elif args.embeddings == "vit":
+        embeddings_func = get_all_vit_embeddings
+    else:
+        raise ValueError("Invalid embeddings function")
+
     dataloader = EightRoomDataLoader(
         evaluation_indices=args.eval_img_inds,
         data_path=args.data_path,
@@ -39,7 +51,7 @@ def main(args):
         sam_checkpoint_path = args.sam_checkpoint_path,
         camera_focal_lenth_x = args.focal_length,
         camera_focal_lenth_y = args.focal_length,
-        get_embeddings_func = dummy_get_embs,
+        get_embeddings_func = embeddings_func,
         lora_path=args.lora_path
     )
     if args.load_memory == False:
@@ -85,11 +97,10 @@ def main(args):
         # Downsample
         memory.downsample_all_objects(voxel_size=0.01)
 
-        # Remove below floors
-        memory.remove_points_below_floor()
+        memory._recluster_IoU(0.3)
+        # memory.recluster_via_combined(eps=0.05, embedding_distance_threshold=0.5, min_points_per_cluster=1)
 
-        # Recluster
-        memory.recluster_objects_with_dbscan(visualize=True)
+        memory.recluster_via_clustering_and_IoU(eps=0.05, embedding_distance_threshold=0.5, IoU_threshold=0.25, min_points_per_cluster=50)
 
 
 
@@ -180,6 +191,19 @@ def main(args):
         rot_errors.append(rotation_error)
         chosen_assignments.append(chosen_assignment)
 
+    f = open(f"./out/{args.testname}_results.txt", "w")
+
+    # bin the results by storing them in a dictionary
+    d_tr = {'0.1': 0, '0.3': 0, '0.6': 0, '1.0': 0, '1.5': 0, '3.0': 0, 'other': 0}
+    r_tr = {'0.1': 0, '0.3': 0, '0.6': 0, '1.0': 0, '1.5': 0, 'other': 0}
+
+    # Output results
+    total = 0
+    successes = 0
+    avg_trans_error = 0
+    avg_rot_error = 0
+
+    # Output results
     for idx, _ in enumerate(tqdm(eval_dataloader.environment_indices, total=len(eval_dataloader.environment_indices))):
         print(f"Pose {idx + 1}, image {len(eval_dataloader.environment_indices)}")
         print("Translation error", trans_errors[idx])
@@ -188,11 +212,75 @@ def main(args):
         print("Moved objects: ", chosen_assignments[idx][1])
         if trans_errors[idx] < 0.6 and rot_errors[idx] < 0.3:
             print("SUCCESS")
+            successes += 1
         else:
             print("MISALIGNED")
+        total += 1
         print()
+        f.write(f"Pose {idx + 1}, image {len(eval_dataloader.environment_indices)}\n")
+        f.write(f"Translation error: {trans_errors[idx]}\n")
+        f.write(f"Rotation errors: {rot_errors[idx]}\n")
+        f.write(f"Assignment: {chosen_assignments[idx][0]}\n")
+        f.write(f"Moved objects: {chosen_assignments[idx][1]}\n")
+        if trans_errors[idx] < 0.6 and rot_errors[idx] < 0.3:
+            f.write("SUCCESS\n")
+        else:
+            f.write("MISALIGNED\n")
 
-    exit(0)
+        avg_trans_error += trans_errors[idx]
+        avg_rot_error += rot_errors[idx] 
+        
+        if trans_errors[idx] < 0.1:
+            d_tr['0.1'] += 1
+        if trans_errors[idx] < 0.3:
+            d_tr['0.3'] += 1
+        if trans_errors[idx] < 0.6:
+            d_tr['0.6'] += 1
+        if trans_errors[idx] < 1.0:
+            d_tr['1.0'] += 1
+        if trans_errors[idx] < 1.5:
+            d_tr['1.5'] += 1
+        if trans_errors[idx] < 3.0:
+            d_tr['3.0'] += 1
+        else:
+            d_tr['other'] += 1
+
+        if rot_errors[idx] < 0.1:
+            r_tr['0.1'] += 1
+        if rot_errors[idx] < 0.3:
+            r_tr['0.3'] += 1
+        if rot_errors[idx] < 0.6:
+            r_tr['0.6'] += 1
+        if rot_errors[idx] < 1.0:
+            r_tr['1.0'] += 1
+        if rot_errors[idx] < 1.5:
+            r_tr['1.5'] += 1
+        else:
+            r_tr['other'] += 1
+
+        f.write("\n")
+    f.write(f"Bagged results for {len(eval_dataloader.environment_indices)} eval indices\n")
+    f.write(f"Translation error less than 0.1: {d_tr['0.1']}\n")
+    f.write(f"Translation error less than 0.3: {d_tr['0.3']}\n")
+    f.write(f"Translation error less than 0.6: {d_tr['0.6']}\n")
+    f.write(f"Translation error less than 1.0: {d_tr['1.0']}\n")
+    f.write(f"Translation error less than 1.5: {d_tr['1.5']}\n")
+    f.write(f"Translation error less than 3.0: {d_tr['3.0']}\n")
+    f.write(f"Translation error greater than 3.0: {d_tr['other']}\n")
+    f.write("\n")
+    f.write(f"Rotation error less than 0.1: {r_tr['0.1']}\n")
+    f.write(f"Rotation error less than 0.3: {r_tr['0.3']}\n")
+    f.write(f"Rotation error less than 0.6: {r_tr['0.6']}\n")
+    f.write(f"Rotation error less than 1.0: {r_tr['1.0']}\n")
+    f.write(f"Rotation error less than 1.5: {r_tr['1.5']}\n")
+    f.write(f"Rotation error greater than 1.5: {r_tr['other']}\n")
+    f.write("\n")  
+    f.write(f"Average Translation Error: {avg_trans_error/total}\n")
+    f.write(f"Average Rotation Error: {avg_rot_error/total}\n")
+    f.write(f"Median Translation Error: {np.median(trans_errors)}\n")
+    f.write(f"Median Rotation Error: {np.median(rot_errors)}\n")
+    f.write(f"Total Success Rate: {successes/total*100}\n")
+    f.close()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

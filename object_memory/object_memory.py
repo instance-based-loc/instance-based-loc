@@ -101,13 +101,15 @@ class ObjectMemory():
 
         ##  HARDCODED TO LORA
         if self.get_embeddings_func == None:
-            self._log("self.get_embeddings_func is None")
-            self.loraModule = LoraRevolver(self.device)
-            if lora_path != None:
-                self.loraModule.load_lora_ckpt_from_file(lora_path, "5x40")
-            else:
-                raise NotImplementedError
-            self.get_embeddings_func = self.loraModule.encode_image
+            # self._log("self.get_embeddings_func is None")
+            # self.loraModule = LoraRevolver(self.device)
+            # if lora_path != None:
+            #     self.loraModule.load_lora_ckpt_from_file(lora_path, "5x40")
+            # else:
+            #     raise NotImplementedError
+            # self.get_embeddings_func = self.loraModule.encode_image
+
+            raise NotImplementedError("Need to pass in get_embeddings_func")
 
         self.memory: list[ObjectInfo] = []
         self.floors = None # stoors all floors or ground in one pcd
