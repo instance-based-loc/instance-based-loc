@@ -1,0 +1,41 @@
+parse arguments
+make dataloaders
+make model
+make optimizer
+make scheduler
+do train
+
+
+make_model
+calls build_transformer
+
+class build_transformer
+self.base is the backbone (ImageNet pretrained)
+classifier is defined, based on the different loss types, there are different classifiers 
+and if not a known classifier type, then use nn.Linear classifier, and weights are initialized 
+then a bottleneck is defined, which is BatchNorm1d
+def forward:
+first passed through backbone 
+then passed through bottleneck 
+self.neck_feat = "after" if test with feature after BN 
+
+
+class build_transformer_local
+def __init__:
+again first base is defined 
+block = self.base.blocks[-1] 
+layer_norm = self.base.norm 
+self.b1 = nn.Sequential(
+copy.deepcopy(block), 
+copy.deepcopy(layer_norm) 
+)
+self.b2 is same as self.b1 
+
+then classifier, but here there are multiple linear layers for the classifier 
+again the bottlenecks are also stacked, 4 batchnorm layers 
+
+
+
+
+def load_param_finetune() in make_model.py if for loading parameters for finetuning 
+
