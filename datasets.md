@@ -1,7 +1,5 @@
 # Datasets
 
-**Will be updated by October 1st, 2024.**
-
 ## ReID Dataset
 
 _DATOR-ReID_: [Link](https://iiitaphyd-my.sharepoint.com/:u:/g/personal/sarthak_chittawar_research_iiit_ac_in/EbwA3I16D4FPr0mdh9sKu8UB3uQyX4KIU_yRMrBIAiKuIA?e=Ixw5ZR)
