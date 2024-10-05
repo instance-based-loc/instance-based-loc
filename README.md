@@ -31,10 +31,6 @@ Guided by predicted class-agnostic 3D instance masks, our model aggregates per-m
 </p> -->
 <br>
 
-## Code Release
-
-Will be released by 00:00:00 AOT, 4th October, 2024.
-
 ## Setup
 
 ### Clone all submodules
