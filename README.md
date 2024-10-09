@@ -78,4 +78,12 @@ bash bash_scripts/download_ram_sam_weights.sh
 
 ## Overall Documentation
 
-Will be added
+### Full Localisation Run
+```
+python tum_localisation_trial.py -t {run_name} --data-path {data_path} --map-pcd-cache-path {map_pcd_cache_path} --memory-load-path {memory_load_path} --embeddings {dino/clip/vit/dator}
+python real_localisation_trial.py -t {run_name} --data-path {data_path} --map-pcd-cache-path {map_pcd_cache_path} --memory-load-path {memory_load_path} --embeddings {dino/clip/vit/dator}
+```
+
+### DATOR ReID training
+
+* Will be added.
