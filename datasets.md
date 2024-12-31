@@ -15,4 +15,4 @@ global localization in complex indoor environments.
 
 _DATOR-lab_: [Link](https://iiithydresearch-my.sharepoint.com/:u:/g/personal/sarthak_chittawar_research_iiit_ac_in/EcALlWzZ52dBpdgTa-YluMIB2gZwBvJ5dbJex6z_u73Hnw?e=4TWETx)
 
-_DATOR-synth_: [Link to be updated soon](https://iiitaphyd-my.sharepoint.com/:u:/g/personal/sarthak_chittawar_research_iiit_ac_in/EYggxppBGIZJgl6fK4pUfKYBtnqZn_xZ3zKOTtaPoB8mzw?e=NF9Jxj)
+_DATOR-synth_: [Link](https://iiithydresearch-my.sharepoint.com/:u:/g/personal/sarthak_chittawar_research_iiit_ac_in/EabDZMg9TItPmfxfOjkMbOoBFjAp36MLCNEI_Dh1sub0ZA?e=EzRUnF)
