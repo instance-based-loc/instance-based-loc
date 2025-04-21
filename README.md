@@ -16,7 +16,7 @@ Re-Identification</h1>
     <sup>3</sup>Typeface Inc.<br>
     <sup>*</sup>equal contribution, <sup>†</sup>equal contribution
   </p>
-  <h2 align="center">Submitted to ICRA 2025</h2>
+  <h2 align="center">Accepted at Advances in Robotics, AIR 2025 (Oral)</h2>
   <h3 align="center"><a href="https://github.com/instance-based-loc/instance-based-loc">Code</a> | <a href="https://arxiv.org/abs/2409.12002">Paper</a> | <a href="https://github.com/instance-based-loc/instance-based-loc/blob/main/datasets.md">Datasets</a> | <a href="https://instance-based-loc-machine.github.io/">Project Page</a></h3>
   <div align="center"></div>
 </p>
