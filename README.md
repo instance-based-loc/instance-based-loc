@@ -76,6 +76,8 @@ _NOTE_: Update the environment YAML before merging any PR. Remove the `prefix` p
 bash bash_scripts/download_ram_sam_weights.sh 
 ```
 
+* DATOR checkpoints are available at [Google Drive Link](https://drive.google.com/drive/folders/1ojzZtSo39Hs-yPvWhl5BJlZ2QyAZmlHo), please change the directory path on line 102 in `utils/embeddings.py` to your download location.
+
 ## Overall Documentation
 
 ### Full Localisation Run
@@ -86,4 +88,4 @@ python real_localisation_trial.py -t {run_name} --data-path {data_path} --map-pc
 
 ### DATOR ReID training
 
-* Will be added.
+* Similar to the TransReID training setup.
