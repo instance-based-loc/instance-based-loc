@@ -98,7 +98,7 @@ def get_all_vit_embeddings(**kwargs) -> torch.Tensor:
     return cls_embedding.squeeze(0)
 
 
-from dator_wrapper import load_model, get_model_input
+from dator import load_model, get_model_input
 dator_model = load_model('/home2/aneesh.chavan/instance-based-loc/dator/dator_best_tum.pth')
 dator_model.eval()
 
