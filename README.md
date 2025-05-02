@@ -3,10 +3,10 @@
   <h1 align="center">Towards Global Localization using Multi-Modal Object-Instance
 Re-Identification</h1>
   <p align="center">
-    <a href="https://scholar.google.com/citations?hl=en&user=fiFj4AwAAAAJ" target="_blank">Aneesh Chavan</a><sup>*1</sup>,</span> 
+    <a href="https://scholar.google.com/citations?hl=en&user=fiFj4AwAAAAJ" target="_blank">Aneesh Chavan</a><sup>1</sup>,</span> 
     <a href="SECOND AUTHOR PERSONAL LINK" target="_blank">Vaibhav Agrawal</a><sup>*1</sup>,</span>
-    <a href="https://scholar.google.com/citations?user=vsqwwPYAAAAJ&hl=en" target="_blank">Vineeth Bhat</a><sup>†1</sup>,<br>
-    <a href="https://scholar.google.com/citations?user=La1bvRsAAAAJ&hl=en" target="_blank">Sarthak Chittawar</a><sup>†1</sup>,
+    <a href="https://scholar.google.com/citations?user=vsqwwPYAAAAJ&hl=en" target="_blank">Vineeth Bhat</a><sup>*1</sup>,<br>
+    <a href="https://scholar.google.com/citations?user=La1bvRsAAAAJ&hl=en" target="_blank">Sarthak Chittawar</a><sup>*1</sup>,
     <a href="THIRD AUTHOR PERSONAL LINK" target="_blank">Siddharth Srivastava</a><sup>3</sup>,
     <a href="https://scholar.google.com/citations?user=Q8cTLNMAAAAJ&hl=en" target="_blank">Chetan Arora</a><sup>2</sup>,
     <a href="https://scholar.google.com/citations?user=QDuPGHwAAAAJ&hl=en" target="_blank">K Madhava Krishna</a><sup>1</sup>
@@ -14,7 +14,7 @@ Re-Identification</h1>
     <sup>1</sup>Robotics Research Centre, IIIT Hyderabad, 
     <sup>2</sup>IIT Delhi, 
     <sup>3</sup>Typeface Inc.<br>
-    <sup>*</sup>equal contribution, <sup>†</sup>equal contribution
+    <sup>*</sup>equal contribution
   </p>
   <h2 align="center">Accepted at Advances in Robotics, AIR 2025 (Oral)</h2>
   <h3 align="center"><a href="https://github.com/instance-based-loc/instance-based-loc">Code</a> | <a href="https://arxiv.org/abs/2409.12002">Paper</a> | <a href="https://github.com/instance-based-loc/instance-based-loc/blob/main/datasets.md">Datasets</a> | <a href="https://instance-based-loc-machine.github.io/">Project Page</a></h3>
